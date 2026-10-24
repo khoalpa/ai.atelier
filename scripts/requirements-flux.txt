@@ -1,0 +1,6 @@
+# Verified with the existing CUDA-enabled PyTorch 2.11.0+cu128 runtime.
+diffusers==0.37.1
+transformers==5.5.4
+accelerate==1.13.0
+huggingface_hub==1.26.0
+safetensors==0.7.0

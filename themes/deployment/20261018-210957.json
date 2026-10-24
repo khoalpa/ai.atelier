@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "changes": [
+    {
+      "path": "D:\\project\\watermarks-remover\\service\\scripts\\web\\findings.css",
+      "backup": "D:\\project\\watermarks-remover\\.theme-backups\\20261018-210957\\service\\scripts\\web\\findings.css",
+      "sha256": "0d56d69b6ce27bb1fd7f20beb8dac44d34724fb649e8d771880e6f3b7e9ffa1d"
+    }
+  ]
+}

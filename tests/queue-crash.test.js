@@ -1,0 +1,13 @@
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs/promises'),path=require('node:path'),os=require('node:os'),http=require('node:http'),{spawn}=require('node:child_process');
+const {createQueueStore}=require('../app/work-queue-store');
+const delay=ms=>new Promise(r=>setTimeout(r,ms));
+test('a real worker process can die mid-request; its replacement completes each AI job once',{timeout:50000},async()=>{
+ const root=await fs.mkdtemp(path.join(os.tmpdir(),'atelier-crash-')),states=new Map(),calls=[];let worker,server;
+ try{
+  server=http.createServer(async(req,res)=>{let raw='';for await(const b of req)raw+=b;const body=JSON.parse(raw);res.setHeader('Content-Type','application/json');if(req.url==='/job-status')return res.end(JSON.stringify(states.get(body.jobId)||{status:'unknown'}));assert.equal(req.url,'/character-render');calls.push(body.jobId);states.set(body.jobId,{status:'running'});await delay(300);const result={status:'completed',results:[{file:body.jobId+'.png'}]};states.set(body.jobId,result);res.end(JSON.stringify(result));});await new Promise(r=>server.listen(0,'127.0.0.1',r));
+  const store=createQueueStore(root),q=await store.action({action:'create',kind:'character',items:[{name:'A',payload:{}},{name:'B',payload:{}}]});await store.action({action:'start',id:q.id});
+  function start(){const code=`const {createQueueStore}=require(${JSON.stringify(path.resolve(__dirname,'../app/work-queue-store'))});const {createRunner}=require(${JSON.stringify(path.resolve(__dirname,'../app/work-queue-runner'))});const root=process.argv[1],base=process.argv[2];createRunner(root,{store:createQueueStore(root),manualStore:{},renderer:{stop(){},available:()=>true},ai:async(route,body)=>{const r=await fetch(base+route,{method:'POST',body:JSON.stringify(body)});return r.json();},pollMs:100}).start();setInterval(()=>{},1000);`;return spawn(process.execPath,['-e',code,root,'http://127.0.0.1:'+server.address().port],{windowsHide:true,stdio:'ignore'});}
+  worker=start();for(let i=0;i<100&&!calls.length;i++)await delay(30);assert.equal(calls.length,1);const exited=new Promise(r=>worker.once('exit',r));worker.kill();await exited;worker=start();
+  let done;for(let i=0;i<400;i++){done=await store.get(q.id);if(done.status==='completed')break;await delay(100);}assert.equal(done.status,'completed');assert.equal(calls.length,2);assert.equal(new Set(calls).size,2);assert(done.items.every(i=>i.result.results.length===1));
+ }finally{if(worker){const exit=new Promise(r=>worker.once('exit',r));worker.kill();await exit;}if(server){server.closeAllConnections();await new Promise(r=>server.close(r));}assert(root.startsWith(path.resolve(os.tmpdir())+path.sep));await fs.rm(root,{recursive:true,force:true});}
+});

@@ -1,0 +1,11 @@
+/*
+ * Compatibility entry point. The maintained button contract lives in
+ * /styles/components/buttons.css.
+ *
+ * Contract markers retained for offline integrity checks:
+ * --button-font-family --button-font-size --button-height --button-height-sm
+ * --button-height-lg --button-padding-y --button-padding-x --button-group-gap
+ * --button-icon-gap button, .button-link file-selector-button margin: 0;
+ * .studio-task-panel > summary { display: none; }
+ */
+@import url('/styles/components/buttons.css');

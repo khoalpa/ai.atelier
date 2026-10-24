@@ -1,0 +1,147 @@
+@layer components {
+/* One typography contract for every native and link-style button. */
+:root {
+  --button-font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --button-font-size: 12px;
+  --button-line-height: 1.25;
+  --button-font-weight: 600;
+  --button-height: 36px;
+  --button-height-sm: 32px;
+  --button-height-lg: 42px;
+  --button-padding-y: 9px;
+  --button-padding-x: 12px;
+  --button-padding-sm-y: 6px;
+  --button-padding-sm-x: 10px;
+  --button-padding-lg-y: 11px;
+  --button-padding-lg-x: 16px;
+  --button-group-gap: 8px;
+  --button-icon-gap: 7px;
+}
+
+button,
+.button-link {
+  font-family: var(--button-font-family);
+  font-size: var(--button-font-size);
+  font-weight: var(--button-font-weight);
+  line-height: var(--button-line-height);
+  letter-spacing: 0;
+  box-sizing: border-box;
+  min-height: var(--button-height);
+  margin: 0;
+  padding: var(--button-padding-y) var(--button-padding-x);
+  gap: var(--button-icon-gap);
+  vertical-align: middle;
+}
+
+button.primary,
+button.active,
+.button-link {
+  font-weight: 700;
+}
+
+button.primary,
+.button-link.primary,
+.hub-card button,
+.system-action button,
+.jobs-side button {
+  min-height: var(--button-height-lg);
+  padding: var(--button-padding-lg-y) var(--button-padding-lg-x);
+}
+
+.icon-button {
+  min-width: var(--button-height);
+  min-height: var(--button-height);
+  padding: 0;
+}
+
+.panel-heading-actions button,
+.canvas-toolbar button,
+.job-foot button,
+.studio-readiness button,
+.llm-assist-button,
+.registered-path button,
+.reset-grid button,
+.registered-actions details > summary,
+.registered-actions details > button,
+.studio-mode-switch button,
+.job-foot button {
+  min-height: var(--button-height-sm);
+  padding: var(--button-padding-sm-y) var(--button-padding-sm-x);
+}
+
+.button-row,
+.segmented,
+.review-actions,
+.guided-nav,
+.panel-heading-actions,
+.canvas-image-actions,
+.canvas-empty-state > div,
+.job-foot > div,
+.studio-mode-switch,
+.mask-guide-actions,
+.model-manager-tabs,
+.registered-actions {
+  gap: var(--button-group-gap);
+}
+
+input[type="file"]::file-selector-button,
+.source-upload input[type="file"]::file-selector-button,
+#garmentFile::file-selector-button {
+  min-height: var(--button-height-sm);
+  margin: 0 var(--button-group-gap) 0 0;
+  padding: var(--button-padding-sm-y) var(--button-padding-sm-x);
+  font-family: var(--button-font-family);
+  font-size: var(--button-font-size);
+  font-weight: var(--button-font-weight);
+  line-height: var(--button-line-height);
+}
+
+/* The task switch already chooses the only visible panel; no outer accordion is needed. */
+.studio-task-panel > summary { display: none; }
+
+.panel-heading-actions,
+.canvas-image-actions,
+.canvas-empty-state > div {
+  display: flex;
+  align-items: center;
+  gap: var(--button-group-gap);
+}
+
+.canvas-image-actions { min-width: 0; flex: 1; }
+.canvas-image-actions #imageInfo { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.canvas-image-actions button { flex-shrink: 0; }
+@media (max-width: 560px) {
+  .canvas-image-actions { flex-wrap: wrap; padding-block: 8px; }
+  .canvas-image-actions #imageInfo { flex-basis: 100%; }
+  .image-viewer-header { flex-wrap: wrap; }
+}
+
+.canvas-empty-state {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  max-width: 420px;
+  justify-items: center;
+  padding: 28px;
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  color: var(--muted);
+  background: var(--palette-0d131ae8);
+  text-align: center;
+}
+
+.canvas-empty-state[hidden] { display: none; }
+.canvas-empty-state strong { color: var(--text); font-size: 16px; }
+.canvas-empty-state p { margin: 6px 0 16px; }
+.canvas-empty-state button.primary { width: auto; min-height: var(--button-height-lg); }
+
+@media (max-width: 560px) {
+  :root {
+    --button-padding-x: 11px;
+    --button-padding-lg-x: 14px;
+  }
+}
+
+
+}
+

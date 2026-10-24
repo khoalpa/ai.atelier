@@ -1,0 +1,12 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert'),path=require('path');
+const source=fs.readFileSync(path.join(__dirname,'../app/public/app.js'),'utf8');
+const context={};vm.createContext(context);
+vm.runInContext(source.slice(source.indexOf('function referenceSetupSummary('),source.indexOf('async function loadReferenceReadiness(')),context);
+const summary=context.referenceSetupSummary;
+assert.ok(summary({category:'upper_body',ready:false,experimentalReference:'existing.png'}).status.includes('ảnh thử nghiệm'));
+assert.ok(summary({category:'lower_body',ready:false}).status.includes('Chưa thiết lập'));
+assert.ok(summary({category:'overall',ready:false,reference:'r.png',checksumMatches:true}).next.includes('3 ảnh'));
+assert.ok(summary({category:'upper_body',ready:false,reference:'r.png',checksumMatches:false}).status.includes('kiểm định lại'));
+assert.ok(summary({category:'upper_body',ready:true}).status.includes('Đã kiểm định'));
+assert.ok(summary({category:'upper_body',ready:false,reference:'r.png',checksumMatches:true,status:'failed-smoke'}).status.includes('chưa đạt chất lượng'));
+console.log('OK: reference setup distinguishes missing, experimental, invalid, pending and qualified images.');

@@ -1,0 +1,15 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const controls={};
+for(const id of ['inpaintModelSelect','inpaintQualityPreset','inpaintGuidance','inpaintSteps','inpaintNegativePrompt','inpaintNegativeHint','inpaintCount','inpaintStrength','inpaintResolution'])controls[id]={value:''};
+controls.inpaintQualityPreset.value='detail';controls.inpaintModelSelect.value='flux';
+const model={id:'flux',architecture:'flux',removalProfile:{guidance:30,strength:1,steps:40,nativeResolution:1024,supportsNegativePrompt:false}};
+const context={window:{ATELIER_INPAINT_MODELS:[model]},$:id=>controls[id]};
+vm.createContext(context);vm.runInContext(fs.readFileSync('app/public/inpaint-controls.js','utf8'),context);
+context.applyInpaintModelSettings();
+assert.equal(controls.inpaintGuidance.value,'30');assert.equal(controls.inpaintGuidance.max,'50');
+assert.equal(controls.inpaintNegativePrompt.disabled,true);assert.equal(controls.inpaintSteps.value,'45');
+controls.inpaintStrength.value='.55';context.applyInpaintModelSettings();assert.equal(controls.inpaintStrength.value,'.55','Refresh must preserve explicit settings');
+context.window.ATELIER_INPAINT_MODELS.push({id:'sdxl',architecture:'sdxl',removalProfile:{guidance:6,strength:.9,steps:40,nativeResolution:1024,supportsNegativePrompt:true}});
+controls.inpaintModelSelect.value='sdxl';context.applyInpaintModelSettings(true);
+assert.equal(controls.inpaintGuidance.value,'6');assert.equal(controls.inpaintGuidance.max,'12');assert(!controls.inpaintNegativePrompt.disabled);
+console.log('OK: model-specific settings, negative capability and preservation of manual edits.');

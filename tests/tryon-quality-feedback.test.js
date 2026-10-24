@@ -1,0 +1,16 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert'),path=require('path');
+const source=fs.readFileSync(path.join(__dirname,'../app/public/app.js'),'utf8');
+const context={};vm.createContext(context);
+vm.runInContext(source.slice(source.indexOf('function tryonQualityFeedback('),source.indexOf('async function runTryon(')),context);
+const result={selectedSeed:43,qualityGate:{passed:false,minimumQuality:75,minimumSimilarity:0.55,minimumSeam:65,minimumAnatomy:90},results:[{seed:42,qualityScore:70,referenceSimilarity:0.3,seamScore:60,anatomyScore:80},{seed:43,qualityScore:88.5,referenceSimilarity:0.4657,seamScore:92.5,anatomyScore:99.4}]};
+const feedback=context.tryonQualityFeedback(result);
+assert.equal(feedback.kind,'warning');
+assert.ok(feedback.text.includes('46.6%, yêu cầu 55.0%'));
+assert.ok(!feedback.text.includes('Chất lượng tổng'));
+assert.ok(!feedback.text.includes('Cấu trúc cơ thể'));
+assert.ok(feedback.text.includes('xem và chọn'));
+result.bodyAudit={required:true,passed:false};
+assert.ok(context.tryonQualityFeedback(result).text.includes('Vùng tay chưa đạt'));
+result.qualityGate.passed=true;
+assert.equal(context.tryonQualityFeedback(result).kind,'success');
+console.log('OK: completed try-on quality feedback identifies failing criteria without reporting a generation error.');

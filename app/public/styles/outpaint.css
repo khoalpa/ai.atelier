@@ -1,0 +1,34 @@
+.outpaint-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.outpaint-fields label{min-width:0}
+#studioOutpaintPanel label.checkbox{display:flex;flex-direction:row;align-items:center;gap:8px}
+#studioOutpaintPanel label.checkbox>input[type="checkbox"]{width:16px;height:16px;min-width:16px;min-height:16px;flex:0 0 16px;margin:0;padding:0}
+#studioOutpaintPanel>small{display:block;margin:8px 0;line-height:1.5}
+.outpaint-fields input,.outpaint-fields select{width:100%;min-width:0}
+.outpaint-inspector{width:94vw;max-width:94vw;height:90vh;max-height:90vh;padding:16px;background:var(--panel,#152133);color:var(--text,#eee);border:1px solid var(--line,#456);border-radius:12px}
+.outpaint-inspector::backdrop{background:#000b}
+.outpaint-inspector-tools{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:12px}
+.outpaint-inspector-tools label{display:flex;align-items:center;gap:8px}
+.outpaint-inspector-tools input{width:auto;min-height:0}
+.outpaint-inspector-scroll{overflow:auto;height:calc(100% - 85px);background:#182331}
+.outpaint-inspector-scroll img{display:block;max-width:none!important;max-height:none!important;object-fit:initial}
+.outpaint-source-outline{position:absolute;border:1px dashed #ffce54;pointer-events:none;box-sizing:border-box}
+.outpaint-source-outline[hidden]{display:none}
+.outpaint-stage{width:100%;padding:20px;align-self:center;text-align:center}
+.outpaint-stage p{color:var(--muted);font-size:13px}
+#outpaintPreview{display:block;max-width:100%;max-height:65vh;width:auto;height:auto;margin:auto;cursor:grab;touch-action:none;border:1px solid var(--line);border-radius:8px}
+#outpaintPreview:active{cursor:grabbing}
+#studioOutpaintPanel[hidden],#outpaintStage[hidden]{display:none!important}
+body[data-studio-task="outpaint"] #editorCanvas,
+body[data-studio-task="outpaint"] #scopePreviewButton,
+body[data-studio-task="outpaint"] .journey-content .tool-group,
+body[data-studio-task="outpaint"] .journey-content .mask-action-card,
+body[data-studio-task="outpaint"] .journey-content label:has(#brushSize),
+body[data-studio-task="outpaint"] .journey-content label:has(#overlayOpacity),
+body[data-studio-task="outpaint"] .journey-content label:has(#notes),
+body[data-studio-task="outpaint"] .journey-content label:has(#labelSelect){display:none!important}
+body[data-studio-task="outpaint"] .studio-compare-images{min-height:220px}
+@media(max-width:920px){
+  body[data-studio-task="outpaint"] .studio-results-layout{height:auto;grid-template-rows:auto auto}
+  body[data-studio-task="outpaint"] .studio-inline-compare{min-height:360px;grid-template-rows:minmax(220px,1fr) auto auto auto}
+}
+.studio-focus-actions,#studioOutpaintContextActions{display:flex;flex-wrap:wrap;gap:8px}

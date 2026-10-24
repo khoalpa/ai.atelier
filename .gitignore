@@ -1,0 +1,17 @@
+
+
+# Local rollback copies for AI Themes
+.theme-backups/
+
+# Runtime and user data are kept outside source control.
+.venv*/
+__pycache__/
+*.py[cod]
+workspace/
+models/
+weights/
+vendor/
+node_modules/
+samples/
+dist/
+*.log

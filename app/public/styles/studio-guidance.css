@@ -1,0 +1,18 @@
+.studio-guidance{margin:12px 0;padding:12px;border:1px solid var(--line-soft);border-radius:12px;line-height:1.6;overflow-wrap:anywhere}
+.studio-guidance summary{cursor:pointer;font-weight:600}
+#studioTryonPanel [hidden]{display:none!important}
+.journey-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));list-style:none;padding:8px 0;gap:4px}
+.journey-steps li{cursor:pointer;min-width:0}.journey-steps li:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.journey-steps .complete>span{border:2px solid currentColor}
+.reference-examples{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.reference-examples>div{padding:10px;border:1px solid var(--line-soft);border-radius:8px}
+.scope-preview{width:min(850px,92vw);max-height:90vh;overflow:auto;background:var(--surface);color:var(--text);border:1px solid var(--line-soft);border-radius:16px;padding:20px}
+.scope-preview::backdrop{background:var(--palette-000b)}
+.scope-preview canvas{display:block;max-width:100%;max-height:55vh;width:auto;height:auto;margin:auto}
+.history-entry{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid var(--line-soft)}
+.history-entry img{width:64px;height:80px;object-fit:contain}
+.history-entry div{min-width:0}.history-entry small,.history-entry time{display:block;font-size:12px}.history-entry button{margin-top:8px}
+[data-repair-hint]{line-height:1.5;padding:8px;border-left:3px solid var(--accent)}
+body[data-studio-task="chroma"] #scopePreviewButton{display:none}
+@media(max-width:600px){.reference-examples{grid-template-columns:1fr}.scope-preview{padding:12px}}
+

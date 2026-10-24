@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "components": {
+    "build_inpaint_negative_prompt.original_object": "original object",
+    "build_inpaint_negative_prompt.replacement_object": "replacement object",
+    "build_inpaint_negative_prompt.duplicate_object": "duplicate object",
+    "build_inpaint_negative_prompt.visible_inpaint_boundary": "visible inpaint boundary",
+    "build_inpaint_negative_prompt.abrupt_color_transition": "abrupt color transition",
+    "build_inpaint_negative_prompt.deformed_anatomy": "deformed anatomy",
+    "build_inpaint_negative_prompt.extra_limb": "extra limb",
+    "build_inpaint_negative_prompt.changed_face": "changed face",
+    "build_inpaint_negative_prompt.blur": "blur",
+    "build_inpaint_negative_prompt.artifacts": "artifacts",
+    "build_inpaint_negative_prompt.outfit": "outfit",
+    "build_inpaint_negative_prompt.shirt": "shirt",
+    "build_inpaint_negative_prompt.pants": "pants",
+    "build_inpaint_negative_prompt.trousers": "trousers",
+    "build_inpaint_negative_prompt.glasses": "glasses",
+    "build_inpaint_negative_prompt.hat": "hat",
+    "build_inpaint_negative_prompt.jewelry": "jewelry",
+    "build_inpaint_negative_prompt.bag": "bag",
+    "build_inpaint_negative_prompt.handbag": "handbag",
+    "build_inpaint_negative_prompt.shoes": "shoes",
+    "build_inpaint_negative_prompt.footwear": "footwear",
+    "build_inpaint_negative_prompt.selected_object": "selected object",
+    "build_inpaint_negative_prompt.replacement_garment": "replacement garment",
+    "build_inpaint_negative_prompt.new_garment": "new garment",
+    "build_inpaint_negative_prompt.duplicate_clothing": "duplicate clothing",
+    "build_inpaint_negative_prompt.layered_clothing": "layered clothing",
+    "build_inpaint_negative_prompt.transparent_clothing": "transparent clothing",
+    "build_inpaint_negative_prompt.torn_clothing": "torn clothing",
+    "build_inpaint_negative_prompt.person_in_the_cleared_region": "person in the cleared region",
+    "build_inpaint_negative_prompt.body_in_the_cleared_region": "body in the cleared region",
+    "build_inpaint_negative_prompt.clothing_in_the_cleared_region": "clothing in the cleared region",
+    "build_inpaint_negative_prompt.any_remaining_collar": "any remaining collar",
+    "build_inpaint_negative_prompt.any_remaining_button": "any remaining button",
+    "build_inpaint_negative_prompt.any_remaining_cuff": "any remaining cuff",
+    "build_inpaint_negative_prompt.any_remaining_sleeve": "any remaining sleeve",
+    "build_inpaint_negative_prompt.recreated_original_color": "recreated original color",
+    "build_inpaint_negative_prompt.recreated_original_texture": "recreated original texture",
+    "build_inpaint_negative_prompt.recreated_original_silhouette": "recreated original silhouette",
+    "build_inpaint_instruction.strict_inpainting_mode_modify_only_the_area": "Strict inpainting mode. Modify ONLY the area inside the mask. Keep the face, facial expressions, body pose, and every single pixel outside the mask 100% frozen and completely unchanged. Zero modifications to the background or non-masked areas.",
+    "build_inpaint_instruction.object_remnants": "object remnants",
+    "build_inpaint_instruction.duplicate_objects": "duplicate objects",
+    "build_inpaint_instruction.visible_seams": "visible seams",
+    "build_inpaint_instruction.color_mismatch": "color mismatch"
+  },
+  "templates": {
+    "removeObject": "Remove {subject}.",
+    "selectedTarget": "the selected {target}",
+    "remainingOriginal": "remaining original {term}"
+  },
+  "processingModes": {
+    "base_layer": {
+      "label": "base_layer",
+      "prompt": "Restore a plain fabric base layer."
+    },
+    "reconstruct_body": {
+      "label": "reconstruct_body",
+      "prompt": "Restore the underlying subject structure."
+    },
+    "background": {
+      "label": "background",
+      "prompt": "Continue the surrounding background."
+    }
+  },
+  "presets": {},
+  "runtimePresets": {}
+}

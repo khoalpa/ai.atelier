@@ -1,0 +1,17 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const source=fs.readFileSync('app/public/app.js','utf8');
+const handlers={},canvas={addEventListener:(name,fn)=>handlers[name]=fn};
+const image={src:'/source.png'},person={value:'2'},restored=[];
+const context={canvas,sourceImage:image,drawing:true,lastPoint:{},history:['changed'],aiPoints:[{x:9}],$:()=>person,maskCtx:{putImageData:x=>restored.push(x)},protectCtx:{putImageData:x=>restored.push(x)},manualProtectCtx:{clearRect:()=>{},putImageData:x=>restored.push(x)},manualProtectCanvas:{width:10,height:10},render:()=>{},refreshStudioReadiness:()=>{}};
+vm.createContext(context);
+vm.runInContext(source.slice(source.indexOf('let canvasPointerStart='),source.indexOf("canvas.addEventListener('pointerdown'")),context);
+context.saved={image,state:{editable:'mask',protected:'protect',manualProtected:'manual'},history:['original'],points:[{x:1}],person:'1'};
+vm.runInContext('canvasPointerStart=saved',context);handlers.click({detail:1});
+vm.runInContext('canvasPointerStart=null',context);handlers.click({detail:2});
+context.restoreCanvasBeforeDoubleClick();
+assert.deepEqual(restored,['mask','protect','manual']);assert.deepEqual(context.history,['original']);assert.equal(context.aiPoints[0].x,1);assert.equal(person.value,'1');assert.equal(context.drawing,false);
+let dblclick,opened;
+Object.assign(context,{document:{addEventListener:(name,fn)=>dblclick=fn},restoreCanvasBeforeDoubleClick:()=>{},openImageAtFullSize:(...args)=>opened=args,HTMLImageElement:class{}});
+vm.runInContext(source.slice(source.indexOf("document.addEventListener('dblclick'"),source.indexOf('const dismissedProgressJobs=')),context);
+let prevented=false;dblclick({target:canvas,preventDefault:()=>prevented=true});assert(prevented);assert.equal(opened[0],'/source.png');
+console.log('OK: canvas opens original image; double-click restores masks, history, AI points and person selection.');

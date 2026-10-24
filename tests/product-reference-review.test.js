@@ -1,0 +1,16 @@
+const assert=require('node:assert/strict');
+const {applyProductReview}=require('../app/product-reference-review');
+const person='Phát hiện người hoặc pose trong ảnh sản phẩm';
+const validation={ok:true,accepted:false,reasons:[person],metrics:{sha256:'abc',peopleDetected:1}};
+assert.equal(applyProductReview(validation,undefined,'abc'),validation);
+const review={noPerson:true,sha256:'abc',reviewer:'Visual reviewer'};
+const result=applyProductReview(validation,review,'abc');
+assert.equal(result.accepted,true);assert.equal(result.metrics.peopleDetected,1);
+assert.deepEqual(result.manualReview.resolvedReasons,[person]);assert.equal(result.manualReview.sha256,'abc');
+const poor={...validation,reasons:[person,'Ảnh sản phẩm thiếu độ nét']};
+assert.equal(applyProductReview(poor,review,'abc').accepted,false);
+assert.deepEqual(applyProductReview(poor,review,'abc').reasons,['Ảnh sản phẩm thiếu độ nét']);
+for(const bad of [{...review,noPerson:false},{...review,sha256:'different'},{...review,reviewer:''}])assert.throws(()=>applyProductReview(validation,bad,'abc'));
+assert.throws(()=>applyProductReview(validation,review,'changed-image'));
+assert.deepEqual(validation.reasons,[person]);
+console.log('OK: visual review is checksum-bound, retains pose evidence, and cannot override other product gates.');

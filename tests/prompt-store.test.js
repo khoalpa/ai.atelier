@@ -1,0 +1,35 @@
+const assert=require('node:assert/strict'),fs=require('fs'),os=require('os'),path=require('path'),vm=require('vm');
+const s=require('../app/prompt-store');
+const dir=fs.mkdtempSync(path.join(os.tmpdir(),'atelier-catalog-')),file=path.join(dir,'prompts.json');
+fs.copyFileSync(s.FILE,file);
+try{
+  const before=s.readCatalog(file),source=fs.readFileSync(path.join(__dirname,'../app/public/app.js'),'utf8');
+  const custom='quoted "text"\nÁnh sáng ` ${literal} </script>';
+  s.savePresetPrompt({name:'glasses',prompt:custom},file);
+  assert.equal(s.readCatalog(file).presets.glasses.prompt,custom);
+  assert.equal(fs.readFileSync(path.join(__dirname,'../app/public/app.js'),'utf8'),source);
+  assert.equal(s.readCatalog(file).presets.glasses.steps,before.presets.glasses.steps);
+  s.saveMode(file,{id:'background',prompt:custom});
+  s.savePresetPrompt({name:'glasses',reset:true},file);
+  assert.equal(s.readCatalog(file).processingModes.background.prompt,custom);
+  assert.equal(s.readCatalog(file).presets.glasses.prompt,before.defaults.presets.glasses);
+  const unchanged=fs.readFileSync(file,'utf8');
+  for(const change of [v=>v.library.push(v.library[0]),v=>v.schemaVersion=99,v=>v.tasks.bad={positive:{components:['missing']}},v=>v.library[0].text=''])assert.throws(()=>s.updateCatalog(change,file));
+  assert.equal(fs.readFileSync(file,'utf8'),unchanged);
+  assert.throws(()=>s.saveMode(file,{id:'bad',prompt:'x'}));
+  assert.throws(()=>s.savePresetPrompt({name:'glasses',prompt:'x'.repeat(16001)},file));
+  const item={...before.library[0],text:'Browser-specific edit'};
+  const migration={migrationId:'test-browser',items:[item],presets:{hat:'Legacy hat edit'}};
+  s.migrateBrowser(migration,file);const imported=s.readCatalog(file);
+  assert(imported.library.some(v=>v.text==='Browser-specific edit'));
+  assert(imported.library.some(v=>v.text==='Legacy hat edit'));
+  s.migrateBrowser(migration,file);assert.deepEqual(s.readCatalog(file),imported);
+  const rendered=s.renderTemplate(before.promptAssist.instruction,{task:'Test task',currentText:'${notExecutable}',context:'Context'});
+  assert(rendered.includes('"suggestion":"string"'));assert(rendered.includes('${notExecutable}'));
+  assert.throws(()=>s.renderTemplate('{missing}',{}));
+  const escaped=JSON.stringify({...before,ui:{test:'</script><script>bad</script>'}}).replace(/</g,'\\u003c');
+  const context={window:{}};vm.runInNewContext('window.ATELIER_PROMPTS='+escaped,context);
+  assert.equal(context.window.ATELIER_PROMPTS.ui.test,'</script><script>bad</script>');
+  assert(fs.readdirSync(path.join(dir,'backups/prompts')).length>0);
+  console.log('OK: atomic shared saves, independent resets, validation, migration, templates and safe browser export.');
+}finally{fs.rmSync(dir,{recursive:true,force:true});}

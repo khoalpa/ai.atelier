@@ -1,0 +1,12 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert'),path=require('path');
+const source=fs.readFileSync(path.join(__dirname,'../app/public/app.js'),'utf8');
+const layer=alphas=>({getImageData:()=>({data:Uint8ClampedArray.from(alphas.flatMap(a=>[0,0,0,a]))})});
+let output;
+const outCtx={createImageData:()=>({data:new Uint8ClampedArray(8)}),putImageData:image=>output=image.data};
+const context={maskCanvas:{width:2,height:1},maskCtx:layer([255,255]),protectCtx:layer([255,255]),manualProtectCtx:layer([0,255]),document:{createElement:()=>({getContext:()=>outCtx,toDataURL:()=>Array.from(output)})}};
+vm.createContext(context);vm.runInContext(source.slice(source.indexOf('function binaryMaskDataUrl('),source.indexOf('function editableMaskStats(')),context);
+const all=context.binaryMaskDataUrl(false,true),manual=context.binaryMaskDataUrl(false,true,true);
+assert.equal(all[0],255);assert.equal(all[4],255);
+assert.equal(manual[0],0);assert.equal(manual[4],255);
+assert.ok(source.includes('protectedDetailMask:binaryMaskDataUrl(false,true,true)'));
+console.log('OK: automatic wrist protection is not resubmitted as a permanent manual lock; explicit brush protection remains.');

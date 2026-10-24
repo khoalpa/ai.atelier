@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-18",
+  "version": "1.0.0",
+  "scope": "11 registered local projects in D:/project",
+  "passed": [
+    "36 theme/mode/style/density combinations: text and status color contrast",
+    "CSS variable references, pinned asset consistency across 11 projects",
+    "JavaScript preferences: restore, validation, reset, system changes, blocked storage",
+    "Python syntax, Android resource XML and installed Gradio theme API",
+    "ai.meeting: compileDebugJavaWithJavac",
+    "ai.player.android: compileDebugJavaWithJavac",
+    "ai.telegram.android: compileOutsidePlayDebugKotlin",
+    "ai.studio: tests/test_web.py, 16 passed",
+    "ai.story: tests/contracts/test_studio_ui_style.py, 5 passed",
+    "watermarks-remover: tests/test_http_server.py, 33 passed",
+    "Streamlit AppTest: selector renders and changes palette",
+    "Qt offscreen: shared stylesheet renders",
+    "ai.player: main window constructs and video surfaces retain native painting, 2 passed",
+    "VieNeu streaming: HTML theme injection and existing mode switch integration checked without loading inference models",
+    "ai.atelier: studio-guidance and outpaint UI regression tests",
+    "Live browser: AI Atelier light/dark, Watermark Cleaner Paper dark, AI Studio saved palette survives reload",
+    "Deployment repeated without producing source changes"
+  ],
+  "limitations": [
+    "VieNeu-TTS full runtime could not start: pre-existing Pillow installation cannot import _imaging. Theme API checked against the installed Gradio source.",
+    "Android compiled successfully; no APK installation or device-level visual test was performed.",
+    "Android adapters share semantic colors; three style and two density selectors are not added to native settings.",
+    "SD WebUI extension installed in source; a model-backed SD session was not launched.",
+    "Existing packaged EXE/APK and release archives must be rebuilt separately."
+  ]
+}

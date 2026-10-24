@@ -1,0 +1,1430 @@
+{
+  "version": "1.0.0",
+  "changes": [
+    {
+      "path": "D:\\project\\ai.atelier\\themes\\project.json",
+      "backup": null,
+      "sha256": "811d2172d552e20ff456ecb582bc867bfc91edc41f051439b4629705e5fbd0b3"
+    },
+    {
+      "path": "D:\\project\\ai.atelier\\app\\public\\ai-theme.css",
+      "backup": null,
+      "sha256": "3e5132a785cd9153c73c44d05349661de086ba6a35935e53614ee1ca5575a203"
+    },
+    {
+      "path": "D:\\project\\ai.atelier\\app\\public\\ai-theme.js",
+      "backup": null,
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.atelier\\app\\public\\index.html",
+      "backup": "D:\\project\\ai.atelier\\.theme-backups\\20261018-210201\\app\\public\\index.html",
+      "sha256": "8cf448f8e6ae35aef0b1f95d70f04d6c1125a501f07903ec7ff2b7e88717bca3"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\themes\\tokens\\foundation.css",
+      "backup": null,
+      "sha256": "d80c4d81d3bc92be3b3c9a9a9bc8b19a7c68415f12c5fa335999cc87e0ba098b"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\themes\\tokens\\semantic.css",
+      "backup": null,
+      "sha256": "48110b821bea725c7b6acaac9e224dc8add39095ec2c360efc655bbe0d06f9a7"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\themes\\palettes\\atelier.css",
+      "backup": null,
+      "sha256": "c343dbfb4ba43d3fe1bbf333d566884fdb1709242482f4ba6a67795ea1613903"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\themes\\palettes\\neutral.css",
+      "backup": null,
+      "sha256": "937188678fb4bf488c95ad6b8d4afd32ac8c6b1828e2e91de9a6a8fbea6fba2c"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\themes\\palettes\\paper.css",
+      "backup": null,
+      "sha256": "b304b06ffffed7c1695f8c02122ec9a4d6e3f0aae9dbf82ee2fb3c708dc1f2cf"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\themes\\styles\\editorial.css",
+      "backup": null,
+      "sha256": "c83c18d75571eae8080453ac3d392cabe807e5608d7a65385bafd39ddaed81fa"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\themes\\styles\\minimal.css",
+      "backup": null,
+      "sha256": "c84a410792d7195f5dff80402403e9adadfec50d9359a42e6374de0b2c659561"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\themes\\styles\\soft.css",
+      "backup": null,
+      "sha256": "4cab0c403d7e2f9f1f416fc1de1d0cceb1175a4bf3fb9b6fc5f7f19b15a4abdb"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\themes\\density\\comfortable.css",
+      "backup": null,
+      "sha256": "a78d80782c6caef6141fdc8dc9f62ffadffa027ccdddd8258e0a9da9caf32ade"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\themes\\density\\compact.css",
+      "backup": null,
+      "sha256": "a0210b6606bc38b02e12a3aa996c02eb5b019c9ac430b14c787471ec0b4e5c34"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\themes\\dist\\theme.css",
+      "backup": null,
+      "sha256": "3fe90f0c9b2c3c26393bc5aee009208d9728519e7c9ebb62ead1e6a260f18ce2"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\themes\\dist\\theme.js",
+      "backup": null,
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\themes\\runtime\\components.css",
+      "backup": null,
+      "sha256": "509431a02190a71c3b11392d2c2c9c414ab58ed8e525026113484e60ee89dd76"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\themes\\runtime\\python_theme.py",
+      "backup": null,
+      "sha256": "1e51e5417b0802c44c72456ccf7864fd113148faaf99c24b5aa3b5bcc62cac75"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\themes\\runtime\\theme.js",
+      "backup": null,
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\themes\\preview\\index.html",
+      "backup": null,
+      "sha256": "35d3b1fe4c2a2b237aaeae2e5d6053691259211832984d858692da69015414f2"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\themes\\tokens.json",
+      "backup": null,
+      "sha256": "4cf727bca9ab6b12fa018c6434ba0afbabb2b652ac44fa60e28ddf6be0284ef9"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\themes\\theme.css",
+      "backup": null,
+      "sha256": "b40f340e5631f713669a9d5ac38d7f26d488d037f313c47e5fe3427440184844"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\themes\\README.md",
+      "backup": null,
+      "sha256": "e5d94b5ed841126afe62d8b00f59ed26165d905cef8238c8b7e29eeb4efb217a"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\themes\\project.json",
+      "backup": null,
+      "sha256": "978ac3c09ddad20b9aa58002762ebe363bd31c65c934776adb644c87801207a7"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\src\\ai_story\\webapp\\ai-theme.css",
+      "backup": null,
+      "sha256": "6809c4dc187dc3d4c0d01d066f652100e0a237f3e0ba34083c35eb2b4214ed06"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\src\\ai_story\\webapp\\ai-theme.js",
+      "backup": null,
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\src\\ai_story\\webapp\\index.html",
+      "backup": "D:\\project\\ai.studio\\.theme-backups\\20261018-210201\\src\\ai_story\\webapp\\index.html",
+      "sha256": "b2533f4dd46f4c25f23ebbdd3d56eef7737461ecd7fb898f67250989df9b0628"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\src\\ai_story\\web.py",
+      "backup": "D:\\project\\ai.studio\\.theme-backups\\20261018-210201\\src\\ai_story\\web.py",
+      "sha256": "260415ac9dab00005c14cd03b884a0960eeda4ad1004ad5c08febaf9fde5451f"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\themes\\tokens\\foundation.css",
+      "backup": null,
+      "sha256": "d80c4d81d3bc92be3b3c9a9a9bc8b19a7c68415f12c5fa335999cc87e0ba098b"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\themes\\tokens\\semantic.css",
+      "backup": null,
+      "sha256": "48110b821bea725c7b6acaac9e224dc8add39095ec2c360efc655bbe0d06f9a7"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\themes\\palettes\\atelier.css",
+      "backup": null,
+      "sha256": "c343dbfb4ba43d3fe1bbf333d566884fdb1709242482f4ba6a67795ea1613903"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\themes\\palettes\\neutral.css",
+      "backup": null,
+      "sha256": "937188678fb4bf488c95ad6b8d4afd32ac8c6b1828e2e91de9a6a8fbea6fba2c"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\themes\\palettes\\paper.css",
+      "backup": null,
+      "sha256": "b304b06ffffed7c1695f8c02122ec9a4d6e3f0aae9dbf82ee2fb3c708dc1f2cf"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\themes\\styles\\editorial.css",
+      "backup": null,
+      "sha256": "c83c18d75571eae8080453ac3d392cabe807e5608d7a65385bafd39ddaed81fa"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\themes\\styles\\minimal.css",
+      "backup": null,
+      "sha256": "c84a410792d7195f5dff80402403e9adadfec50d9359a42e6374de0b2c659561"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\themes\\styles\\soft.css",
+      "backup": null,
+      "sha256": "4cab0c403d7e2f9f1f416fc1de1d0cceb1175a4bf3fb9b6fc5f7f19b15a4abdb"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\themes\\density\\comfortable.css",
+      "backup": null,
+      "sha256": "a78d80782c6caef6141fdc8dc9f62ffadffa027ccdddd8258e0a9da9caf32ade"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\themes\\density\\compact.css",
+      "backup": null,
+      "sha256": "a0210b6606bc38b02e12a3aa996c02eb5b019c9ac430b14c787471ec0b4e5c34"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\themes\\dist\\theme.css",
+      "backup": null,
+      "sha256": "3fe90f0c9b2c3c26393bc5aee009208d9728519e7c9ebb62ead1e6a260f18ce2"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\themes\\dist\\theme.js",
+      "backup": null,
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\themes\\runtime\\components.css",
+      "backup": null,
+      "sha256": "509431a02190a71c3b11392d2c2c9c414ab58ed8e525026113484e60ee89dd76"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\themes\\runtime\\python_theme.py",
+      "backup": null,
+      "sha256": "1e51e5417b0802c44c72456ccf7864fd113148faaf99c24b5aa3b5bcc62cac75"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\themes\\runtime\\theme.js",
+      "backup": null,
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\themes\\preview\\index.html",
+      "backup": null,
+      "sha256": "35d3b1fe4c2a2b237aaeae2e5d6053691259211832984d858692da69015414f2"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\themes\\tokens.json",
+      "backup": null,
+      "sha256": "4cf727bca9ab6b12fa018c6434ba0afbabb2b652ac44fa60e28ddf6be0284ef9"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\themes\\theme.css",
+      "backup": null,
+      "sha256": "b40f340e5631f713669a9d5ac38d7f26d488d037f313c47e5fe3427440184844"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\themes\\README.md",
+      "backup": null,
+      "sha256": "e5d94b5ed841126afe62d8b00f59ed26165d905cef8238c8b7e29eeb4efb217a"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\themes\\project.json",
+      "backup": null,
+      "sha256": "d8db1ae827904229ee396e5805c19cea0f42e0548090f4061516519f835cee17"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\service\\scripts\\web\\ai-theme.css",
+      "backup": null,
+      "sha256": "99aaa4b86218a4c6bba987a53515ea6b38e0df65e771424369e855562190d951"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\service\\scripts\\web\\ai-theme.js",
+      "backup": null,
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\service\\scripts\\web\\index.html",
+      "backup": "D:\\project\\watermarks-remover\\.theme-backups\\20261018-210201\\service\\scripts\\web\\index.html",
+      "sha256": "283caa0737c997280deb9547c21337ac12436decbc01b71c142be2d1e1c090de"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\service\\scripts\\server.py",
+      "backup": "D:\\project\\watermarks-remover\\.theme-backups\\20261018-210201\\service\\scripts\\server.py",
+      "sha256": "ef9f7695879120c39bbd2a5b0454845a176c39789742a4b7ccb8294f8994b87a"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\themes\\tokens\\foundation.css",
+      "backup": null,
+      "sha256": "d80c4d81d3bc92be3b3c9a9a9bc8b19a7c68415f12c5fa335999cc87e0ba098b"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\themes\\tokens\\semantic.css",
+      "backup": null,
+      "sha256": "48110b821bea725c7b6acaac9e224dc8add39095ec2c360efc655bbe0d06f9a7"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\themes\\palettes\\atelier.css",
+      "backup": null,
+      "sha256": "c343dbfb4ba43d3fe1bbf333d566884fdb1709242482f4ba6a67795ea1613903"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\themes\\palettes\\neutral.css",
+      "backup": null,
+      "sha256": "937188678fb4bf488c95ad6b8d4afd32ac8c6b1828e2e91de9a6a8fbea6fba2c"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\themes\\palettes\\paper.css",
+      "backup": null,
+      "sha256": "b304b06ffffed7c1695f8c02122ec9a4d6e3f0aae9dbf82ee2fb3c708dc1f2cf"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\themes\\styles\\editorial.css",
+      "backup": null,
+      "sha256": "c83c18d75571eae8080453ac3d392cabe807e5608d7a65385bafd39ddaed81fa"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\themes\\styles\\minimal.css",
+      "backup": null,
+      "sha256": "c84a410792d7195f5dff80402403e9adadfec50d9359a42e6374de0b2c659561"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\themes\\styles\\soft.css",
+      "backup": null,
+      "sha256": "4cab0c403d7e2f9f1f416fc1de1d0cceb1175a4bf3fb9b6fc5f7f19b15a4abdb"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\themes\\density\\comfortable.css",
+      "backup": null,
+      "sha256": "a78d80782c6caef6141fdc8dc9f62ffadffa027ccdddd8258e0a9da9caf32ade"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\themes\\density\\compact.css",
+      "backup": null,
+      "sha256": "a0210b6606bc38b02e12a3aa996c02eb5b019c9ac430b14c787471ec0b4e5c34"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\themes\\dist\\theme.css",
+      "backup": null,
+      "sha256": "3fe90f0c9b2c3c26393bc5aee009208d9728519e7c9ebb62ead1e6a260f18ce2"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\themes\\dist\\theme.js",
+      "backup": null,
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\themes\\runtime\\components.css",
+      "backup": null,
+      "sha256": "509431a02190a71c3b11392d2c2c9c414ab58ed8e525026113484e60ee89dd76"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\themes\\runtime\\python_theme.py",
+      "backup": null,
+      "sha256": "1e51e5417b0802c44c72456ccf7864fd113148faaf99c24b5aa3b5bcc62cac75"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\themes\\runtime\\theme.js",
+      "backup": null,
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\themes\\preview\\index.html",
+      "backup": null,
+      "sha256": "35d3b1fe4c2a2b237aaeae2e5d6053691259211832984d858692da69015414f2"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\themes\\tokens.json",
+      "backup": null,
+      "sha256": "4cf727bca9ab6b12fa018c6434ba0afbabb2b652ac44fa60e28ddf6be0284ef9"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\themes\\theme.css",
+      "backup": null,
+      "sha256": "b40f340e5631f713669a9d5ac38d7f26d488d037f313c47e5fe3427440184844"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\themes\\README.md",
+      "backup": null,
+      "sha256": "e5d94b5ed841126afe62d8b00f59ed26165d905cef8238c8b7e29eeb4efb217a"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\themes\\project.json",
+      "backup": null,
+      "sha256": "a6a80d9f9f5a9dc37e25cd88a34ff2587c1725430e3d39c03f083d5489df0791"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\studio\\themes\\__init__.py",
+      "backup": null,
+      "sha256": "c3902868957528738c399f023b7e548327baf3b3b8d6b07234a7a3b896fe4dff"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\studio\\themes\\python_theme.py",
+      "backup": null,
+      "sha256": "1e51e5417b0802c44c72456ccf7864fd113148faaf99c24b5aa3b5bcc62cac75"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\studio\\themes\\tokens.json",
+      "backup": null,
+      "sha256": "4cf727bca9ab6b12fa018c6434ba0afbabb2b652ac44fa60e28ddf6be0284ef9"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\studio\\themes\\project.json",
+      "backup": null,
+      "sha256": "a6a80d9f9f5a9dc37e25cd88a34ff2587c1725430e3d39c03f083d5489df0791"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\studio\\gui_entry.py",
+      "backup": "D:\\project\\ai.slide\\.theme-backups\\20261018-210201\\studio\\gui_entry.py",
+      "sha256": "407f5112c25fb39304188a950fd1523c9fb7b90fe152feade2c11762a60c9146"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\audio\\gui\\app.py",
+      "backup": "D:\\project\\ai.slide\\.theme-backups\\20261018-210201\\audio\\gui\\app.py",
+      "sha256": "114ff6e3f9c5b8e10c1fc8957f6d38534d66a8a18f3a3245ab9d62619b162b49"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\video\\gui\\app.py",
+      "backup": "D:\\project\\ai.slide\\.theme-backups\\20261018-210201\\video\\gui\\app.py",
+      "sha256": "45c9fb74ed941cb45b38ae7ae3e285b2b5078c5663d5ab800ee7d3446f03561c"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\pyproject.toml",
+      "backup": "D:\\project\\ai.slide\\.theme-backups\\20261018-210201\\pyproject.toml",
+      "sha256": "e25156993dc2e776192e6f17bb35ec01a80f3b41fa95726960470c61423a4c59"
+    },
+    {
+      "path": "D:\\project\\ai.story\\themes\\tokens\\foundation.css",
+      "backup": null,
+      "sha256": "d80c4d81d3bc92be3b3c9a9a9bc8b19a7c68415f12c5fa335999cc87e0ba098b"
+    },
+    {
+      "path": "D:\\project\\ai.story\\themes\\tokens\\semantic.css",
+      "backup": null,
+      "sha256": "48110b821bea725c7b6acaac9e224dc8add39095ec2c360efc655bbe0d06f9a7"
+    },
+    {
+      "path": "D:\\project\\ai.story\\themes\\palettes\\atelier.css",
+      "backup": null,
+      "sha256": "c343dbfb4ba43d3fe1bbf333d566884fdb1709242482f4ba6a67795ea1613903"
+    },
+    {
+      "path": "D:\\project\\ai.story\\themes\\palettes\\neutral.css",
+      "backup": null,
+      "sha256": "937188678fb4bf488c95ad6b8d4afd32ac8c6b1828e2e91de9a6a8fbea6fba2c"
+    },
+    {
+      "path": "D:\\project\\ai.story\\themes\\palettes\\paper.css",
+      "backup": null,
+      "sha256": "b304b06ffffed7c1695f8c02122ec9a4d6e3f0aae9dbf82ee2fb3c708dc1f2cf"
+    },
+    {
+      "path": "D:\\project\\ai.story\\themes\\styles\\editorial.css",
+      "backup": null,
+      "sha256": "c83c18d75571eae8080453ac3d392cabe807e5608d7a65385bafd39ddaed81fa"
+    },
+    {
+      "path": "D:\\project\\ai.story\\themes\\styles\\minimal.css",
+      "backup": null,
+      "sha256": "c84a410792d7195f5dff80402403e9adadfec50d9359a42e6374de0b2c659561"
+    },
+    {
+      "path": "D:\\project\\ai.story\\themes\\styles\\soft.css",
+      "backup": null,
+      "sha256": "4cab0c403d7e2f9f1f416fc1de1d0cceb1175a4bf3fb9b6fc5f7f19b15a4abdb"
+    },
+    {
+      "path": "D:\\project\\ai.story\\themes\\density\\comfortable.css",
+      "backup": null,
+      "sha256": "a78d80782c6caef6141fdc8dc9f62ffadffa027ccdddd8258e0a9da9caf32ade"
+    },
+    {
+      "path": "D:\\project\\ai.story\\themes\\density\\compact.css",
+      "backup": null,
+      "sha256": "a0210b6606bc38b02e12a3aa996c02eb5b019c9ac430b14c787471ec0b4e5c34"
+    },
+    {
+      "path": "D:\\project\\ai.story\\themes\\dist\\theme.css",
+      "backup": null,
+      "sha256": "3fe90f0c9b2c3c26393bc5aee009208d9728519e7c9ebb62ead1e6a260f18ce2"
+    },
+    {
+      "path": "D:\\project\\ai.story\\themes\\dist\\theme.js",
+      "backup": null,
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.story\\themes\\runtime\\components.css",
+      "backup": null,
+      "sha256": "509431a02190a71c3b11392d2c2c9c414ab58ed8e525026113484e60ee89dd76"
+    },
+    {
+      "path": "D:\\project\\ai.story\\themes\\runtime\\python_theme.py",
+      "backup": null,
+      "sha256": "1e51e5417b0802c44c72456ccf7864fd113148faaf99c24b5aa3b5bcc62cac75"
+    },
+    {
+      "path": "D:\\project\\ai.story\\themes\\runtime\\theme.js",
+      "backup": null,
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.story\\themes\\preview\\index.html",
+      "backup": null,
+      "sha256": "35d3b1fe4c2a2b237aaeae2e5d6053691259211832984d858692da69015414f2"
+    },
+    {
+      "path": "D:\\project\\ai.story\\themes\\tokens.json",
+      "backup": null,
+      "sha256": "4cf727bca9ab6b12fa018c6434ba0afbabb2b652ac44fa60e28ddf6be0284ef9"
+    },
+    {
+      "path": "D:\\project\\ai.story\\themes\\theme.css",
+      "backup": null,
+      "sha256": "b40f340e5631f713669a9d5ac38d7f26d488d037f313c47e5fe3427440184844"
+    },
+    {
+      "path": "D:\\project\\ai.story\\themes\\README.md",
+      "backup": null,
+      "sha256": "e5d94b5ed841126afe62d8b00f59ed26165d905cef8238c8b7e29eeb4efb217a"
+    },
+    {
+      "path": "D:\\project\\ai.story\\themes\\project.json",
+      "backup": null,
+      "sha256": "4007f8daf7d2744be6f1dbe613b8c0f6a3c074d01b2007d342292d8d78a33e75"
+    },
+    {
+      "path": "D:\\project\\ai.story\\studio\\themes\\__init__.py",
+      "backup": null,
+      "sha256": "c3902868957528738c399f023b7e548327baf3b3b8d6b07234a7a3b896fe4dff"
+    },
+    {
+      "path": "D:\\project\\ai.story\\studio\\themes\\python_theme.py",
+      "backup": null,
+      "sha256": "1e51e5417b0802c44c72456ccf7864fd113148faaf99c24b5aa3b5bcc62cac75"
+    },
+    {
+      "path": "D:\\project\\ai.story\\studio\\themes\\tokens.json",
+      "backup": null,
+      "sha256": "4cf727bca9ab6b12fa018c6434ba0afbabb2b652ac44fa60e28ddf6be0284ef9"
+    },
+    {
+      "path": "D:\\project\\ai.story\\studio\\themes\\project.json",
+      "backup": null,
+      "sha256": "4007f8daf7d2744be6f1dbe613b8c0f6a3c074d01b2007d342292d8d78a33e75"
+    },
+    {
+      "path": "D:\\project\\ai.story\\studio\\gui_entry.py",
+      "backup": "D:\\project\\ai.story\\.theme-backups\\20261018-210201\\studio\\gui_entry.py",
+      "sha256": "db3fd703f6b74b749933ac4d362dd90b088287e17e3de22ff412e9a3ebd86638"
+    },
+    {
+      "path": "D:\\project\\ai.story\\audio\\gui\\app.py",
+      "backup": "D:\\project\\ai.story\\.theme-backups\\20261018-210201\\audio\\gui\\app.py",
+      "sha256": "b66fec02bf09c1fb21471f861db512d6e99c1c3b27e2c514a7cbfa69f74e64db"
+    },
+    {
+      "path": "D:\\project\\ai.story\\video\\gui\\app.py",
+      "backup": "D:\\project\\ai.story\\.theme-backups\\20261018-210201\\video\\gui\\app.py",
+      "sha256": "2f3ef53fff4047f8517fd2feb8cbd96a36e6ac4ae0a1d3712f8cb7c7b944fad4"
+    },
+    {
+      "path": "D:\\project\\ai.story\\pyproject.toml",
+      "backup": "D:\\project\\ai.story\\.theme-backups\\20261018-210201\\pyproject.toml",
+      "sha256": "ea8dfffe3f223b15e1757025e35d3f03641d2af8d1da715642de46f3c6db1259"
+    },
+    {
+      "path": "D:\\project\\ai.player\\themes\\tokens\\foundation.css",
+      "backup": null,
+      "sha256": "d80c4d81d3bc92be3b3c9a9a9bc8b19a7c68415f12c5fa335999cc87e0ba098b"
+    },
+    {
+      "path": "D:\\project\\ai.player\\themes\\tokens\\semantic.css",
+      "backup": null,
+      "sha256": "48110b821bea725c7b6acaac9e224dc8add39095ec2c360efc655bbe0d06f9a7"
+    },
+    {
+      "path": "D:\\project\\ai.player\\themes\\palettes\\atelier.css",
+      "backup": null,
+      "sha256": "c343dbfb4ba43d3fe1bbf333d566884fdb1709242482f4ba6a67795ea1613903"
+    },
+    {
+      "path": "D:\\project\\ai.player\\themes\\palettes\\neutral.css",
+      "backup": null,
+      "sha256": "937188678fb4bf488c95ad6b8d4afd32ac8c6b1828e2e91de9a6a8fbea6fba2c"
+    },
+    {
+      "path": "D:\\project\\ai.player\\themes\\palettes\\paper.css",
+      "backup": null,
+      "sha256": "b304b06ffffed7c1695f8c02122ec9a4d6e3f0aae9dbf82ee2fb3c708dc1f2cf"
+    },
+    {
+      "path": "D:\\project\\ai.player\\themes\\styles\\editorial.css",
+      "backup": null,
+      "sha256": "c83c18d75571eae8080453ac3d392cabe807e5608d7a65385bafd39ddaed81fa"
+    },
+    {
+      "path": "D:\\project\\ai.player\\themes\\styles\\minimal.css",
+      "backup": null,
+      "sha256": "c84a410792d7195f5dff80402403e9adadfec50d9359a42e6374de0b2c659561"
+    },
+    {
+      "path": "D:\\project\\ai.player\\themes\\styles\\soft.css",
+      "backup": null,
+      "sha256": "4cab0c403d7e2f9f1f416fc1de1d0cceb1175a4bf3fb9b6fc5f7f19b15a4abdb"
+    },
+    {
+      "path": "D:\\project\\ai.player\\themes\\density\\comfortable.css",
+      "backup": null,
+      "sha256": "a78d80782c6caef6141fdc8dc9f62ffadffa027ccdddd8258e0a9da9caf32ade"
+    },
+    {
+      "path": "D:\\project\\ai.player\\themes\\density\\compact.css",
+      "backup": null,
+      "sha256": "a0210b6606bc38b02e12a3aa996c02eb5b019c9ac430b14c787471ec0b4e5c34"
+    },
+    {
+      "path": "D:\\project\\ai.player\\themes\\dist\\theme.css",
+      "backup": null,
+      "sha256": "3fe90f0c9b2c3c26393bc5aee009208d9728519e7c9ebb62ead1e6a260f18ce2"
+    },
+    {
+      "path": "D:\\project\\ai.player\\themes\\dist\\theme.js",
+      "backup": null,
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.player\\themes\\runtime\\components.css",
+      "backup": null,
+      "sha256": "509431a02190a71c3b11392d2c2c9c414ab58ed8e525026113484e60ee89dd76"
+    },
+    {
+      "path": "D:\\project\\ai.player\\themes\\runtime\\python_theme.py",
+      "backup": null,
+      "sha256": "1e51e5417b0802c44c72456ccf7864fd113148faaf99c24b5aa3b5bcc62cac75"
+    },
+    {
+      "path": "D:\\project\\ai.player\\themes\\runtime\\theme.js",
+      "backup": null,
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.player\\themes\\preview\\index.html",
+      "backup": null,
+      "sha256": "35d3b1fe4c2a2b237aaeae2e5d6053691259211832984d858692da69015414f2"
+    },
+    {
+      "path": "D:\\project\\ai.player\\themes\\tokens.json",
+      "backup": null,
+      "sha256": "4cf727bca9ab6b12fa018c6434ba0afbabb2b652ac44fa60e28ddf6be0284ef9"
+    },
+    {
+      "path": "D:\\project\\ai.player\\themes\\theme.css",
+      "backup": null,
+      "sha256": "b40f340e5631f713669a9d5ac38d7f26d488d037f313c47e5fe3427440184844"
+    },
+    {
+      "path": "D:\\project\\ai.player\\themes\\README.md",
+      "backup": null,
+      "sha256": "e5d94b5ed841126afe62d8b00f59ed26165d905cef8238c8b7e29eeb4efb217a"
+    },
+    {
+      "path": "D:\\project\\ai.player\\themes\\project.json",
+      "backup": null,
+      "sha256": "63f38219569f24ef63db7a02ebc7f53a22f5d99ed825222298696dae233e7ad5"
+    },
+    {
+      "path": "D:\\project\\ai.player\\ai_player\\resources\\themes\\__init__.py",
+      "backup": null,
+      "sha256": "c3902868957528738c399f023b7e548327baf3b3b8d6b07234a7a3b896fe4dff"
+    },
+    {
+      "path": "D:\\project\\ai.player\\ai_player\\resources\\themes\\python_theme.py",
+      "backup": null,
+      "sha256": "1e51e5417b0802c44c72456ccf7864fd113148faaf99c24b5aa3b5bcc62cac75"
+    },
+    {
+      "path": "D:\\project\\ai.player\\ai_player\\resources\\themes\\tokens.json",
+      "backup": null,
+      "sha256": "4cf727bca9ab6b12fa018c6434ba0afbabb2b652ac44fa60e28ddf6be0284ef9"
+    },
+    {
+      "path": "D:\\project\\ai.player\\ai_player\\resources\\themes\\project.json",
+      "backup": null,
+      "sha256": "63f38219569f24ef63db7a02ebc7f53a22f5d99ed825222298696dae233e7ad5"
+    },
+    {
+      "path": "D:\\project\\ai.player\\ai_player\\ui\\player_window_ui.py",
+      "backup": "D:\\project\\ai.player\\.theme-backups\\20261018-210201\\ai_player\\ui\\player_window_ui.py",
+      "sha256": "5b68b6dc621acb33d7bb8202e5b272c435aba4901eb63fea6809a6b9cc9ad560"
+    },
+    {
+      "path": "D:\\project\\ai.player\\pyproject.toml",
+      "backup": "D:\\project\\ai.player\\.theme-backups\\20261018-210201\\pyproject.toml",
+      "sha256": "cf8c318740963087882d345040b5207fa05f15a3e46311d793fb207520c394c6"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\themes\\tokens\\foundation.css",
+      "backup": null,
+      "sha256": "d80c4d81d3bc92be3b3c9a9a9bc8b19a7c68415f12c5fa335999cc87e0ba098b"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\themes\\tokens\\semantic.css",
+      "backup": null,
+      "sha256": "48110b821bea725c7b6acaac9e224dc8add39095ec2c360efc655bbe0d06f9a7"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\themes\\palettes\\atelier.css",
+      "backup": null,
+      "sha256": "c343dbfb4ba43d3fe1bbf333d566884fdb1709242482f4ba6a67795ea1613903"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\themes\\palettes\\neutral.css",
+      "backup": null,
+      "sha256": "937188678fb4bf488c95ad6b8d4afd32ac8c6b1828e2e91de9a6a8fbea6fba2c"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\themes\\palettes\\paper.css",
+      "backup": null,
+      "sha256": "b304b06ffffed7c1695f8c02122ec9a4d6e3f0aae9dbf82ee2fb3c708dc1f2cf"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\themes\\styles\\editorial.css",
+      "backup": null,
+      "sha256": "c83c18d75571eae8080453ac3d392cabe807e5608d7a65385bafd39ddaed81fa"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\themes\\styles\\minimal.css",
+      "backup": null,
+      "sha256": "c84a410792d7195f5dff80402403e9adadfec50d9359a42e6374de0b2c659561"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\themes\\styles\\soft.css",
+      "backup": null,
+      "sha256": "4cab0c403d7e2f9f1f416fc1de1d0cceb1175a4bf3fb9b6fc5f7f19b15a4abdb"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\themes\\density\\comfortable.css",
+      "backup": null,
+      "sha256": "a78d80782c6caef6141fdc8dc9f62ffadffa027ccdddd8258e0a9da9caf32ade"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\themes\\density\\compact.css",
+      "backup": null,
+      "sha256": "a0210b6606bc38b02e12a3aa996c02eb5b019c9ac430b14c787471ec0b4e5c34"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\themes\\dist\\theme.css",
+      "backup": null,
+      "sha256": "3fe90f0c9b2c3c26393bc5aee009208d9728519e7c9ebb62ead1e6a260f18ce2"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\themes\\dist\\theme.js",
+      "backup": null,
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\themes\\runtime\\components.css",
+      "backup": null,
+      "sha256": "509431a02190a71c3b11392d2c2c9c414ab58ed8e525026113484e60ee89dd76"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\themes\\runtime\\python_theme.py",
+      "backup": null,
+      "sha256": "1e51e5417b0802c44c72456ccf7864fd113148faaf99c24b5aa3b5bcc62cac75"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\themes\\runtime\\theme.js",
+      "backup": null,
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\themes\\preview\\index.html",
+      "backup": null,
+      "sha256": "35d3b1fe4c2a2b237aaeae2e5d6053691259211832984d858692da69015414f2"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\themes\\tokens.json",
+      "backup": null,
+      "sha256": "4cf727bca9ab6b12fa018c6434ba0afbabb2b652ac44fa60e28ddf6be0284ef9"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\themes\\theme.css",
+      "backup": null,
+      "sha256": "b40f340e5631f713669a9d5ac38d7f26d488d037f313c47e5fe3427440184844"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\themes\\README.md",
+      "backup": null,
+      "sha256": "e5d94b5ed841126afe62d8b00f59ed26165d905cef8238c8b7e29eeb4efb217a"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\themes\\project.json",
+      "backup": null,
+      "sha256": "3360fc0c6676784ff3fe4529b6297d2670ad613fb4fdc0ee580f799cddcfad04"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\app\\src\\main\\res\\values\\shared-theme-colors.xml",
+      "backup": null,
+      "sha256": "d200cdac6cb31a38ed550f2c04fd53bf7dded54fd477ca33a7780a939c737084"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\app\\src\\main\\res\\values\\colors.xml",
+      "backup": "D:\\project\\ai.meeting\\.theme-backups\\20261018-210201\\app\\src\\main\\res\\values\\colors.xml",
+      "sha256": "f042888ec28925f1f6d12a307c58fee60887ce2647b431b5f6b10f57a3b3c386"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\app\\src\\main\\res\\values-night\\shared-theme-colors.xml",
+      "backup": null,
+      "sha256": "493c41d0f61439096e05d24a5ebcaec68cae19404e9da974a25fdd6ebc547eca"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\app\\src\\main\\res\\values-night\\colors.xml",
+      "backup": null,
+      "sha256": "f042888ec28925f1f6d12a307c58fee60887ce2647b431b5f6b10f57a3b3c386"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\app\\src\\main\\res\\values\\styles.xml",
+      "backup": "D:\\project\\ai.meeting\\.theme-backups\\20261018-210201\\app\\src\\main\\res\\values\\styles.xml",
+      "sha256": "aa0977172529787da90deeb38d8d8ed21d7c6fbbb7d3fd8dade33d7359b9afa6"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\app\\src\\main\\res\\values-night\\styles.xml",
+      "backup": null,
+      "sha256": "1532922d55c0f16864c7f62466c8845278fb5f2c909e703615b9ed0321d4d6ad"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\app\\src\\main\\res\\values\\shared-theme-dimens.xml",
+      "backup": null,
+      "sha256": "f076a162d1480baeef1a57ebbcf7dcdfeb668093b23f8d71dc9d86fe646141c1"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\themes\\tokens\\foundation.css",
+      "backup": null,
+      "sha256": "d80c4d81d3bc92be3b3c9a9a9bc8b19a7c68415f12c5fa335999cc87e0ba098b"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\themes\\tokens\\semantic.css",
+      "backup": null,
+      "sha256": "48110b821bea725c7b6acaac9e224dc8add39095ec2c360efc655bbe0d06f9a7"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\themes\\palettes\\atelier.css",
+      "backup": null,
+      "sha256": "c343dbfb4ba43d3fe1bbf333d566884fdb1709242482f4ba6a67795ea1613903"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\themes\\palettes\\neutral.css",
+      "backup": null,
+      "sha256": "937188678fb4bf488c95ad6b8d4afd32ac8c6b1828e2e91de9a6a8fbea6fba2c"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\themes\\palettes\\paper.css",
+      "backup": null,
+      "sha256": "b304b06ffffed7c1695f8c02122ec9a4d6e3f0aae9dbf82ee2fb3c708dc1f2cf"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\themes\\styles\\editorial.css",
+      "backup": null,
+      "sha256": "c83c18d75571eae8080453ac3d392cabe807e5608d7a65385bafd39ddaed81fa"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\themes\\styles\\minimal.css",
+      "backup": null,
+      "sha256": "c84a410792d7195f5dff80402403e9adadfec50d9359a42e6374de0b2c659561"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\themes\\styles\\soft.css",
+      "backup": null,
+      "sha256": "4cab0c403d7e2f9f1f416fc1de1d0cceb1175a4bf3fb9b6fc5f7f19b15a4abdb"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\themes\\density\\comfortable.css",
+      "backup": null,
+      "sha256": "a78d80782c6caef6141fdc8dc9f62ffadffa027ccdddd8258e0a9da9caf32ade"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\themes\\density\\compact.css",
+      "backup": null,
+      "sha256": "a0210b6606bc38b02e12a3aa996c02eb5b019c9ac430b14c787471ec0b4e5c34"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\themes\\dist\\theme.css",
+      "backup": null,
+      "sha256": "3fe90f0c9b2c3c26393bc5aee009208d9728519e7c9ebb62ead1e6a260f18ce2"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\themes\\dist\\theme.js",
+      "backup": null,
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\themes\\runtime\\components.css",
+      "backup": null,
+      "sha256": "509431a02190a71c3b11392d2c2c9c414ab58ed8e525026113484e60ee89dd76"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\themes\\runtime\\python_theme.py",
+      "backup": null,
+      "sha256": "1e51e5417b0802c44c72456ccf7864fd113148faaf99c24b5aa3b5bcc62cac75"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\themes\\runtime\\theme.js",
+      "backup": null,
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\themes\\preview\\index.html",
+      "backup": null,
+      "sha256": "35d3b1fe4c2a2b237aaeae2e5d6053691259211832984d858692da69015414f2"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\themes\\tokens.json",
+      "backup": null,
+      "sha256": "4cf727bca9ab6b12fa018c6434ba0afbabb2b652ac44fa60e28ddf6be0284ef9"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\themes\\theme.css",
+      "backup": null,
+      "sha256": "b40f340e5631f713669a9d5ac38d7f26d488d037f313c47e5fe3427440184844"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\themes\\README.md",
+      "backup": null,
+      "sha256": "e5d94b5ed841126afe62d8b00f59ed26165d905cef8238c8b7e29eeb4efb217a"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\themes\\project.json",
+      "backup": null,
+      "sha256": "df6366ee8874344437b753d702a22521ce097442c1ff1abc282989617e063ac2"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\app\\src\\main\\res\\values\\shared-theme-colors.xml",
+      "backup": null,
+      "sha256": "d200cdac6cb31a38ed550f2c04fd53bf7dded54fd477ca33a7780a939c737084"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\app\\src\\main\\res\\values\\colors.xml",
+      "backup": "D:\\project\\ai.player.android\\.theme-backups\\20261018-210201\\app\\src\\main\\res\\values\\colors.xml",
+      "sha256": "e144688bed992b49a621b39cff39070060ddb09c64915030a27063dcd4cf77b0"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\app\\src\\main\\res\\values-night\\shared-theme-colors.xml",
+      "backup": null,
+      "sha256": "493c41d0f61439096e05d24a5ebcaec68cae19404e9da974a25fdd6ebc547eca"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\app\\src\\main\\res\\values-night\\colors.xml",
+      "backup": null,
+      "sha256": "e144688bed992b49a621b39cff39070060ddb09c64915030a27063dcd4cf77b0"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\app\\src\\main\\res\\values\\styles.xml",
+      "backup": "D:\\project\\ai.player.android\\.theme-backups\\20261018-210201\\app\\src\\main\\res\\values\\styles.xml",
+      "sha256": "11571bf5fa2e08e1f1696a48d2facd6e4a0c2bb9b0729bf2ae5c72b2a8d3a4a9"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\app\\src\\main\\res\\values-night\\styles.xml",
+      "backup": null,
+      "sha256": "cf51994c6c251e911a82485e8c4c5e880833785249a5f5139c61da67ee068242"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\app\\src\\main\\res\\values\\shared-theme-dimens.xml",
+      "backup": null,
+      "sha256": "f076a162d1480baeef1a57ebbcf7dcdfeb668093b23f8d71dc9d86fe646141c1"
+    },
+    {
+      "path": "D:\\project\\ai.telegram.android\\themes\\tokens\\foundation.css",
+      "backup": null,
+      "sha256": "d80c4d81d3bc92be3b3c9a9a9bc8b19a7c68415f12c5fa335999cc87e0ba098b"
+    },
+    {
+      "path": "D:\\project\\ai.telegram.android\\themes\\tokens\\semantic.css",
+      "backup": null,
+      "sha256": "48110b821bea725c7b6acaac9e224dc8add39095ec2c360efc655bbe0d06f9a7"
+    },
+    {
+      "path": "D:\\project\\ai.telegram.android\\themes\\palettes\\atelier.css",
+      "backup": null,
+      "sha256": "c343dbfb4ba43d3fe1bbf333d566884fdb1709242482f4ba6a67795ea1613903"
+    },
+    {
+      "path": "D:\\project\\ai.telegram.android\\themes\\palettes\\neutral.css",
+      "backup": null,
+      "sha256": "937188678fb4bf488c95ad6b8d4afd32ac8c6b1828e2e91de9a6a8fbea6fba2c"
+    },
+    {
+      "path": "D:\\project\\ai.telegram.android\\themes\\palettes\\paper.css",
+      "backup": null,
+      "sha256": "b304b06ffffed7c1695f8c02122ec9a4d6e3f0aae9dbf82ee2fb3c708dc1f2cf"
+    },
+    {
+      "path": "D:\\project\\ai.telegram.android\\themes\\styles\\editorial.css",
+      "backup": null,
+      "sha256": "c83c18d75571eae8080453ac3d392cabe807e5608d7a65385bafd39ddaed81fa"
+    },
+    {
+      "path": "D:\\project\\ai.telegram.android\\themes\\styles\\minimal.css",
+      "backup": null,
+      "sha256": "c84a410792d7195f5dff80402403e9adadfec50d9359a42e6374de0b2c659561"
+    },
+    {
+      "path": "D:\\project\\ai.telegram.android\\themes\\styles\\soft.css",
+      "backup": null,
+      "sha256": "4cab0c403d7e2f9f1f416fc1de1d0cceb1175a4bf3fb9b6fc5f7f19b15a4abdb"
+    },
+    {
+      "path": "D:\\project\\ai.telegram.android\\themes\\density\\comfortable.css",
+      "backup": null,
+      "sha256": "a78d80782c6caef6141fdc8dc9f62ffadffa027ccdddd8258e0a9da9caf32ade"
+    },
+    {
+      "path": "D:\\project\\ai.telegram.android\\themes\\density\\compact.css",
+      "backup": null,
+      "sha256": "a0210b6606bc38b02e12a3aa996c02eb5b019c9ac430b14c787471ec0b4e5c34"
+    },
+    {
+      "path": "D:\\project\\ai.telegram.android\\themes\\dist\\theme.css",
+      "backup": null,
+      "sha256": "3fe90f0c9b2c3c26393bc5aee009208d9728519e7c9ebb62ead1e6a260f18ce2"
+    },
+    {
+      "path": "D:\\project\\ai.telegram.android\\themes\\dist\\theme.js",
+      "backup": null,
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.telegram.android\\themes\\runtime\\components.css",
+      "backup": null,
+      "sha256": "509431a02190a71c3b11392d2c2c9c414ab58ed8e525026113484e60ee89dd76"
+    },
+    {
+      "path": "D:\\project\\ai.telegram.android\\themes\\runtime\\python_theme.py",
+      "backup": null,
+      "sha256": "1e51e5417b0802c44c72456ccf7864fd113148faaf99c24b5aa3b5bcc62cac75"
+    },
+    {
+      "path": "D:\\project\\ai.telegram.android\\themes\\runtime\\theme.js",
+      "backup": null,
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.telegram.android\\themes\\preview\\index.html",
+      "backup": null,
+      "sha256": "35d3b1fe4c2a2b237aaeae2e5d6053691259211832984d858692da69015414f2"
+    },
+    {
+      "path": "D:\\project\\ai.telegram.android\\themes\\tokens.json",
+      "backup": null,
+      "sha256": "4cf727bca9ab6b12fa018c6434ba0afbabb2b652ac44fa60e28ddf6be0284ef9"
+    },
+    {
+      "path": "D:\\project\\ai.telegram.android\\themes\\theme.css",
+      "backup": null,
+      "sha256": "b40f340e5631f713669a9d5ac38d7f26d488d037f313c47e5fe3427440184844"
+    },
+    {
+      "path": "D:\\project\\ai.telegram.android\\themes\\README.md",
+      "backup": null,
+      "sha256": "e5d94b5ed841126afe62d8b00f59ed26165d905cef8238c8b7e29eeb4efb217a"
+    },
+    {
+      "path": "D:\\project\\ai.telegram.android\\themes\\project.json",
+      "backup": null,
+      "sha256": "12382c49b3fa926d88607d1c1fc9808da135eeeece6a73283282a0bf631e24b8"
+    },
+    {
+      "path": "D:\\project\\ai.telegram.android\\app\\src\\main\\res\\values\\shared-theme-colors.xml",
+      "backup": null,
+      "sha256": "f822a74edac334ea83bbd5af44ab1b1f9366c981dff0f16be832fa4717aca73e"
+    },
+    {
+      "path": "D:\\project\\ai.telegram.android\\app\\src\\main\\res\\values-night\\shared-theme-colors.xml",
+      "backup": null,
+      "sha256": "f85bb15040f39d58dc14839ba2b911057ae69f57d2084cb23d4d9c2b03636eda"
+    },
+    {
+      "path": "D:\\project\\ai.telegram.android\\app\\src\\main\\java\\ai\\telegram\\android\\ui\\SharedThemeColors.kt",
+      "backup": null,
+      "sha256": "3da1c4dea55521f4c9779613857ef5603b92a7e449809cc8626491e7eeb52e1d"
+    },
+    {
+      "path": "D:\\project\\ai.telegram.android\\app\\src\\main\\java\\ai\\telegram\\android\\ui\\AppTheme.kt",
+      "backup": "D:\\project\\ai.telegram.android\\.theme-backups\\20261018-210201\\app\\src\\main\\java\\ai\\telegram\\android\\ui\\AppTheme.kt",
+      "sha256": "7d419a5c2c680860352e3e5730246f6a748243d7eaa23a2fc703a72e5bd5da69"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\themes\\tokens\\foundation.css",
+      "backup": null,
+      "sha256": "d80c4d81d3bc92be3b3c9a9a9bc8b19a7c68415f12c5fa335999cc87e0ba098b"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\themes\\tokens\\semantic.css",
+      "backup": null,
+      "sha256": "48110b821bea725c7b6acaac9e224dc8add39095ec2c360efc655bbe0d06f9a7"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\themes\\palettes\\atelier.css",
+      "backup": null,
+      "sha256": "c343dbfb4ba43d3fe1bbf333d566884fdb1709242482f4ba6a67795ea1613903"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\themes\\palettes\\neutral.css",
+      "backup": null,
+      "sha256": "937188678fb4bf488c95ad6b8d4afd32ac8c6b1828e2e91de9a6a8fbea6fba2c"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\themes\\palettes\\paper.css",
+      "backup": null,
+      "sha256": "b304b06ffffed7c1695f8c02122ec9a4d6e3f0aae9dbf82ee2fb3c708dc1f2cf"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\themes\\styles\\editorial.css",
+      "backup": null,
+      "sha256": "c83c18d75571eae8080453ac3d392cabe807e5608d7a65385bafd39ddaed81fa"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\themes\\styles\\minimal.css",
+      "backup": null,
+      "sha256": "c84a410792d7195f5dff80402403e9adadfec50d9359a42e6374de0b2c659561"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\themes\\styles\\soft.css",
+      "backup": null,
+      "sha256": "4cab0c403d7e2f9f1f416fc1de1d0cceb1175a4bf3fb9b6fc5f7f19b15a4abdb"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\themes\\density\\comfortable.css",
+      "backup": null,
+      "sha256": "a78d80782c6caef6141fdc8dc9f62ffadffa027ccdddd8258e0a9da9caf32ade"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\themes\\density\\compact.css",
+      "backup": null,
+      "sha256": "a0210b6606bc38b02e12a3aa996c02eb5b019c9ac430b14c787471ec0b4e5c34"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\themes\\dist\\theme.css",
+      "backup": null,
+      "sha256": "3fe90f0c9b2c3c26393bc5aee009208d9728519e7c9ebb62ead1e6a260f18ce2"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\themes\\dist\\theme.js",
+      "backup": null,
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\themes\\runtime\\components.css",
+      "backup": null,
+      "sha256": "509431a02190a71c3b11392d2c2c9c414ab58ed8e525026113484e60ee89dd76"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\themes\\runtime\\python_theme.py",
+      "backup": null,
+      "sha256": "1e51e5417b0802c44c72456ccf7864fd113148faaf99c24b5aa3b5bcc62cac75"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\themes\\runtime\\theme.js",
+      "backup": null,
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\themes\\preview\\index.html",
+      "backup": null,
+      "sha256": "35d3b1fe4c2a2b237aaeae2e5d6053691259211832984d858692da69015414f2"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\themes\\tokens.json",
+      "backup": null,
+      "sha256": "4cf727bca9ab6b12fa018c6434ba0afbabb2b652ac44fa60e28ddf6be0284ef9"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\themes\\theme.css",
+      "backup": null,
+      "sha256": "b40f340e5631f713669a9d5ac38d7f26d488d037f313c47e5fe3427440184844"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\themes\\README.md",
+      "backup": null,
+      "sha256": "e5d94b5ed841126afe62d8b00f59ed26165d905cef8238c8b7e29eeb4efb217a"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\themes\\project.json",
+      "backup": null,
+      "sha256": "982904233c63ab65a40e0106f7a58ca36dbff6f5e28675e4d8b1722d989913c9"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\apps\\shared_themes\\__init__.py",
+      "backup": null,
+      "sha256": "c3902868957528738c399f023b7e548327baf3b3b8d6b07234a7a3b896fe4dff"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\apps\\shared_themes\\python_theme.py",
+      "backup": null,
+      "sha256": "1e51e5417b0802c44c72456ccf7864fd113148faaf99c24b5aa3b5bcc62cac75"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\apps\\shared_themes\\tokens.json",
+      "backup": null,
+      "sha256": "4cf727bca9ab6b12fa018c6434ba0afbabb2b652ac44fa60e28ddf6be0284ef9"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\apps\\shared_themes\\project.json",
+      "backup": null,
+      "sha256": "982904233c63ab65a40e0106f7a58ca36dbff6f5e28675e4d8b1722d989913c9"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\apps\\gradio_main.py",
+      "backup": "D:\\project\\VieNeu-TTS\\.theme-backups\\20261018-210201\\apps\\gradio_main.py",
+      "sha256": "79be86b869d3a6fc69278d08069dd452c5a68a83f932df701eaeac3d96849339"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\apps\\gradio_xpu.py",
+      "backup": "D:\\project\\VieNeu-TTS\\.theme-backups\\20261018-210201\\apps\\gradio_xpu.py",
+      "sha256": "330dc9d87f36274a1af3fc7713b89a63c829dbb4194ac1777835bf8bc12d2a32"
+    },
+    {
+      "path": "D:\\project\\sd.webui\\themes\\tokens\\foundation.css",
+      "backup": null,
+      "sha256": "d80c4d81d3bc92be3b3c9a9a9bc8b19a7c68415f12c5fa335999cc87e0ba098b"
+    },
+    {
+      "path": "D:\\project\\sd.webui\\themes\\tokens\\semantic.css",
+      "backup": null,
+      "sha256": "48110b821bea725c7b6acaac9e224dc8add39095ec2c360efc655bbe0d06f9a7"
+    },
+    {
+      "path": "D:\\project\\sd.webui\\themes\\palettes\\atelier.css",
+      "backup": null,
+      "sha256": "c343dbfb4ba43d3fe1bbf333d566884fdb1709242482f4ba6a67795ea1613903"
+    },
+    {
+      "path": "D:\\project\\sd.webui\\themes\\palettes\\neutral.css",
+      "backup": null,
+      "sha256": "937188678fb4bf488c95ad6b8d4afd32ac8c6b1828e2e91de9a6a8fbea6fba2c"
+    },
+    {
+      "path": "D:\\project\\sd.webui\\themes\\palettes\\paper.css",
+      "backup": null,
+      "sha256": "b304b06ffffed7c1695f8c02122ec9a4d6e3f0aae9dbf82ee2fb3c708dc1f2cf"
+    },
+    {
+      "path": "D:\\project\\sd.webui\\themes\\styles\\editorial.css",
+      "backup": null,
+      "sha256": "c83c18d75571eae8080453ac3d392cabe807e5608d7a65385bafd39ddaed81fa"
+    },
+    {
+      "path": "D:\\project\\sd.webui\\themes\\styles\\minimal.css",
+      "backup": null,
+      "sha256": "c84a410792d7195f5dff80402403e9adadfec50d9359a42e6374de0b2c659561"
+    },
+    {
+      "path": "D:\\project\\sd.webui\\themes\\styles\\soft.css",
+      "backup": null,
+      "sha256": "4cab0c403d7e2f9f1f416fc1de1d0cceb1175a4bf3fb9b6fc5f7f19b15a4abdb"
+    },
+    {
+      "path": "D:\\project\\sd.webui\\themes\\density\\comfortable.css",
+      "backup": null,
+      "sha256": "a78d80782c6caef6141fdc8dc9f62ffadffa027ccdddd8258e0a9da9caf32ade"
+    },
+    {
+      "path": "D:\\project\\sd.webui\\themes\\density\\compact.css",
+      "backup": null,
+      "sha256": "a0210b6606bc38b02e12a3aa996c02eb5b019c9ac430b14c787471ec0b4e5c34"
+    },
+    {
+      "path": "D:\\project\\sd.webui\\themes\\dist\\theme.css",
+      "backup": null,
+      "sha256": "3fe90f0c9b2c3c26393bc5aee009208d9728519e7c9ebb62ead1e6a260f18ce2"
+    },
+    {
+      "path": "D:\\project\\sd.webui\\themes\\dist\\theme.js",
+      "backup": null,
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\sd.webui\\themes\\runtime\\components.css",
+      "backup": null,
+      "sha256": "509431a02190a71c3b11392d2c2c9c414ab58ed8e525026113484e60ee89dd76"
+    },
+    {
+      "path": "D:\\project\\sd.webui\\themes\\runtime\\python_theme.py",
+      "backup": null,
+      "sha256": "1e51e5417b0802c44c72456ccf7864fd113148faaf99c24b5aa3b5bcc62cac75"
+    },
+    {
+      "path": "D:\\project\\sd.webui\\themes\\runtime\\theme.js",
+      "backup": null,
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\sd.webui\\themes\\preview\\index.html",
+      "backup": null,
+      "sha256": "35d3b1fe4c2a2b237aaeae2e5d6053691259211832984d858692da69015414f2"
+    },
+    {
+      "path": "D:\\project\\sd.webui\\themes\\tokens.json",
+      "backup": null,
+      "sha256": "4cf727bca9ab6b12fa018c6434ba0afbabb2b652ac44fa60e28ddf6be0284ef9"
+    },
+    {
+      "path": "D:\\project\\sd.webui\\themes\\theme.css",
+      "backup": null,
+      "sha256": "b40f340e5631f713669a9d5ac38d7f26d488d037f313c47e5fe3427440184844"
+    },
+    {
+      "path": "D:\\project\\sd.webui\\themes\\README.md",
+      "backup": null,
+      "sha256": "e5d94b5ed841126afe62d8b00f59ed26165d905cef8238c8b7e29eeb4efb217a"
+    },
+    {
+      "path": "D:\\project\\sd.webui\\themes\\project.json",
+      "backup": null,
+      "sha256": "daea45ae33c23c5dd1b163504ffd177cb0f9c67aa5d7e006ecbd02d31d7b4a0e"
+    },
+    {
+      "path": "D:\\project\\sd.webui\\webui\\extensions\\ai-shared-themes\\style.css",
+      "backup": null,
+      "sha256": "bb563cd2b289844158c7fbfccbd29c2b04ec9ce800bea5f8cec62d446d6e3b7a"
+    },
+    {
+      "path": "D:\\project\\sd.webui\\webui\\extensions\\ai-shared-themes\\javascript\\theme.js",
+      "backup": null,
+      "sha256": "629874557bfe3d8a6eac5f7714ad978020e0fb69532793920e68c7733f47caf9"
+    },
+    {
+      "path": "D:\\project\\sd.webui\\webui\\extensions\\ai-shared-themes\\scripts\\shared_theme.py",
+      "backup": null,
+      "sha256": "a096926835891b12aa2bba0784e910198ce9985113b0233c0439a0a50d804594"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\app\\src\\main\\java\\com\\aiplayer\\android\\MainActivity.java",
+      "backup": "D:\\project\\ai.player.android\\.theme-backups\\20261018-210402\\app\\src\\main\\java\\com\\aiplayer\\android\\MainActivity.java",
+      "sha256": "8f5945b0e8f8aea4a52204fd55b3d53b84f62bc762daf5087bbf67167718908b"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\service\\scripts\\web\\app.css",
+      "backup": "D:\\project\\watermarks-remover\\.theme-backups\\20261018-210635\\service\\scripts\\web\\app.css",
+      "sha256": "505ec265a07c22738896efa836b320f31697a350bfee6b7aaa20f53af860db8d"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\service\\scripts\\web\\download-only.css",
+      "backup": "D:\\project\\watermarks-remover\\.theme-backups\\20261018-210635\\service\\scripts\\web\\download-only.css",
+      "sha256": "73a5f00dc906dc793f9b13b909dab61a6d168faf9c840e497da138181c0d9abe"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\service\\scripts\\web\\explanations.css",
+      "backup": "D:\\project\\watermarks-remover\\.theme-backups\\20261018-210635\\service\\scripts\\web\\explanations.css",
+      "sha256": "3c0e6ec9257f36c281bb5ad35326ed25ea0f0d7eee6ed7892684c4c8c2e35aa5"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\service\\scripts\\web\\findings.css",
+      "backup": "D:\\project\\watermarks-remover\\.theme-backups\\20261018-210635\\service\\scripts\\web\\findings.css",
+      "sha256": "0d56d69b6ce27bb1fd7f20beb8dac44d34724fb649e8d771880e6f3b7e9ffa1d"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\service\\scripts\\web\\model-status.css",
+      "backup": "D:\\project\\watermarks-remover\\.theme-backups\\20261018-210635\\service\\scripts\\web\\model-status.css",
+      "sha256": "24d632e8fde691ce293ce3e788fe0019eb9b255d9cb1d4b6872e34b8a0c19700"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\service\\scripts\\web\\models.css",
+      "backup": "D:\\project\\watermarks-remover\\.theme-backups\\20261018-210635\\service\\scripts\\web\\models.css",
+      "sha256": "4f03572fdba6cdc960c7d5daefa71000dfaa20b43f361ec835a5f35ca4564cda"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\service\\scripts\\web\\version.css",
+      "backup": "D:\\project\\watermarks-remover\\.theme-backups\\20261018-210635\\service\\scripts\\web\\version.css",
+      "sha256": "be851f9c842e7e62831a8b771f7abfb6248f22637d34aa631bfa3c6b45a9f5fe"
+    },
+    {
+      "path": "D:\\project\\ai.atelier\\.gitignore",
+      "backup": null,
+      "sha256": "f971db2751b414284031cba0ebdc4afde5c28596f919cda2b6bbd8fc5fa1d66b"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\.gitignore",
+      "backup": "D:\\project\\ai.studio\\.theme-backups\\20261018-210908\\.gitignore",
+      "sha256": "77e2f6b306c4b18e064fa43fd3648b4a32f38af28e7adb87b8141cfe06c7e065"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\.gitignore",
+      "backup": "D:\\project\\watermarks-remover\\.theme-backups\\20261018-210908\\.gitignore",
+      "sha256": "b0d2e8df3b8b672e818b3879f7c7dab0910441047971bc43973a3336c093e1c7"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\.gitignore",
+      "backup": "D:\\project\\ai.slide\\.theme-backups\\20261018-210908\\.gitignore",
+      "sha256": "af95b8445438a424468d8b8e1d3312b89996a522af64d78acbd573dc230197b7"
+    },
+    {
+      "path": "D:\\project\\ai.story\\.gitignore",
+      "backup": "D:\\project\\ai.story\\.theme-backups\\20261018-210908\\.gitignore",
+      "sha256": "953530990f9a5bbb43b2b4a6423f905e485f2f4d6f4874148437d0737e1ecbe2"
+    },
+    {
+      "path": "D:\\project\\ai.player\\.gitignore",
+      "backup": "D:\\project\\ai.player\\.theme-backups\\20261018-210908\\.gitignore",
+      "sha256": "0769dccd848a50f4e1c87e8d8635257aadd2f74b634dce1d65022a1f6365c7ed"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\.gitignore",
+      "backup": "D:\\project\\ai.meeting\\.theme-backups\\20261018-210908\\.gitignore",
+      "sha256": "aab8c485b81450d5ce3cf242f20c684ececd04a192463a1f28cfdd428fe6193b"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\.gitignore",
+      "backup": "D:\\project\\ai.player.android\\.theme-backups\\20261018-210908\\.gitignore",
+      "sha256": "f674cb3eb8624ad49f59c385d26a07812dbc0c0662af2154afdad47d995c8e6e"
+    },
+    {
+      "path": "D:\\project\\ai.telegram.android\\.gitignore",
+      "backup": "D:\\project\\ai.telegram.android\\.theme-backups\\20261018-210908\\.gitignore",
+      "sha256": "bfb9bf0861ddbf9624ef29dde8da7d986c2469b4ca52634352feaf089be7ce58"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\.gitignore",
+      "backup": "D:\\project\\VieNeu-TTS\\.theme-backups\\20261018-210908\\.gitignore",
+      "sha256": "8b15f0ed3679eac9c98bfbc76dcce5a37c8d73fd16a225b8defbcf2a8ac39b15"
+    },
+    {
+      "path": "D:\\project\\sd.webui\\.gitignore",
+      "backup": null,
+      "sha256": "f971db2751b414284031cba0ebdc4afde5c28596f919cda2b6bbd8fc5fa1d66b"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\pyproject.toml",
+      "backup": "D:\\project\\VieNeu-TTS\\.theme-backups\\20261018-211337\\pyproject.toml",
+      "sha256": "a9b3d3dbc5dbbcc436b9f6fe60519875fea724b4d35821c24cb9c7217a170b4f"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\apps\\shared_themes\\theme.css",
+      "backup": null,
+      "sha256": "3fe90f0c9b2c3c26393bc5aee009208d9728519e7c9ebb62ead1e6a260f18ce2"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\apps\\shared_themes\\theme.js",
+      "backup": null,
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\apps\\web_stream.py",
+      "backup": "D:\\project\\VieNeu-TTS\\.theme-backups\\20261018-211459\\apps\\web_stream.py",
+      "sha256": "089387a15a63cd4b6113f12fa4460e7cec2466ab8edd4d546fa21d722233cb64"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\client\\client.html",
+      "backup": "D:\\project\\VieNeu-TTS\\.theme-backups\\20261018-211459\\client\\client.html",
+      "sha256": "3c4e306aac7e6ecc524c25e8070db531e0cf8352f08eb5f72c56333756552ca6"
+    }
+  ]
+}

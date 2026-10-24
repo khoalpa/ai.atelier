@@ -1,0 +1,180 @@
+{
+  "version": "1.0.0",
+  "changes": [
+    {
+      "path": "D:\\project\\ai.atelier\\app\\public\\ai-theme.js",
+      "backup": "D:\\project\\ai.atelier\\.theme-backups\\20261018-211522\\app\\public\\ai-theme.js",
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\themes\\dist\\theme.js",
+      "backup": "D:\\project\\ai.studio\\.theme-backups\\20261018-211522\\themes\\dist\\theme.js",
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\themes\\runtime\\theme.js",
+      "backup": "D:\\project\\ai.studio\\.theme-backups\\20261018-211522\\themes\\runtime\\theme.js",
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\themes\\README.md",
+      "backup": "D:\\project\\ai.studio\\.theme-backups\\20261018-211522\\themes\\README.md",
+      "sha256": "e5d94b5ed841126afe62d8b00f59ed26165d905cef8238c8b7e29eeb4efb217a"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\src\\ai_story\\webapp\\ai-theme.js",
+      "backup": "D:\\project\\ai.studio\\.theme-backups\\20261018-211522\\src\\ai_story\\webapp\\ai-theme.js",
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\themes\\dist\\theme.js",
+      "backup": "D:\\project\\watermarks-remover\\.theme-backups\\20261018-211522\\themes\\dist\\theme.js",
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\themes\\runtime\\theme.js",
+      "backup": "D:\\project\\watermarks-remover\\.theme-backups\\20261018-211522\\themes\\runtime\\theme.js",
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\themes\\README.md",
+      "backup": "D:\\project\\watermarks-remover\\.theme-backups\\20261018-211522\\themes\\README.md",
+      "sha256": "e5d94b5ed841126afe62d8b00f59ed26165d905cef8238c8b7e29eeb4efb217a"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\service\\scripts\\web\\ai-theme.js",
+      "backup": "D:\\project\\watermarks-remover\\.theme-backups\\20261018-211522\\service\\scripts\\web\\ai-theme.js",
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\themes\\dist\\theme.js",
+      "backup": "D:\\project\\ai.slide\\.theme-backups\\20261018-211522\\themes\\dist\\theme.js",
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\themes\\runtime\\theme.js",
+      "backup": "D:\\project\\ai.slide\\.theme-backups\\20261018-211522\\themes\\runtime\\theme.js",
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.slide\\themes\\README.md",
+      "backup": "D:\\project\\ai.slide\\.theme-backups\\20261018-211522\\themes\\README.md",
+      "sha256": "e5d94b5ed841126afe62d8b00f59ed26165d905cef8238c8b7e29eeb4efb217a"
+    },
+    {
+      "path": "D:\\project\\ai.story\\themes\\dist\\theme.js",
+      "backup": "D:\\project\\ai.story\\.theme-backups\\20261018-211522\\themes\\dist\\theme.js",
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.story\\themes\\runtime\\theme.js",
+      "backup": "D:\\project\\ai.story\\.theme-backups\\20261018-211522\\themes\\runtime\\theme.js",
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.story\\themes\\README.md",
+      "backup": "D:\\project\\ai.story\\.theme-backups\\20261018-211522\\themes\\README.md",
+      "sha256": "e5d94b5ed841126afe62d8b00f59ed26165d905cef8238c8b7e29eeb4efb217a"
+    },
+    {
+      "path": "D:\\project\\ai.player\\themes\\dist\\theme.js",
+      "backup": "D:\\project\\ai.player\\.theme-backups\\20261018-211522\\themes\\dist\\theme.js",
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.player\\themes\\runtime\\theme.js",
+      "backup": "D:\\project\\ai.player\\.theme-backups\\20261018-211522\\themes\\runtime\\theme.js",
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.player\\themes\\README.md",
+      "backup": "D:\\project\\ai.player\\.theme-backups\\20261018-211522\\themes\\README.md",
+      "sha256": "e5d94b5ed841126afe62d8b00f59ed26165d905cef8238c8b7e29eeb4efb217a"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\themes\\dist\\theme.js",
+      "backup": "D:\\project\\ai.meeting\\.theme-backups\\20261018-211522\\themes\\dist\\theme.js",
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\themes\\runtime\\theme.js",
+      "backup": "D:\\project\\ai.meeting\\.theme-backups\\20261018-211522\\themes\\runtime\\theme.js",
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.meeting\\themes\\README.md",
+      "backup": "D:\\project\\ai.meeting\\.theme-backups\\20261018-211522\\themes\\README.md",
+      "sha256": "e5d94b5ed841126afe62d8b00f59ed26165d905cef8238c8b7e29eeb4efb217a"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\themes\\dist\\theme.js",
+      "backup": "D:\\project\\ai.player.android\\.theme-backups\\20261018-211522\\themes\\dist\\theme.js",
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\themes\\runtime\\theme.js",
+      "backup": "D:\\project\\ai.player.android\\.theme-backups\\20261018-211522\\themes\\runtime\\theme.js",
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.player.android\\themes\\README.md",
+      "backup": "D:\\project\\ai.player.android\\.theme-backups\\20261018-211522\\themes\\README.md",
+      "sha256": "e5d94b5ed841126afe62d8b00f59ed26165d905cef8238c8b7e29eeb4efb217a"
+    },
+    {
+      "path": "D:\\project\\ai.telegram.android\\themes\\dist\\theme.js",
+      "backup": "D:\\project\\ai.telegram.android\\.theme-backups\\20261018-211522\\themes\\dist\\theme.js",
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.telegram.android\\themes\\runtime\\theme.js",
+      "backup": "D:\\project\\ai.telegram.android\\.theme-backups\\20261018-211522\\themes\\runtime\\theme.js",
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\ai.telegram.android\\themes\\README.md",
+      "backup": "D:\\project\\ai.telegram.android\\.theme-backups\\20261018-211522\\themes\\README.md",
+      "sha256": "e5d94b5ed841126afe62d8b00f59ed26165d905cef8238c8b7e29eeb4efb217a"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\themes\\dist\\theme.js",
+      "backup": "D:\\project\\VieNeu-TTS\\.theme-backups\\20261018-211522\\themes\\dist\\theme.js",
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\themes\\runtime\\theme.js",
+      "backup": "D:\\project\\VieNeu-TTS\\.theme-backups\\20261018-211522\\themes\\runtime\\theme.js",
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\themes\\README.md",
+      "backup": "D:\\project\\VieNeu-TTS\\.theme-backups\\20261018-211522\\themes\\README.md",
+      "sha256": "e5d94b5ed841126afe62d8b00f59ed26165d905cef8238c8b7e29eeb4efb217a"
+    },
+    {
+      "path": "D:\\project\\VieNeu-TTS\\apps\\shared_themes\\theme.js",
+      "backup": "D:\\project\\VieNeu-TTS\\.theme-backups\\20261018-211522\\apps\\shared_themes\\theme.js",
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\sd.webui\\themes\\dist\\theme.js",
+      "backup": "D:\\project\\sd.webui\\.theme-backups\\20261018-211522\\themes\\dist\\theme.js",
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\sd.webui\\themes\\runtime\\theme.js",
+      "backup": "D:\\project\\sd.webui\\.theme-backups\\20261018-211522\\themes\\runtime\\theme.js",
+      "sha256": "f97b8ba303b23899372d44436a2ff3821e7527ad1d55c28a8c10c8ca6712ffb7"
+    },
+    {
+      "path": "D:\\project\\sd.webui\\themes\\README.md",
+      "backup": "D:\\project\\sd.webui\\.theme-backups\\20261018-211522\\themes\\README.md",
+      "sha256": "e5d94b5ed841126afe62d8b00f59ed26165d905cef8238c8b7e29eeb4efb217a"
+    },
+    {
+      "path": "D:\\project\\sd.webui\\webui\\extensions\\ai-shared-themes\\javascript\\theme.js",
+      "backup": "D:\\project\\sd.webui\\.theme-backups\\20261018-211522\\webui\\extensions\\ai-shared-themes\\javascript\\theme.js",
+      "sha256": "629874557bfe3d8a6eac5f7714ad978020e0fb69532793920e68c7733f47caf9"
+    }
+  ]
+}

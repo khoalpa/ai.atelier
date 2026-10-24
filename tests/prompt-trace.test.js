@@ -1,0 +1,38 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const source=fs.readFileSync('app/public/app.js','utf8');
+const start=source.indexOf('function promptTraceMarkup('),end=source.indexOf('function renderRunPromptTraces(');
+const context={STAGE_LABELS:{'inpaint-generating':'Inpainting'},escapeHtml:value=>String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'),JSON,String,Object,Array};
+vm.createContext(context);vm.runInContext(source.slice(start,end),context);
+const entry={stage:'inpaint-generating',model:'test',seed:12,timestamp:'2026-10-17',prompts:{prompt:['<script>alert(1)</script>'+'x'.repeat(5000)],prompt_2:'second',negative_prompt:['avoid']},userPrompt:'user',negativePromptStrategy:'direct'};
+const html=context.promptTraceMarkup([entry]);
+assert(!html.includes('<script>'));assert(html.includes('&lt;script&gt;'));assert(html.includes('x'.repeat(5000)));assert(html.includes('second'));assert(html.includes('avoid'));
+assert(context.promptTraceMarkup([{...entry,prompts:{},negativePromptStrategy:'unused'}]).includes('không sử dụng prompt văn bản'));
+const buttons={};const host={dataset:{},hidden:true,innerHTML:'',querySelector:selector=>selector==='details'?{open:true}:(buttons[selector]??={})};
+context.renderPromptTrace(host,{jobId:'a',promptHistory:[entry]});
+assert(!host.hidden);assert(host.innerHTML.includes('open'));assert(host.innerHTML.includes('data-trace-download'));
+const previous=host.innerHTML;context.renderPromptTrace(host,{jobId:'a',promptHistory:[entry]});assert.equal(previous,host.innerHTML);
+host.hidden=true;context.renderPromptTrace(host,{jobId:'a',promptHistory:[entry]});assert.equal(host.hidden,false,'Polling must restore visibility even when the prompt is unchanged');
+const liveHost={...host,id:'editorPromptTrace',dataset:{},querySelector:selector=>selector==='details'?null:(buttons[selector]??={})};
+context.renderPromptTrace(liveHost,{jobId:'live',promptHistory:[entry,{...entry,seed:43,prompts:{prompt:'LATEST ACTUAL PROMPT'}}]});
+assert(liveHost.innerHTML.includes('class="prompt-trace" open'));
+assert(liveHost.innerHTML.includes('Prompt đang dùng · Seed 43'));
+assert(liveHost.innerHTML.indexOf('LATEST ACTUAL PROMPT')<liveHost.innerHTML.indexOf('Các lần gọi trước'));
+context.renderPromptTrace(host,{jobId:'b',promptHistory:[]});assert(!host.innerHTML.includes('x'.repeat(5000)));
+console.log('OK: complete prompt text, HTML escaping, prompt-free calls, stable expanded panel and new-job clearing.');
+const liveCode=source.slice(source.indexOf('function renderGenerationLive('),source.indexOf('function renderActivity('));
+assert(liveCode.includes('liveContent.innerHTML='));
+assert(!liveCode.includes('target.innerHTML='),'Polling must not destroy the prompt scroll container');
+assert(!liveCode.includes('target.after(promptHost)'),'Polling must not detach the prompt during scrollbar drag');
+const os=require('os'),path=require('path');
+const serverSource=fs.readFileSync('app/server.js','utf8');
+const route=serverSource.slice(serverSource.indexOf("  if (req.method === 'GET' && pathname === '/api/output-prompts')"),serverSource.indexOf("  if (req.method === 'GET' && pathname === '/api/library-assets')"));
+const temp=fs.mkdtempSync(path.join(os.tmpdir(),'atelier-prompt-test-'));
+try{
+ const run=path.join(temp,'run');fs.mkdirSync(run);fs.writeFileSync(path.join(run,'result.png'),'image');fs.writeFileSync(path.join(run,'metadata.json'),JSON.stringify({promptHistory:[entry]}));
+ const routeContext={fs,path,OUTPUTS_DIR:temp,req:{method:'GET'},pathname:'/api/output-prompts',res:{},url:new URL('http://local/api/output-prompts?file=run/result.png'),safeJoin:(base,relative)=>{const target=path.resolve(base,relative);return target.startsWith(base+path.sep)?target:null},send:(_,status,body)=>({status,body:JSON.parse(body)})};
+ vm.createContext(routeContext);
+ let result=vm.runInContext('(function(){'+route+'})()',routeContext);assert.equal(result.status,200);assert.equal(result.body.promptHistory[0].seed,12);
+ routeContext.url=new URL('http://local/api/output-prompts?file=../outside.png');result=vm.runInContext('(function(){'+route+'})()',routeContext);assert.equal(result.status,400);
+ fs.writeFileSync(path.join(run,'result.json'),JSON.stringify({promptHistory:[]}));routeContext.url=new URL('http://local/api/output-prompts?file=run/result.png');result=vm.runInContext('(function(){'+route+'})()',routeContext);assert.equal(result.body.promptHistory.length,0);
+ console.log('OK: historical metadata, per-image sidecars and output path containment.');
+}finally{fs.rmSync(temp,{recursive:true,force:true});}

@@ -1,0 +1,14 @@
+/*
+ * Compatibility entry point for offline packages and integrity checks that still
+ * reference /styles.css. The application loads the layered files directly.
+ */
+@import url('/styles/tokens.css');
+@import url('/styles/base.css');
+@import url('/styles/views/activity.css');
+@import url('/styles/components/buttons.css');
+@import url('/styles/components/system.css');
+@import url('/styles/views/application.css');
+@import url('/styles/views/model-library.css');
+@import url('/styles/views/system-reset.css');
+@import url('/styles/views/atelier.css');
+@import url('/styles/responsive.css');

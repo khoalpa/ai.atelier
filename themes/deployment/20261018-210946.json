@@ -1,0 +1,15 @@
+{
+  "version": "1.0.0",
+  "changes": [
+    {
+      "path": "D:\\project\\watermarks-remover\\service\\scripts\\web\\model-status.css",
+      "backup": "D:\\project\\watermarks-remover\\.theme-backups\\20261018-210946\\service\\scripts\\web\\model-status.css",
+      "sha256": "24d632e8fde691ce293ce3e788fe0019eb9b255d9cb1d4b6872e34b8a0c19700"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\service\\scripts\\web\\models.css",
+      "backup": "D:\\project\\watermarks-remover\\.theme-backups\\20261018-210946\\service\\scripts\\web\\models.css",
+      "sha256": "4f03572fdba6cdc960c7d5daefa71000dfaa20b43f361ec835a5f35ca4564cda"
+    }
+  ]
+}

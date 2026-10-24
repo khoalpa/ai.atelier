@@ -1,0 +1,21 @@
+const assert=require('assert');
+const {planMakeup,validatePlan,explicitOverrides}=require('../app/makeup-plan');
+const base=require('../app/makeup-styles.json').natural;
+(async()=>{
+  let calls=0;
+  const request=async body=>{calls++;assert.equal(body.keep_alive,0);assert.equal(body.format.type,'object');return {message:{content:JSON.stringify({...base,parts:['lips'],prompt:'muted rose lipstick',summary:'Chỉ tô son hồng đất.'})}};};
+  const defaults=await planMakeup({style:'natural',description:''},request,'local');assert.equal(calls,0);assert.equal(defaults.parts.length,5);
+  const described=await planMakeup({style:'custom',description:'Chỉ tô son hồng đất.'},request,'local');assert.equal(calls,1);assert.deepEqual(described.parts,['lips']);
+  for(const delta of [{parts:[]},{parts:['hair']},{lip:'javascript:test'},{intensity:'light|bold'},{prompt:'x '.repeat(80)},{renderer:'remote'}])assert.throws(()=>validatePlan({...base,parts:['lips'],...delta},base));
+  await assert.rejects(()=>planMakeup({style:'constructor',description:''},request,'local'));
+  await assert.rejects(()=>planMakeup({style:'custom',description:'a'.repeat(1001)},request,'local'));
+  await assert.rejects(()=>planMakeup({style:'custom',description:'test'},async()=>({message:{content:'bad'}}),'local'));
+  const constrained=explicitOverrides({...base,parts:['lips','eyes','cheeks']},'Chỉ tô son hồng đất, không trang điểm mắt.');
+  assert.deepEqual(constrained.parts,['lips']);assert.equal(constrained.lip,'#a66b70');
+  assert.deepEqual(explicitOverrides({...base,parts:['lips','eyes']},'Phấn mắt tím, không kẻ mắt.').parts,['lips','eyes']);
+  assert.deepEqual(explicitOverrides({...base,parts:['lips']},'Tô son đỏ, không thay đổi dáng môi.').parts,['lips']);
+  const glitter=explicitOverrides({...base,parts:['eyes','lips']},'Phấn mắt tím có nhũ bạc, son đỏ rượu bóng.');
+  assert.equal(glitter.renderer,'ai');assert.equal(glitter.finish,'gloss');assert.equal(glitter.intensity,'medium');assert(glitter.prompt.includes('silver glitter'));
+  assert.equal(explicitOverrides({...base,parts:['eyes']},'Phấn mắt tím, không nhũ.').renderer,'color');
+  console.log('OK: preset defaults, local description parsing, bounded settings, invalid output rejection.');
+})().catch(e=>{console.error(e);process.exitCode=1;});

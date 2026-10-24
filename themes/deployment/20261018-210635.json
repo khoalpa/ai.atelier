@@ -1,0 +1,55 @@
+{
+  "version": "1.0.0",
+  "changes": [
+    {
+      "path": "D:\\project\\ai.atelier\\app\\public\\ai-theme.css",
+      "backup": "D:\\project\\ai.atelier\\.theme-backups\\20261018-210635\\app\\public\\ai-theme.css",
+      "sha256": "271d481352136c08f7483f2214612c62a7658a234bfb5a20be4c3538c2babc96"
+    },
+    {
+      "path": "D:\\project\\ai.studio\\src\\ai_story\\webapp\\ai-theme.css",
+      "backup": "D:\\project\\ai.studio\\.theme-backups\\20261018-210635\\src\\ai_story\\webapp\\ai-theme.css",
+      "sha256": "6809c4dc187dc3d4c0d01d066f652100e0a237f3e0ba34083c35eb2b4214ed06"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\service\\scripts\\web\\app.css",
+      "backup": "D:\\project\\watermarks-remover\\.theme-backups\\20261018-210635\\service\\scripts\\web\\app.css",
+      "sha256": "505ec265a07c22738896efa836b320f31697a350bfee6b7aaa20f53af860db8d"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\service\\scripts\\web\\download-only.css",
+      "backup": "D:\\project\\watermarks-remover\\.theme-backups\\20261018-210635\\service\\scripts\\web\\download-only.css",
+      "sha256": "73a5f00dc906dc793f9b13b909dab61a6d168faf9c840e497da138181c0d9abe"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\service\\scripts\\web\\explanations.css",
+      "backup": "D:\\project\\watermarks-remover\\.theme-backups\\20261018-210635\\service\\scripts\\web\\explanations.css",
+      "sha256": "3c0e6ec9257f36c281bb5ad35326ed25ea0f0d7eee6ed7892684c4c8c2e35aa5"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\service\\scripts\\web\\findings.css",
+      "backup": "D:\\project\\watermarks-remover\\.theme-backups\\20261018-210635\\service\\scripts\\web\\findings.css",
+      "sha256": "192afab8bcb409fb97d8d1230101f0eed6e15adf46d6f73cdf6ca3851f251dfd"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\service\\scripts\\web\\model-status.css",
+      "backup": "D:\\project\\watermarks-remover\\.theme-backups\\20261018-210635\\service\\scripts\\web\\model-status.css",
+      "sha256": "8906b9605cbc39129ed6efd4bd838340c433360547d66cbb78df0e86324f22fa"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\service\\scripts\\web\\models.css",
+      "backup": "D:\\project\\watermarks-remover\\.theme-backups\\20261018-210635\\service\\scripts\\web\\models.css",
+      "sha256": "0c0fa301b0d87a9be7a225de298cd8db05582bc5af52c675b3b01ee61a079a1c"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\service\\scripts\\web\\version.css",
+      "backup": "D:\\project\\watermarks-remover\\.theme-backups\\20261018-210635\\service\\scripts\\web\\version.css",
+      "sha256": "be851f9c842e7e62831a8b771f7abfb6248f22637d34aa631bfa3c6b45a9f5fe"
+    },
+    {
+      "path": "D:\\project\\watermarks-remover\\service\\scripts\\web\\ai-theme.css",
+      "backup": "D:\\project\\watermarks-remover\\.theme-backups\\20261018-210635\\service\\scripts\\web\\ai-theme.css",
+      "sha256": "99aaa4b86218a4c6bba987a53515ea6b38e0df65e771424369e855562190d951"
+    }
+  ]
+}

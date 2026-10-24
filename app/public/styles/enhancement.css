@@ -1,0 +1,21 @@
+.enhance-panel label { display: grid; gap: 6px; margin-block: 12px; }
+.enhance-panel .enhance-preview-position { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.enhance-panel p, .enhance-panel small { line-height: 1.55; }
+.enhance-panel [hidden] { display: none !important; }
+.enhance-panel .skin-texture-toggle { display: flex; align-items: center; gap: 8px; }
+.skin-texture-toggle input { width: auto; }
+#skinRetouchControls { padding: 4px 12px; border: 1px solid #8885; border-radius: 10px; }
+#skinSmoothValue { font-variant-numeric: tabular-nums; }
+#skinEdgeControls { padding: 4px 12px; border: 1px solid #8885; border-radius: 10px; }
+#skinEdgeControls [aria-pressed="true"] { outline: 2px solid #f6cc62; }
+.enhance-edge-guide { pointer-events: none; }
+.enhance-inspector .enhance-edge-toggle { display: flex; align-items: center; gap: 8px; margin-block: 12px; }
+.enhance-inspector .enhance-edge-toggle input { width: 18px; height: 18px; margin: 0; padding: 0; }
+.enhance-inspector { width: min(1100px, 95vw); max-height: 92vh; padding: 20px; }
+.enhance-inspector-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.enhance-inspector-scroll { overflow: auto; max-height: 65vh; margin-top: 12px; border: 1px solid #aaa5; }
+.enhance-inspector-pair { position: relative; }
+.enhance-inspector-pair img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: fill; }
+body[data-studio-task="enhance"] .studio-mode-switch { flex-wrap: wrap; }
+body[data-studio-task="enhance"] #studioRetryResults { display: none; }
+body[data-studio-task="enhance"] #scopePreviewButton { display: none; }
