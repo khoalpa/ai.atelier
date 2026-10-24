@@ -1,3 +1,4 @@
+from helpers.ai_source import read_source
 """Runtime profiles and task templates reload without loading model weights."""
 import ast
 import json
@@ -9,14 +10,14 @@ root=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(root))
 import prompt_catalog as catalog
 
-source=ast.parse((root/'ai_service.py').read_text(encoding='utf-8'))
+source=ast.parse(read_source(root/'ai_service.py', encoding='utf-8'))
 node=next(n for n in source.body if isinstance(n,ast.FunctionDef) and n.name=='resolved_inpaint_profile')
 scope={'read_catalog':catalog.read_catalog}
 exec(compile(ast.Module(body=[node],type_ignores=[]),'<profile>','exec'),scope)
 original=catalog._FILE
 with tempfile.TemporaryDirectory() as directory:
     file=Path(directory)/'prompts.json'
-    value=json.loads(original.read_text(encoding='utf-8'))
+    value=json.loads(read_source(original, encoding='utf-8'))
     catalog._FILE=file
     try:
         file.write_text(json.dumps(value),encoding='utf-8')

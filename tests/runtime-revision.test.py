@@ -1,3 +1,4 @@
+from helpers.ai_source import read_source
 """Optional IDM code participates in revision tracking without becoming mandatory."""
 import ast
 import json
@@ -6,13 +7,13 @@ import tempfile
 from pathlib import Path
 
 root=Path(__file__).resolve().parents[1]
-tree=ast.parse((root/'ai_service.py').read_text(encoding='utf-8'))
+tree=ast.parse(read_source(root/'ai_service.py', encoding='utf-8'))
 assignment=next(n for n in tree.body if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='SOURCE_REVISION' for t in n.targets))
 code=compile(ast.Module(body=[assignment],type_ignores=[]),'<runtime-revision>','exec')
 optional='vendor/IDM-VTON/src/tryon_pipeline.py'
 with tempfile.TemporaryDirectory() as directory:
     folder=Path(directory)
-    manifest=json.loads((root/'version.json').read_text(encoding='utf-8'))
+    manifest=json.loads(read_source(root/'version.json', encoding='utf-8'))
     names=set(manifest['aiSources'])
     for name in names-{optional,'version.json'}:
         p=folder/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_text('base')

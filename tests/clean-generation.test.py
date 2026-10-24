@@ -1,3 +1,4 @@
+from helpers.ai_source import read_source
 """Generation and smoke reports work before workspace/review exists."""
 import ast
 import hashlib
@@ -9,7 +10,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from PIL import Image
 
-tree = ast.parse((Path(__file__).resolve().parents[1] / 'ai_service.py').read_text(encoding='utf-8'))
+tree = ast.parse(read_source(Path(__file__).resolve().parents[1] / 'ai_service.py', encoding='utf-8'))
 nodes = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name in ('chroma_generate', 'chroma_smoke')]
 for node in nodes:
     node.decorator_list = []
@@ -32,7 +33,7 @@ for function in ('chroma_smoke',):
         exec(compile(ast.Module(body=nodes, type_ignores=[]), '<clean-generation>', 'exec'), namespace)
         result = namespace[function]({'prompt': 'landscape', 'modelId': 'flux-2-klein-4b', 'count': 1, 'size': 256})
         assert result['ok'] and (root/result['report']).is_file()
-        report = json.loads((root/result['report']).read_text(encoding='utf-8'))
+        report = json.loads(read_source(root/result['report'], encoding='utf-8'))
         assert report['prompt'] == 'landscape'
         assert len(list((root/'workspace/outputs').rglob('*.png'))) == 1
         if function == 'chroma_generate':

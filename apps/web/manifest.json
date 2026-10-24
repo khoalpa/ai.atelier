@@ -1,0 +1,1447 @@
+{
+  "schemaVersion": 1,
+  "modules": [
+    "shared",
+    "editor",
+    "results",
+    "library",
+    "outfit",
+    "review",
+    "jobs",
+    "navigation",
+    "inpaint",
+    "regions",
+    "models",
+    "generation",
+    "prompts",
+    "bootstrap",
+    "settings"
+  ],
+  "steps": [
+    {
+      "module": "shared",
+      "step": 0
+    },
+    {
+      "module": "editor",
+      "step": 0
+    },
+    {
+      "module": "editor",
+      "step": 1
+    },
+    {
+      "module": "editor",
+      "step": 2
+    },
+    {
+      "module": "editor",
+      "step": 3
+    },
+    {
+      "module": "editor",
+      "step": 4
+    },
+    {
+      "module": "editor",
+      "step": 5
+    },
+    {
+      "module": "editor",
+      "step": 6
+    },
+    {
+      "module": "editor",
+      "step": 7
+    },
+    {
+      "module": "editor",
+      "step": 8
+    },
+    {
+      "module": "editor",
+      "step": 9
+    },
+    {
+      "module": "editor",
+      "step": 10
+    },
+    {
+      "module": "editor",
+      "step": 11
+    },
+    {
+      "module": "editor",
+      "step": 12
+    },
+    {
+      "module": "editor",
+      "step": 13
+    },
+    {
+      "module": "editor",
+      "step": 14
+    },
+    {
+      "module": "editor",
+      "step": 15
+    },
+    {
+      "module": "results",
+      "step": 0
+    },
+    {
+      "module": "results",
+      "step": 1
+    },
+    {
+      "module": "results",
+      "step": 2
+    },
+    {
+      "module": "results",
+      "step": 3
+    },
+    {
+      "module": "library",
+      "step": 0
+    },
+    {
+      "module": "library",
+      "step": 1
+    },
+    {
+      "module": "library",
+      "step": 2
+    },
+    {
+      "module": "outfit",
+      "step": 0
+    },
+    {
+      "module": "outfit",
+      "step": 1
+    },
+    {
+      "module": "review",
+      "step": 0
+    },
+    {
+      "module": "review",
+      "step": 1
+    },
+    {
+      "module": "jobs",
+      "step": 0
+    },
+    {
+      "module": "jobs",
+      "step": 1
+    },
+    {
+      "module": "jobs",
+      "step": 2
+    },
+    {
+      "module": "review",
+      "step": 2
+    },
+    {
+      "module": "review",
+      "step": 3
+    },
+    {
+      "module": "jobs",
+      "step": 3
+    },
+    {
+      "module": "jobs",
+      "step": 4
+    },
+    {
+      "module": "navigation",
+      "step": 0
+    },
+    {
+      "module": "navigation",
+      "step": 1
+    },
+    {
+      "module": "navigation",
+      "step": 2
+    },
+    {
+      "module": "editor",
+      "step": 16
+    },
+    {
+      "module": "review",
+      "step": 4
+    },
+    {
+      "module": "review",
+      "step": 5
+    },
+    {
+      "module": "shared",
+      "step": 1
+    },
+    {
+      "module": "jobs",
+      "step": 5
+    },
+    {
+      "module": "jobs",
+      "step": 6
+    },
+    {
+      "module": "jobs",
+      "step": 7
+    },
+    {
+      "module": "jobs",
+      "step": 8
+    },
+    {
+      "module": "jobs",
+      "step": 9
+    },
+    {
+      "module": "jobs",
+      "step": 10
+    },
+    {
+      "module": "jobs",
+      "step": 11
+    },
+    {
+      "module": "jobs",
+      "step": 12
+    },
+    {
+      "module": "jobs",
+      "step": 13
+    },
+    {
+      "module": "jobs",
+      "step": 14
+    },
+    {
+      "module": "jobs",
+      "step": 15
+    },
+    {
+      "module": "jobs",
+      "step": 16
+    },
+    {
+      "module": "jobs",
+      "step": 17
+    },
+    {
+      "module": "jobs",
+      "step": 18
+    },
+    {
+      "module": "results",
+      "step": 4
+    },
+    {
+      "module": "jobs",
+      "step": 19
+    },
+    {
+      "module": "jobs",
+      "step": 20
+    },
+    {
+      "module": "results",
+      "step": 5
+    },
+    {
+      "module": "editor",
+      "step": 17
+    },
+    {
+      "module": "editor",
+      "step": 18
+    },
+    {
+      "module": "editor",
+      "step": 19
+    },
+    {
+      "module": "editor",
+      "step": 20
+    },
+    {
+      "module": "editor",
+      "step": 21
+    },
+    {
+      "module": "editor",
+      "step": 22
+    },
+    {
+      "module": "editor",
+      "step": 23
+    },
+    {
+      "module": "editor",
+      "step": 24
+    },
+    {
+      "module": "editor",
+      "step": 25
+    },
+    {
+      "module": "editor",
+      "step": 26
+    },
+    {
+      "module": "editor",
+      "step": 27
+    },
+    {
+      "module": "editor",
+      "step": 28
+    },
+    {
+      "module": "editor",
+      "step": 29
+    },
+    {
+      "module": "editor",
+      "step": 30
+    },
+    {
+      "module": "inpaint",
+      "step": 0
+    },
+    {
+      "module": "regions",
+      "step": 0
+    },
+    {
+      "module": "models",
+      "step": 0
+    },
+    {
+      "module": "models",
+      "step": 1
+    },
+    {
+      "module": "models",
+      "step": 2
+    },
+    {
+      "module": "models",
+      "step": 3
+    },
+    {
+      "module": "models",
+      "step": 4
+    },
+    {
+      "module": "models",
+      "step": 5
+    },
+    {
+      "module": "models",
+      "step": 6
+    },
+    {
+      "module": "models",
+      "step": 7
+    },
+    {
+      "module": "models",
+      "step": 8
+    },
+    {
+      "module": "models",
+      "step": 9
+    },
+    {
+      "module": "models",
+      "step": 10
+    },
+    {
+      "module": "models",
+      "step": 11
+    },
+    {
+      "module": "models",
+      "step": 12
+    },
+    {
+      "module": "models",
+      "step": 13
+    },
+    {
+      "module": "models",
+      "step": 14
+    },
+    {
+      "module": "models",
+      "step": 15
+    },
+    {
+      "module": "models",
+      "step": 16
+    },
+    {
+      "module": "models",
+      "step": 17
+    },
+    {
+      "module": "models",
+      "step": 18
+    },
+    {
+      "module": "models",
+      "step": 19
+    },
+    {
+      "module": "models",
+      "step": 20
+    },
+    {
+      "module": "models",
+      "step": 21
+    },
+    {
+      "module": "models",
+      "step": 22
+    },
+    {
+      "module": "models",
+      "step": 23
+    },
+    {
+      "module": "models",
+      "step": 24
+    },
+    {
+      "module": "models",
+      "step": 25
+    },
+    {
+      "module": "models",
+      "step": 26
+    },
+    {
+      "module": "models",
+      "step": 27
+    },
+    {
+      "module": "generation",
+      "step": 0
+    },
+    {
+      "module": "generation",
+      "step": 1
+    },
+    {
+      "module": "generation",
+      "step": 2
+    },
+    {
+      "module": "generation",
+      "step": 3
+    },
+    {
+      "module": "prompts",
+      "step": 0
+    },
+    {
+      "module": "models",
+      "step": 28
+    },
+    {
+      "module": "prompts",
+      "step": 1
+    },
+    {
+      "module": "bootstrap",
+      "step": 0
+    },
+    {
+      "module": "bootstrap",
+      "step": 1
+    },
+    {
+      "module": "bootstrap",
+      "step": 2
+    },
+    {
+      "module": "bootstrap",
+      "step": 3
+    },
+    {
+      "module": "bootstrap",
+      "step": 4
+    },
+    {
+      "module": "bootstrap",
+      "step": 5
+    },
+    {
+      "module": "bootstrap",
+      "step": 6
+    },
+    {
+      "module": "bootstrap",
+      "step": 7
+    },
+    {
+      "module": "bootstrap",
+      "step": 8
+    },
+    {
+      "module": "bootstrap",
+      "step": 9
+    },
+    {
+      "module": "bootstrap",
+      "step": 10
+    },
+    {
+      "module": "bootstrap",
+      "step": 11
+    },
+    {
+      "module": "bootstrap",
+      "step": 12
+    },
+    {
+      "module": "bootstrap",
+      "step": 13
+    },
+    {
+      "module": "bootstrap",
+      "step": 14
+    },
+    {
+      "module": "bootstrap",
+      "step": 15
+    },
+    {
+      "module": "bootstrap",
+      "step": 16
+    },
+    {
+      "module": "bootstrap",
+      "step": 17
+    },
+    {
+      "module": "bootstrap",
+      "step": 18
+    },
+    {
+      "module": "bootstrap",
+      "step": 19
+    },
+    {
+      "module": "bootstrap",
+      "step": 20
+    },
+    {
+      "module": "bootstrap",
+      "step": 21
+    },
+    {
+      "module": "bootstrap",
+      "step": 22
+    },
+    {
+      "module": "bootstrap",
+      "step": 23
+    },
+    {
+      "module": "bootstrap",
+      "step": 24
+    },
+    {
+      "module": "bootstrap",
+      "step": 25
+    },
+    {
+      "module": "bootstrap",
+      "step": 26
+    },
+    {
+      "module": "bootstrap",
+      "step": 27
+    },
+    {
+      "module": "bootstrap",
+      "step": 28
+    },
+    {
+      "module": "bootstrap",
+      "step": 29
+    },
+    {
+      "module": "bootstrap",
+      "step": 30
+    },
+    {
+      "module": "bootstrap",
+      "step": 31
+    },
+    {
+      "module": "bootstrap",
+      "step": 32
+    },
+    {
+      "module": "bootstrap",
+      "step": 33
+    },
+    {
+      "module": "bootstrap",
+      "step": 34
+    },
+    {
+      "module": "bootstrap",
+      "step": 35
+    },
+    {
+      "module": "bootstrap",
+      "step": 36
+    },
+    {
+      "module": "bootstrap",
+      "step": 37
+    },
+    {
+      "module": "bootstrap",
+      "step": 38
+    },
+    {
+      "module": "bootstrap",
+      "step": 39
+    },
+    {
+      "module": "bootstrap",
+      "step": 40
+    },
+    {
+      "module": "bootstrap",
+      "step": 41
+    },
+    {
+      "module": "bootstrap",
+      "step": 42
+    },
+    {
+      "module": "bootstrap",
+      "step": 43
+    },
+    {
+      "module": "bootstrap",
+      "step": 44
+    },
+    {
+      "module": "bootstrap",
+      "step": 45
+    },
+    {
+      "module": "bootstrap",
+      "step": 46
+    },
+    {
+      "module": "bootstrap",
+      "step": 47
+    },
+    {
+      "module": "bootstrap",
+      "step": 48
+    },
+    {
+      "module": "bootstrap",
+      "step": 49
+    },
+    {
+      "module": "bootstrap",
+      "step": 50
+    },
+    {
+      "module": "bootstrap",
+      "step": 51
+    },
+    {
+      "module": "bootstrap",
+      "step": 52
+    },
+    {
+      "module": "bootstrap",
+      "step": 53
+    },
+    {
+      "module": "bootstrap",
+      "step": 54
+    },
+    {
+      "module": "bootstrap",
+      "step": 55
+    },
+    {
+      "module": "bootstrap",
+      "step": 56
+    },
+    {
+      "module": "bootstrap",
+      "step": 57
+    },
+    {
+      "module": "bootstrap",
+      "step": 58
+    },
+    {
+      "module": "bootstrap",
+      "step": 59
+    },
+    {
+      "module": "bootstrap",
+      "step": 60
+    },
+    {
+      "module": "bootstrap",
+      "step": 61
+    },
+    {
+      "module": "bootstrap",
+      "step": 62
+    },
+    {
+      "module": "bootstrap",
+      "step": 63
+    },
+    {
+      "module": "bootstrap",
+      "step": 64
+    },
+    {
+      "module": "bootstrap",
+      "step": 65
+    },
+    {
+      "module": "bootstrap",
+      "step": 66
+    },
+    {
+      "module": "bootstrap",
+      "step": 67
+    },
+    {
+      "module": "bootstrap",
+      "step": 68
+    },
+    {
+      "module": "bootstrap",
+      "step": 69
+    },
+    {
+      "module": "bootstrap",
+      "step": 70
+    },
+    {
+      "module": "bootstrap",
+      "step": 71
+    },
+    {
+      "module": "bootstrap",
+      "step": 72
+    },
+    {
+      "module": "bootstrap",
+      "step": 73
+    },
+    {
+      "module": "bootstrap",
+      "step": 74
+    },
+    {
+      "module": "bootstrap",
+      "step": 75
+    },
+    {
+      "module": "bootstrap",
+      "step": 76
+    },
+    {
+      "module": "bootstrap",
+      "step": 77
+    },
+    {
+      "module": "bootstrap",
+      "step": 78
+    },
+    {
+      "module": "bootstrap",
+      "step": 79
+    },
+    {
+      "module": "bootstrap",
+      "step": 80
+    },
+    {
+      "module": "bootstrap",
+      "step": 81
+    },
+    {
+      "module": "bootstrap",
+      "step": 82
+    },
+    {
+      "module": "bootstrap",
+      "step": 83
+    },
+    {
+      "module": "bootstrap",
+      "step": 84
+    },
+    {
+      "module": "bootstrap",
+      "step": 85
+    },
+    {
+      "module": "bootstrap",
+      "step": 86
+    },
+    {
+      "module": "bootstrap",
+      "step": 87
+    },
+    {
+      "module": "bootstrap",
+      "step": 88
+    },
+    {
+      "module": "bootstrap",
+      "step": 89
+    },
+    {
+      "module": "bootstrap",
+      "step": 90
+    },
+    {
+      "module": "bootstrap",
+      "step": 91
+    },
+    {
+      "module": "bootstrap",
+      "step": 92
+    },
+    {
+      "module": "bootstrap",
+      "step": 93
+    },
+    {
+      "module": "bootstrap",
+      "step": 94
+    },
+    {
+      "module": "bootstrap",
+      "step": 95
+    },
+    {
+      "module": "bootstrap",
+      "step": 96
+    },
+    {
+      "module": "bootstrap",
+      "step": 97
+    },
+    {
+      "module": "bootstrap",
+      "step": 98
+    },
+    {
+      "module": "bootstrap",
+      "step": 99
+    },
+    {
+      "module": "bootstrap",
+      "step": 100
+    },
+    {
+      "module": "bootstrap",
+      "step": 101
+    },
+    {
+      "module": "bootstrap",
+      "step": 102
+    },
+    {
+      "module": "bootstrap",
+      "step": 103
+    },
+    {
+      "module": "bootstrap",
+      "step": 104
+    },
+    {
+      "module": "bootstrap",
+      "step": 105
+    },
+    {
+      "module": "bootstrap",
+      "step": 106
+    },
+    {
+      "module": "bootstrap",
+      "step": 107
+    },
+    {
+      "module": "bootstrap",
+      "step": 108
+    },
+    {
+      "module": "bootstrap",
+      "step": 109
+    },
+    {
+      "module": "bootstrap",
+      "step": 110
+    },
+    {
+      "module": "bootstrap",
+      "step": 111
+    },
+    {
+      "module": "bootstrap",
+      "step": 112
+    },
+    {
+      "module": "bootstrap",
+      "step": 113
+    },
+    {
+      "module": "bootstrap",
+      "step": 114
+    },
+    {
+      "module": "bootstrap",
+      "step": 115
+    },
+    {
+      "module": "bootstrap",
+      "step": 116
+    },
+    {
+      "module": "bootstrap",
+      "step": 117
+    },
+    {
+      "module": "bootstrap",
+      "step": 118
+    },
+    {
+      "module": "bootstrap",
+      "step": 119
+    },
+    {
+      "module": "bootstrap",
+      "step": 120
+    },
+    {
+      "module": "bootstrap",
+      "step": 121
+    },
+    {
+      "module": "bootstrap",
+      "step": 122
+    },
+    {
+      "module": "bootstrap",
+      "step": 123
+    },
+    {
+      "module": "bootstrap",
+      "step": 124
+    },
+    {
+      "module": "bootstrap",
+      "step": 125
+    },
+    {
+      "module": "bootstrap",
+      "step": 126
+    },
+    {
+      "module": "bootstrap",
+      "step": 127
+    },
+    {
+      "module": "bootstrap",
+      "step": 128
+    },
+    {
+      "module": "bootstrap",
+      "step": 129
+    },
+    {
+      "module": "bootstrap",
+      "step": 130
+    },
+    {
+      "module": "bootstrap",
+      "step": 131
+    },
+    {
+      "module": "bootstrap",
+      "step": 132
+    },
+    {
+      "module": "bootstrap",
+      "step": 133
+    },
+    {
+      "module": "navigation",
+      "step": 3
+    },
+    {
+      "module": "prompts",
+      "step": 2
+    },
+    {
+      "module": "prompts",
+      "step": 3
+    },
+    {
+      "module": "prompts",
+      "step": 4
+    },
+    {
+      "module": "results",
+      "step": 6
+    },
+    {
+      "module": "results",
+      "step": 7
+    },
+    {
+      "module": "prompts",
+      "step": 5
+    },
+    {
+      "module": "prompts",
+      "step": 6
+    },
+    {
+      "module": "prompts",
+      "step": 7
+    },
+    {
+      "module": "settings",
+      "step": 0
+    },
+    {
+      "module": "jobs",
+      "step": 21
+    },
+    {
+      "module": "review",
+      "step": 6
+    },
+    {
+      "module": "navigation",
+      "step": 4
+    },
+    {
+      "module": "navigation",
+      "step": 5
+    },
+    {
+      "module": "bootstrap",
+      "step": 134
+    },
+    {
+      "module": "bootstrap",
+      "step": 135
+    },
+    {
+      "module": "bootstrap",
+      "step": 136
+    },
+    {
+      "module": "bootstrap",
+      "step": 137
+    },
+    {
+      "module": "bootstrap",
+      "step": 138
+    },
+    {
+      "module": "bootstrap",
+      "step": 139
+    },
+    {
+      "module": "bootstrap",
+      "step": 140
+    },
+    {
+      "module": "bootstrap",
+      "step": 141
+    },
+    {
+      "module": "bootstrap",
+      "step": 142
+    },
+    {
+      "module": "bootstrap",
+      "step": 143
+    },
+    {
+      "module": "bootstrap",
+      "step": 144
+    },
+    {
+      "module": "bootstrap",
+      "step": 145
+    },
+    {
+      "module": "bootstrap",
+      "step": 146
+    }
+  ],
+  "bindings": [
+    "$",
+    "canvas",
+    "ctx",
+    "maskCanvas",
+    "maskCtx",
+    "protectCanvas",
+    "protectCtx",
+    "manualProtectCanvas",
+    "manualProtectCtx",
+    "images",
+    "current",
+    "sourceImage",
+    "drawing",
+    "tool",
+    "lastPoint",
+    "history",
+    "aiPoints",
+    "currentRunDirectory",
+    "studioSelectedResult",
+    "studioPendingResult",
+    "studioViewingResult",
+    "libraryFilter",
+    "librarySelected",
+    "libraryAssets",
+    "garmentDataUrl",
+    "detectedPeople",
+    "reviewState",
+    "auditItems",
+    "activeJobId",
+    "jobPollTimer",
+    "jobEventSource",
+    "guidedReviewItems",
+    "guidedReviewIndex",
+    "activityState",
+    "activityClockTimer",
+    "studioCommandCollapseTimer",
+    "studioCommandAutoKey",
+    "studioCommandManuallyCollapsed",
+    "MAX_HISTORY",
+    "reviewKey",
+    "currentReview",
+    "createJobId",
+    "SEED_MAX",
+    "randomSeed",
+    "setupSeedControl",
+    "seedForRun",
+    "setCustomSeed",
+    "setActiveJob",
+    "connectJobStream",
+    "STAGE_LABELS",
+    "PIPELINE_STAGES",
+    "INPAINT_STAGES",
+    "OUTPAINT_STAGES",
+    "TEXT_TO_IMAGE_STAGES",
+    "escapeHtml",
+    "readableRequestError",
+    "formatDuration",
+    "downloadFullSizeImage",
+    "openImageAtFullSize",
+    "dismissedProgressJobs",
+    "currentAppView",
+    "activityProgress",
+    "generationProgressInfo",
+    "closeGenerationProgress",
+    "imagePromptRequest",
+    "loadImagePromptTrace",
+    "promptTraceMarkup",
+    "renderPromptTrace",
+    "renderRunPromptTraces",
+    "generationActionState",
+    "showGenerationResult",
+    "presentStudioResults",
+    "refreshContinuationActions",
+    "continueFromSelectedResult",
+    "updateProgressVisibility",
+    "renderGenerationLive",
+    "renderActivity",
+    "pollJobStatus",
+    "settleJob",
+    "applyJobState",
+    "resumeActiveJob",
+    "cancelActiveJob",
+    "calibrateQuality",
+    "buildGoldenBaseline",
+    "compareBaseline",
+    "showJobs",
+    "cleanupOldJobs",
+    "runBenchmark",
+    "buildDashboard",
+    "checkSystem",
+    "backupData",
+    "loadBackups",
+    "restoreSelectedBackup",
+    "saveBenchmarkReview",
+    "renderGuidedReview",
+    "reviewBenchmark",
+    "showReviewReadiness",
+    "runTargetedRetryQueue",
+    "showRetryComparisons",
+    "calibrateWeights",
+    "compareWeights",
+    "activateWeights",
+    "confirmDefaultWeights",
+    "saveReferenceProfile",
+    "referenceSetupSummary",
+    "loadReferenceReadiness",
+    "qualifyReference",
+    "checkAcceptance",
+    "setMessage",
+    "showCompare",
+    "loadReviewState",
+    "setReviewStatus",
+    "renderAuditQueue",
+    "editorZoom",
+    "editorPan",
+    "editorPanStart",
+    "editorPanMode",
+    "updateEditorTransform",
+    "setEditorZoom",
+    "fitCanvas",
+    "render",
+    "snapshot",
+    "canvasPoint",
+    "paint",
+    "canvasPointerStart",
+    "canvasFirstClick",
+    "restoreCanvasBeforeDoubleClick",
+    "loadImage",
+    "renderImageOptions",
+    "editorHasChanges",
+    "restoreControlDefault",
+    "resetEditorSession",
+    "showEmptyEditorState",
+    "deselectCurrentImage",
+    "uploadSourceImage",
+    "setTool",
+    "segmentWithAi",
+    "displayMask",
+    "displayProtectedMask",
+    "createAutomaticMask",
+    "detectPeopleInImage",
+    "preprocessGarment",
+    "binaryMaskDataUrl",
+    "editableMaskStats",
+    "highlightMaskTools",
+    "showMaskGuide",
+    "createMaskFromInpaintPreset",
+    "save",
+    "inpaintPromptReviewPending",
+    "reviewGenerationPrompts",
+    "runInpaint",
+    "loadRuntimeModelStatus",
+    "regionDetection",
+    "regionController",
+    "selectedRegions",
+    "applyDetectedRegions",
+    "detectWithManagedModel",
+    "runAdetailerRefine",
+    "loraStatusRequest",
+    "loadLoraStatus",
+    "loadModels",
+    "modelInventory",
+    "formatModelSize",
+    "renderModelInventory",
+    "renderModelInventoryWithoutPercent",
+    "modelNameCompare",
+    "modelSize",
+    "modelVram",
+    "renderModelInventoryLicenseBase",
+    "modelStatusRank",
+    "compareInventoryModels",
+    "renderModelInventorySortedBase",
+    "renderModelInventoryWithSort",
+    "downloadableModels",
+    "formatDownloadBytes",
+    "updateDownloadAllModelsButton",
+    "loadModelCandidates",
+    "startModelDownload",
+    "downloadAllModels",
+    "loadModelCapabilities",
+    "loadInpaintModelOptions",
+    "selectModelForFeature",
+    "setModelManagerTab",
+    "loadModelsBase",
+    "registeredModelsState",
+    "lastRegisteredModelId",
+    "renderRegisteredModels",
+    "renderRegisteredModelsUnsorted",
+    "loadModelsRegisteredBase",
+    "renderRegisteredModelsWithSort",
+    "loadModelCapabilitiesBase",
+    "sortCapabilityCards",
+    "loadModelCapabilitiesSortedBase",
+    "loadChromaStatus",
+    "runChromaSmoke",
+    "textToImageModels",
+    "TEXT_PIPELINE_HINTS",
+    "textControlUnavailableReason",
+    "updateTextToImagePipeline",
+    "loadTextToImageLoras",
+    "updateTextToImageAvailability",
+    "loadTextToImageModels",
+    "modelSelectorRefreshPromise",
+    "modelStartupScanPromise",
+    "refreshModelSelectors",
+    "startModelSelectorStartupScan",
+    "textQuality",
+    "TEXT_TO_IMAGE_PRESETS",
+    "syncTextToImageControls",
+    "applyTextToImagePreset",
+    "runChromaGenerate",
+    "runExtendedTextPipeline",
+    "pendingPromptAssist",
+    "promptAssistDiff",
+    "renderPromptAssistDiff",
+    "renderPromptAssistFeedback",
+    "openPromptAssistPreview",
+    "requestPromptSuggestion",
+    "runPromptAssist",
+    "analyzedModelUrl",
+    "analyzeModelUrl",
+    "downloadAndRegisterModelUrl",
+    "registerManagedModel",
+    "activateManagedModel",
+    "quarantineManagedModel",
+    "restoreManagedModel",
+    "deleteManagedModel",
+    "exportModelManifest",
+    "configureLora",
+    "runLoraAbTest",
+    "runLoraMatrix",
+    "runLoraStrengthMatrix",
+    "selectPrimary",
+    "tryonQualityFeedback",
+    "runTryon",
+    "outputUrl",
+    "runBatchTryon",
+    "runRegressionAudit",
+    "exportApproved",
+    "PRESETS",
+    "applyPreset",
+    "init",
+    "progressVisibilityFrame",
+    "HUBS",
+    "PROMPT_LIBRARY_KEY",
+    "PRESET_PROMPTS_KEY",
+    "EDITABLE_PRESET_LABELS",
+    "readEditablePresetOverrides",
+    "readEditablePresetPrompt",
+    "renderPresetPromptEditor",
+    "studioResultModes",
+    "studioResultDrafts",
+    "studioResultInstructionsDirty",
+    "showStudioResultInstructions",
+    "loadStudioResultInstructions",
+    "setupStudioResultInstructions",
+    "renderProcessingModeEditor",
+    "DEFAULT_PROMPT_LIBRARY",
+    "PROMPT_SLOT_LABELS",
+    "LEGACY_INPAINT_LIBRARY_TEXT",
+    "readPromptLibrary",
+    "writePromptLibrary",
+    "applyManagedPromptDefaults",
+    "renderPromptManager",
+    "systemStateLabel",
+    "RESET_SCOPE_UI",
+    "formatResetSize",
+    "reloadSourceImages",
+    "resetWorkspaceScope",
+    "openModelManager",
+    "loadSystemOverview",
+    "qualityMetric",
+    "runQualityAction",
+    "loadQualityOverview",
+    "jobsRefreshTimer",
+    "jobStatusLabel",
+    "jobProgress",
+    "runJobAction",
+    "loadJobsOverview",
+    "startJobsLiveUpdates",
+    "REVIEW_CATEGORY_LABELS",
+    "runReviewAction",
+    "loadReviewOverview",
+    "restartAtelierWeb",
+    "renderHub",
+    "renderLibrary",
+    "loadLibraryAssets",
+    "changeLibraryRemoval",
+    "updateLibraryBulkBar",
+    "activateAppView",
+    "studioMode",
+    "studioTaskMasks",
+    "switchTaskMask",
+    "loadTryonModelOptions",
+    "refreshStudioReadiness",
+    "revealStudioCreateAction",
+    "setStudioCommandCollapsed",
+    "scheduleStudioCommandCollapse",
+    "updateStudioCommandVisibility",
+    "updateStudioCommandBar",
+    "setExperienceMode",
+    "setStudioMode",
+    "restoreModelSortPreferences",
+    "setupExperience"
+  ],
+  "features": [
+    "json-editor.js",
+    "ui-state.js",
+    "browser-data.js",
+    "prompt-catalog.js",
+    "studio-guidance.js",
+    "outfit-workflow.js",
+    "outpaint.js",
+    "studio-workspace.js",
+    "inpaint-controls.js",
+    "quality-learning.js",
+    "image-enhancement.js",
+    "makeup.js",
+    "character.js",
+    "character-extra.js",
+    "makeup-library.js",
+    "makeup-compare.js",
+    "library.js",
+    "service-manager.js",
+    "acceptance.js",
+    "creative-review.js",
+    "backup-ui.js",
+    "new-image.js",
+    "manual-core.js",
+    "export-core.js",
+    "work-queue.js",
+    "export-studio.js",
+    "manual-workflow.js",
+    "manual-editor.js",
+    "shared-regions.js"
+  ]
+}

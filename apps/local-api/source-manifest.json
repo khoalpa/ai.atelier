@@ -1,0 +1,10 @@
+[
+  "services/transport.js",
+  "services/library.js",
+  "services/jobs.js",
+  "services/review.js",
+  "services/prompts.js",
+  "services/models.js",
+  "services/administration.js",
+  "services/routes.js"
+]

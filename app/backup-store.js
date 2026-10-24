@@ -1,13 +1,14 @@
 'use strict';
 const fs=require('node:fs/promises'),path=require('node:path'),crypto=require('node:crypto');
 const {atomic,read}=require('./asset-catalog');
+const metadata=require('../packages/storage/metadata');
 const execute=require('node:util').promisify(require('node:child_process').execFile);
 const digest=buffer=>crypto.createHash('sha256').update(buffer).digest('hex');
 function createBackupStore(root,options={}){
   const home=path.join(root,'workspace','backups'),config=options.config||path.join(root,'workspace','config.json'),prompts=options.prompts||path.join(root,'workflows','prompts.json');
   const groups={settings:['config.json','asset-catalog.json','export-presets.json','character-presets.json','makeup-styles.json','manual/presets.json'],working:['config.json','asset-catalog.json','edit-history.json','library-removed.json','regions','export-presets.json','work-queue','character-presets.json','makeup-styles.json','manual/presets.json','review','masks','jobs','quality-learning','acceptance','manual']};
   let running=false;
-  const python=options.python||path.join(root,'.venv-sam2/Scripts/python.exe'),sqliteScript=path.join(__dirname,'../scripts/backup-sqlite.py');
+  const python=options.python||require('../packages/runtime/paths').python(root),sqliteScript=path.join(__dirname,'../scripts/backup-sqlite.py');
   const isSqlite=bytes=>bytes.subarray(0,16).toString()==='SQLite format 3\0';
   async function sqliteCopy(source,target){await execute(python,[sqliteScript,source,target],{windowsHide:true,timeout:120000,maxBuffer:1024*1024});}
   async function consistentBytes(file){const bytes=await fs.readFile(file);if(!isSqlite(bytes))return bytes;await fs.mkdir(home,{recursive:true});const snapshot=path.join(home,'.snapshot-'+crypto.randomUUID()+'.sqlite');try{await sqliteCopy(file,snapshot);return await fs.readFile(snapshot);}finally{await fs.unlink(snapshot).catch(()=>{});}}
@@ -22,13 +23,18 @@ function createBackupStore(root,options={}){
     if(mode==='full'){await add(path.join(root,'workspace'),'workspace');await add(path.join(root,'samples'),'samples');}
     else for(const name of groups[mode])await add(path.join(root,'workspace',name),'workspace/'+name);
     await add(config,'configuration/config.json');await add(prompts,'configuration/prompts.json');
-    return [...new Map(entries.map(e=>[e.path,e])).values()];
+    const homeData=path.join(root,'workspace'),active=metadata.status(homeData).active;
+    const filtered=active?entries.filter(e=>e.path!=='workspace/metadata.sqlite3'&&!e.path.startsWith('workspace/metadata.sqlite3-')&&!metadata.connection(e.file)):entries;
+    if(active)for(const row of metadata.snapshot(homeData)){
+      if(mode==='full'||groups[mode].some(prefix=>row.key===prefix||row.key.startsWith(prefix+'/')))filtered.push({path:'workspace/'+row.key,file:path.join(homeData,row.key),bytes:Buffer.from(row.data)});
+    }
+    return [...new Map(filtered.map(e=>[e.path,e])).values()];
   }
-  async function preview(mode='full'){const entries=await sources(mode);let bytes=0;for(const e of entries)bytes+=(await fs.stat(e.file)).size;return {mode,files:entries.length,bytes,includes:mode==='full'?['Ảnh nguồn, ảnh mẫu và ảnh kết quả','Phiên sửa, vùng chọn, lịch sử, hàng đợi','Cấu hình và dữ liệu đánh giá']:mode==='settings'?['Cấu hình, album và các bộ mẫu']:['Cấu hình, phiên sửa và lịch sử công việc'],excludes:['Model AI','Bản sao lưu cũ, kho phục hồi, gói phát hành và dữ liệu chẩn đoán',...(mode==='full'?[]:['Ảnh nguồn và ảnh kết quả ngoài phiên thủ công'])]};}
+  async function preview(mode='full'){const entries=await sources(mode);let bytes=0;for(const e of entries)bytes+=e.bytes?e.bytes.length:(await fs.stat(e.file)).size;return {mode,files:entries.length,bytes,includes:mode==='full'?['Ảnh nguồn, ảnh mẫu và ảnh kết quả','Phiên sửa, vùng chọn, lịch sử, hàng đợi','Cấu hình và dữ liệu đánh giá']:mode==='settings'?['Cấu hình, album và các bộ mẫu']:['Cấu hình, phiên sửa và lịch sử công việc'],excludes:['Model AI','Bản sao lưu cũ, kho phục hồi, gói phát hành và dữ liệu chẩn đoán',...(mode==='full'?[]:['Ảnh nguồn và ảnh kết quả ngoài phiên thủ công'])]};}
   async function create(mode='full'){
     if(running)throw Error('Đang có thao tác sao lưu hoặc khôi phục.');running=true;let staging;
     try{const name='backup-'+new Date().toISOString().replace(/[:.]/g,'-')+'-'+crypto.randomBytes(3).toString('hex'),dir=path.join(home,name);staging=dir+'.tmp';await fs.mkdir(staging,{recursive:true});const entries=[];
-      for(const item of await sources(mode)){const bytes=await consistentBytes(item.file),target=safe(staging,item.path);await fs.mkdir(path.dirname(target),{recursive:true});await fs.writeFile(target,bytes);entries.push({path:item.path,size:bytes.length,sha256:digest(bytes)});}
+      for(const item of await sources(mode)){const bytes=item.bytes||await consistentBytes(item.file),target=safe(staging,item.path);await fs.mkdir(path.dirname(target),{recursive:true});await fs.writeFile(target,bytes);entries.push({path:item.path,size:bytes.length,sha256:digest(bytes)});}
       const manifest={schemaVersion:3,mode,createdAt:new Date().toISOString(),entries,bytes:entries.reduce((n,x)=>n+x.size,0),restoreMode:'merge',excludes:(await preview(mode)).excludes};await atomic(path.join(staging,'backup-manifest.json'),manifest);await fs.rename(staging,dir);staging=null;return {name,backup:path.relative(root,dir),manifest};
     }finally{running=false;/* Incomplete .tmp backups stay excluded and can be inspected if disk writes fail. */}
   }
@@ -52,15 +58,15 @@ function createBackupStore(root,options={}){
       // Finish the entire safety snapshot before changing any destination.
       for(const e of entries){const relative=e.target||e.path,target=destination(relative);if(seen.has(target))continue;seen.add(target);
         for(let ancestor=target;;ancestor=path.dirname(ancestor)){const stat=await fs.lstat(ancestor).catch(error=>{if(error.code==='ENOENT')return null;throw error;});if(stat?.isSymbolicLink())throw Error('Không khôi phục qua đường dẫn liên kết.');if(ancestor===path.dirname(ancestor))break;}
-        const exists=await fs.stat(target).catch(error=>{if(error.code==='ENOENT')return null;throw error;});if(exists&&!exists.isFile())throw Error('Đích khôi phục không phải tệp: '+relative);
-        if(exists){const bytes=await consistentBytes(target),saved=safe(safety,relative);await fs.mkdir(path.dirname(saved),{recursive:true});await fs.writeFile(saved,bytes);savedEntries.push({path:relative,size:bytes.length,sha256:digest(bytes)});}
+        const exists=metadata.connection(target)?(metadata.exists(target)?{isFile:()=>true}:null):await fs.stat(target).catch(error=>{if(error.code==='ENOENT')return null;throw error;});if(exists&&!exists.isFile())throw Error('Đích khôi phục không phải tệp: '+relative);
+        if(exists){const bytes=metadata.connection(target)?Buffer.from(JSON.stringify(metadata.read(target))):await consistentBytes(target),saved=safe(safety,relative);await fs.mkdir(path.dirname(saved),{recursive:true});await fs.writeFile(saved,bytes);savedEntries.push({path:relative,size:bytes.length,sha256:digest(bytes)});}
         plan.push({e,relative,target,existed:Boolean(exists)});
       }
       await atomic(path.join(safety,'backup-manifest.json'),{schemaVersion:3,mode:'safety',createdAt:new Date().toISOString(),from:name,entries:savedEntries,bytes:savedEntries.reduce((n,e)=>n+e.size,0),restoreMode:'merge'});
       const written=[];
-      async function replace(target,bytes){await fs.mkdir(path.dirname(target),{recursive:true});const temp=target+'.restore-'+crypto.randomUUID()+'.tmp';try{await fs.writeFile(temp,bytes);if(isSqlite(bytes))await sqliteCopy(temp,target);else await fs.rename(temp,target);}finally{await fs.unlink(temp).catch(()=>{});}}
+      async function replace(target,bytes){if(metadata.connection(target)){metadata.write(target,JSON.parse(bytes.toString('utf8')));return;}await fs.mkdir(path.dirname(target),{recursive:true});const temp=target+'.restore-'+crypto.randomUUID()+'.tmp';try{await fs.writeFile(temp,bytes);if(isSqlite(bytes))await sqliteCopy(temp,target);else await fs.rename(temp,target);}finally{await fs.unlink(temp).catch(()=>{});}}
       try{for(const p of plan){const bytes=await fs.readFile(safe(dir,p.e.path));if(manifest.schemaVersion===3&&(bytes.length!==p.e.size||digest(bytes)!==p.e.sha256))throw Error('Tệp sao lưu thay đổi trong khi khôi phục.');await replace(p.target,bytes);written.push(p);}}
-      catch(error){const failures=[];for(const p of written.reverse())try{if(p.existed)await replace(p.target,await fs.readFile(safe(safety,p.relative)));else await fs.unlink(p.target);}catch(rollbackError){failures.push(p.relative);}throw Error(error.message+(failures.length?' Không thể tự hoàn nguyên '+failures.length+' tệp. Khôi phục bản '+safetyName+'.':' Đã hoàn nguyên các tệp vừa thay đổi.'));}
+      catch(error){const failures=[];for(const p of written.reverse())try{if(p.existed)await replace(p.target,await fs.readFile(safe(safety,p.relative)));else metadata.remove(p.target);}catch(rollbackError){failures.push(p.relative);}throw Error(error.message+(failures.length?' Không thể tự hoàn nguyên '+failures.length+' tệp. Khôi phục bản '+safetyName+'.':' Đã hoàn nguyên các tệp vừa thay đổi.'));}
       return {restored:name,files:plan.length,safetyBackup:path.relative(root,safety),message:'Đã khôi phục và giữ các mục mới chưa có trong bản sao lưu.'};
     }finally{running=false;}
   }

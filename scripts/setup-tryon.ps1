@@ -1,6 +1,6 @@
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
-$git = 'C:\Users\lpak\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\git\cmd\git.exe'
+$git = (Get-Command git -ErrorAction Stop).Source
 $python = Join-Path $projectRoot '.venv-sam2\Scripts\python.exe'
 $vendor = Join-Path $projectRoot 'vendor\CatVTON'
 $modelRoot = Join-Path $projectRoot 'models\tryon'

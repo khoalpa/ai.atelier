@@ -1,13 +1,8 @@
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
-$node = 'C:\Users\lpak\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe'
-$python = Join-Path $projectRoot '.venv-sam2\Scripts\python.exe'
-
-if (-not (Test-Path -LiteralPath $node)) {
-  $nodeCommand = Get-Command node -ErrorAction SilentlyContinue
-  if ($nodeCommand) { $node = $nodeCommand.Source } else { throw 'Khong tim thay Node.js.' }
-}
-if (-not (Test-Path -LiteralPath $python)) { throw 'Chua cai moi truong SAM 2.' }
+. (Join-Path $projectRoot 'scripts\runtime.ps1')
+$node = Resolve-AtelierRuntime -Root $projectRoot -Kind node
+$python = Resolve-AtelierRuntime -Root $projectRoot -Kind python
 
 $env:SAM2_VARIANT = 'tiny'
 # ai_service.py resolves an explicit environment override, saved config, then its default.
@@ -15,7 +10,7 @@ $aiReady = $false
 $webReady = $false
 try {
   $aiHealth = Invoke-RestMethod 'http://127.0.0.1:7861/health' -TimeoutSec 2
-  $aiReady = $aiHealth.ok -and $aiHealth.device -eq 'cuda' -and $aiHealth.modelsReady
+  $aiReady = $aiHealth.ok
 } catch {}
 try { $webReady = (Invoke-RestMethod 'http://127.0.0.1:7860/api/health' -TimeoutSec 2).ok } catch {}
 if (-not $aiReady) { $ai = Start-Process -FilePath $python -ArgumentList (Join-Path $projectRoot 'ai_service.py') -WorkingDirectory $projectRoot -WindowStyle Hidden -PassThru }

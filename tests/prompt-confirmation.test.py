@@ -1,3 +1,4 @@
+from helpers.ai_source import read_source
 """Check prompt preview and confirmed overrides without model loading."""
 import ast
 import sys
@@ -5,7 +6,7 @@ from pathlib import Path
 
 root = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(root))
-tree = ast.parse((root / 'ai_service.py').read_text(encoding='utf-8'))
+tree = ast.parse(read_source(root / 'ai_service.py', encoding='utf-8'))
 names = {'build_inpaint_instruction', 'build_inpaint_negative_prompt', 'resolve_inpaint_prompts'}
 nodes = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name in names]
 nodes += [n for n in tree.body if isinstance(n, ast.Assign) and any(isinstance(t, ast.Name) and t.id == 'INPAINT_TARGETS' for t in n.targets)]

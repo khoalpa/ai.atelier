@@ -4,7 +4,7 @@ function outpaintTiming(jobs,folder){
   const grouped=new Map();
   for(const job of jobs){
     if(job.taskType!=='outpaint'||job.status!=='completed'||!(job.durationSeconds>0)||!(job.totalWorkSteps>0)||!/^[\w-]+$/.test(job.jobId))continue;
-    let request;try{request=JSON.parse(fs.readFileSync(path.join(folder,job.jobId+'.request.json'),'utf8'));}catch{continue;}
+    let request;try{request=require('../packages/storage/metadata').read(path.join(folder,job.jobId+'.request.json'));if(!request)continue;}catch{continue;}
     const modelId=String(request.modelId||job.modelId||''),maxSide=Number(request.maxSide||(/flux/i.test(modelId)?1024:768));
     const rate=job.durationSeconds/job.totalWorkSteps;
     if(!Number.isFinite(rate)||rate<=0||!modelId)continue;

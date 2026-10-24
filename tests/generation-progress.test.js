@@ -1,5 +1,5 @@
 const fs=require('fs'),path=require('path'),vm=require('vm'),assert=require('assert');
-const source=fs.readFileSync(path.join(__dirname,'../app/public/app.js'),'utf8');
+const source=require('./helpers/source').read(path.join(__dirname,'../app/public/app.js'),'utf8');
 const code=source.slice(source.indexOf('function activityProgress(state){'),source.indexOf('function closeGenerationProgress(){'));
 const context={Date,Number,Math};vm.createContext(context);vm.runInContext(code,context);
 const info=context.generationProgressInfo;

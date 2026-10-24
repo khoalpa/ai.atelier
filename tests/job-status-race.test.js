@@ -1,5 +1,5 @@
 const fs = require('fs'), vm = require('vm'), assert = require('assert');
-const source = fs.readFileSync(require('path').join(__dirname, '../app/public/app.js'), 'utf8');
+const source = require('./helpers/source').read(require('path').join(__dirname, '../app/public/app.js'), 'utf8');
 const apply = source.slice(source.indexOf('function applyJobState('), source.indexOf('async function resumeActiveJob('));
 const rendered = [], messages = [];
 const context = {

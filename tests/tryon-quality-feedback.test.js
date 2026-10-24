@@ -1,5 +1,5 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert'),path=require('path');
-const source=fs.readFileSync(path.join(__dirname,'../app/public/app.js'),'utf8');
+const source=require('./helpers/source').read(path.join(__dirname,'../app/public/app.js'),'utf8');
 const context={};vm.createContext(context);
 vm.runInContext(source.slice(source.indexOf('function tryonQualityFeedback('),source.indexOf('async function runTryon(')),context);
 const result={selectedSeed:43,qualityGate:{passed:false,minimumQuality:75,minimumSimilarity:0.55,minimumSeam:65,minimumAnatomy:90},results:[{seed:42,qualityScore:70,referenceSimilarity:0.3,seamScore:60,anatomyScore:80},{seed:43,qualityScore:88.5,referenceSimilarity:0.4657,seamScore:92.5,anatomyScore:99.4}]};

@@ -1,8 +1,9 @@
+from helpers.ai_source import read_source
 import ast
 from pathlib import Path
 import numpy as np
 
-tree = ast.parse((Path(__file__).resolve().parents[1] / 'ai_service.py').read_text(encoding='utf-8'))
+tree = ast.parse(read_source(Path(__file__).resolve().parents[1] / 'ai_service.py', encoding='utf-8'))
 fn = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'garment_category_from_points')
 ns = {'np': np}
 exec(compile(ast.Module(body=[fn], type_ignores=[]), '<category>', 'exec'), ns)

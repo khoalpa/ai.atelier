@@ -1,3 +1,4 @@
+from helpers.ai_source import read_source
 """Verify lossless prompt composition and live catalog reload without models."""
 import ast
 import hashlib
@@ -13,7 +14,7 @@ from processing_mode_prompts import processing_mode_prompt
 from unittest.mock import patch
 import prompt_catalog
 
-tree=ast.parse((root/'ai_service.py').read_text(encoding='utf-8'))
+tree=ast.parse(read_source(root/'ai_service.py', encoding='utf-8'))
 names={'build_inpaint_instruction','build_inpaint_negative_prompt','resolve_inpaint_prompts'}
 nodes=[n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name in names]
 nodes += [n for n in tree.body if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='INPAINT_TARGETS' for t in n.targets)]
@@ -34,14 +35,14 @@ with tempfile.TemporaryDirectory(prefix='atelier-prompt-fixture-') as temporary,
                     results.append(scope['build_inpaint_instruction'](target,mode,architecture,user,forbidden_replacement='new object'))
                     for retry in (False,True):
                         results.append(scope['build_inpaint_negative_prompt'](target,mode,retry,'blur, BLUR, extra artifact'))
-    expected=json.loads((root/'tests/prompt-catalog-fingerprint.json').read_text())
+    expected=json.loads(read_source(root/'tests/prompt-catalog-fingerprint.json'))
     assert len(results)==expected['cases']
     assert hashlib.sha256(json.dumps(results,ensure_ascii=False).encode()).hexdigest()==expected['sha256']
 with tempfile.TemporaryDirectory() as temporary:
     test_root=Path(temporary)
     (test_root/'workspace').mkdir()
     file=test_root/'workspace/prompts.json'
-    catalog=json.loads((root/'workspace/prompts.json').read_text(encoding='utf-8'))
+    catalog=json.loads(read_source(root/'workspace/prompts.json', encoding='utf-8'))
     for text in ('First instruction.','New instruction with Unicode: ánh sáng.'):
         catalog['processingModes']['background']['prompt']=text
         file.write_text(json.dumps(catalog),encoding='utf-8')

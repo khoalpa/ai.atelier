@@ -4,7 +4,7 @@ for(const id of ['inpaintModelSelect','inpaintQualityPreset','inpaintGuidance','
 controls.inpaintQualityPreset.value='detail';controls.inpaintModelSelect.value='flux';
 const model={id:'flux',architecture:'flux',removalProfile:{guidance:30,strength:1,steps:40,nativeResolution:1024,supportsNegativePrompt:false}};
 const context={window:{ATELIER_INPAINT_MODELS:[model]},$:id=>controls[id]};
-vm.createContext(context);vm.runInContext(fs.readFileSync('app/public/inpaint-controls.js','utf8'),context);
+vm.createContext(context);vm.runInContext(require('./helpers/source').read('app/public/inpaint-controls.js','utf8'),context);
 context.applyInpaintModelSettings();
 assert.equal(controls.inpaintGuidance.value,'30');assert.equal(controls.inpaintGuidance.max,'50');
 assert.equal(controls.inpaintNegativePrompt.disabled,true);assert.equal(controls.inpaintSteps.value,'45');

@@ -1,5 +1,5 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert');
-const source=fs.readFileSync('app/public/app.js','utf8');
+const source=require('./helpers/source').read('app/public/app.js','utf8');
 const code=source.slice(source.indexOf('let regionDetection ='),source.indexOf('async function detectWithManagedModel('));
 const controls={regionChoices:{querySelectorAll:()=>[{value:'0'}]},regionMergeMode:{value:'replace'}};
 let pixels=new Uint8ClampedArray([255,40,40,255,255,40,40,0]);

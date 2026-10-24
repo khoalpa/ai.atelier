@@ -1,5 +1,5 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert'),path=require('path');
-const source=fs.readFileSync(path.join(__dirname,'../app/public/app.js'),'utf8');
+const source=require('./helpers/source').read(path.join(__dirname,'../app/public/app.js'),'utf8');
 const body=source.slice(source.indexOf('let textQuality='),source.indexOf('async function runChromaGenerate('));
 const controls={textToImageModel:{value:'flux-chroma1-hd',selectedOptions:[{textContent:'Chroma'}]},chromaSize:{},chromaQuality:{},textToImagePresetHint:{}};
 const buttons=['fast','balanced','quality'].map(name=>({dataset:{textQuality:name},classList:{toggle(){}},setAttribute(){}}));

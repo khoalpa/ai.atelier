@@ -4,7 +4,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 
 // Load the pure prompt helpers without starting the HTTP server or the LLM.
-const source = fs.readFileSync(path.join(__dirname, '../app/server.js'), 'utf8');
+const source = require('./helpers/source').read(path.join(__dirname, '../app/server.js'), 'utf8');
 const helpers = source.slice(source.indexOf('function assistantFallback('), source.indexOf('function requestLocalLlm('));
 const context = vm.createContext({});
 vm.runInContext(helpers, context);

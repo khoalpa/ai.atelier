@@ -1,6 +1,6 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 const root=path.resolve(__dirname,'..');
-const server=fs.readFileSync(path.join(root,'app/server.js'),'utf8');
+const server=require('./helpers/source').read(path.join(root,'app/server.js'),'utf8');
 const body=server.slice(server.indexOf('function modelOperationalState('),server.indexOf('function listModels('));
 for(const present of [false,true]){
  const context={ROOT:root,path,process:{env:{}},readLocalConfig:()=>({}),fs:{existsSync:()=>present}};

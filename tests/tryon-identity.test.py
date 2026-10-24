@@ -1,10 +1,11 @@
+from helpers.ai_source import read_source
 """Protected pixels must survive dilation, feathering, cropping and repairs."""
 import ast
 from pathlib import Path
 import numpy as np
 from PIL import Image, ImageFilter
 
-tree = ast.parse((Path(__file__).resolve().parents[1] / 'ai_service.py').read_text(encoding='utf-8'))
+tree = ast.parse(read_source(Path(__file__).resolve().parents[1] / 'ai_service.py', encoding='utf-8'))
 names = {'exclude_protected_pixels', 'restore_protected_pixels'}
 namespace = {'np': np, 'Image': Image}
 exec(compile(ast.Module(body=[node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name in names], type_ignores=[]), '<identity>', 'exec'), namespace)

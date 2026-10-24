@@ -21,7 +21,7 @@ window.MakeupLibrary=(()=>{
   async function work(statusId,fn){
     if(busy||window.Makeup.isLocked())return;
     busy=true;window.Makeup.setExtensionBusy(true);
-    try{await fn();}catch(error){el(statusId).textContent=error.message;setMessage(error.message,'error');}
+    try{await fn();}catch(error){el(statusId).textContent=error.message;globalThis.AtelierApp.setMessage(error.message,'error');}
     finally{busy=false;window.Makeup.setExtensionBusy(false);}
   }
   function resetReference(){
@@ -62,7 +62,7 @@ window.MakeupLibrary=(()=>{
     window.Makeup.loadStyle(result.plan,'Gợi ý từ ảnh tham chiếu · '+reference.name);
     el('makeupReferenceStatus').textContent=result.warnings.join(' ');
     el('makeupSavedStyle').value='';el('makeupStyleName').value='';
-    setMessage('Đã lấy gợi ý. Chỉnh màu, độ đậm hoặc nhập mô tả bổ sung rồi xem thử.','success');
+    globalThis.AtelierApp.setMessage('Đã lấy gợi ý. Chỉnh màu, độ đậm hoặc nhập mô tả bổ sung rồi xem thử.','success');
   });}
   function showStyles(items,selected=el('makeupSavedStyle').value){
     saved=items;el('makeupSavedStyle').replaceChildren(new Option('Chọn phong cách…',''));
@@ -74,7 +74,7 @@ window.MakeupLibrary=(()=>{
     const item=selectedStyle();if(update&&!item)throw Error('Chọn phong cách muốn cập nhật.');
     const result=await api('/api/makeup-library',{name:el('makeupStyleName').value,settings:window.Makeup.settings(),...(update?{id:item.id}:{})});
     showStyles(result.styles,result.item.id);el('makeupLibraryStatus').textContent='Đã lưu “'+result.item.name+'” trên máy. Có thể dùng trên ảnh khác.';
-    setMessage('Đã lưu phong cách cá nhân.','success');
+    globalThis.AtelierApp.setMessage('Đã lưu phong cách cá nhân.','success');
   });}
   async function upload(file){if(!file)return;return work('makeupReferenceStatus',async()=>{
     if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>20*1024*1024)throw Error('Chọn ảnh PNG, JPG hoặc WebP nhỏ hơn 20 MB.');

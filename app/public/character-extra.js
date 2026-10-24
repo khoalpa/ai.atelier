@@ -117,10 +117,10 @@ window.CharacterExtra=(()=>{
       if(stop)break;
       // On reconnect, recover a completed job rather than silently duplicate it.
       if(row.jobId){try{const state=await api.post('/api/job-status',{jobId:row.jobId});if(state.status==='completed'&&state.results?.length){row.results=state.results;row.status='Hoàn tất';persist();renderQueue();continue;}if(state.status==='running')throw Error('Ảnh này vẫn đang xử lý. Theo dõi trong Hoạt động.');}catch(e){if(e.message.includes('vẫn đang'))throw e;}}
-      const jobId=createJobId('character');row.jobId=jobId;row.status='Đang xử lý';persist();renderQueue();setActiveJob(jobId);let success=false,error='';
+      const jobId=globalThis.AtelierApp.createJobId('character');row.jobId=jobId;row.status='Đang xử lý';persist();renderQueue();globalThis.AtelierApp.setActiveJob(jobId);let success=false,error='';
       try{const result=await api.post('/api/character-render',{...row.request,jobId});row.results=result.results;row.status='Hoàn tất';success=true;}
       catch(e){error=e.message;batchError=error;row.status=error;row.approved=false;stop=true;}
-      finally{await settleJob(jobId,success?'completed':'failed',error);persist();renderQueue();}
+      finally{await globalThis.AtelierApp.settleJob(jobId,success?'completed':'failed',error);persist();renderQueue();}
     }}catch(e){batchError=e.message;stop=true;}finally{running=false;api.setBusy(false);renderQueue();api.notice(batchError?'Đã dừng danh sách: '+batchError:stop?'Đã dừng danh sách. Ảnh hoàn tất vẫn được giữ.':'Đã xử lý các ảnh đã duyệt.',batchError?'error':'success');}
   }
   function setup(bridge){

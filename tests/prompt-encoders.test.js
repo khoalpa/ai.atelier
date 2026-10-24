@@ -1,5 +1,5 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert');
-const source=fs.readFileSync('app/public/app.js','utf8');
+const source=require('./helpers/source').read('app/public/app.js','utf8');
 class Element extends EventTarget {
   constructor(){super();this.value='';this.innerHTML='';this.textContent='';}
   setCustomValidity(){} focus(){} showModal(){} close(){this.dispatchEvent(new Event('close'));}

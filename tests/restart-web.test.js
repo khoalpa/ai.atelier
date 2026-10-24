@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const vm = require('node:vm');
 const fs = require('node:fs');
 const path = require('node:path');
-const source = fs.readFileSync(path.join(__dirname,'../app/server.js'),'utf8');
+const source = require('./helpers/source').read(path.join(__dirname,'../app/server.js'),'utf8');
 const handler = source.slice(source.indexOf('let webRestartPending ='),source.indexOf('const server = http.createServer'));
 function fixture({body={confirm:true},jobs=[],origin}={}) {
   const responses=[];let spawned=false;

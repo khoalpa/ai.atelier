@@ -1,3 +1,4 @@
+from helpers.ai_source import read_source
 """AI prompt confirmation accepts the same image payload budget as inference."""
 import ast
 import io
@@ -8,11 +9,11 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 root = Path(__file__).resolve().parents[1]
-tree = ast.parse((root/'ai_service.py').read_text(encoding='utf-8'))
+tree = ast.parse(read_source(root/'ai_service.py', encoding='utf-8'))
 handler = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == 'Handler')
 method = next(n for n in handler.body if isinstance(n, ast.FunctionDef) and n.name == 'do_POST')
 method.decorator_list = []
-namespace = dict(json=json, Path=Path, INPAINT_MODEL=root/'model',
+namespace = dict(execution_journal=lambda:SimpleNamespace(routes={}),json=json, Path=Path, INPAINT_MODEL=root/'model',
     inpaint_model_entry=lambda *args: None, detect_inpaint_architecture=lambda *args: 'sdxl',
     resolved_inpaint_profile=lambda *args: {}, resolve_inpaint_prompts=lambda *args: {'prompt':'scene', 'negativePrompt':''})
 exec(compile(ast.Module(body=[method], type_ignores=[]), '<payload>', 'exec'), namespace)

@@ -1,0 +1,93 @@
+@layer components {
+  :root {
+    --bg: var(--color-bg-app);
+    --surface: var(--color-bg-panel);
+    --surface-2: var(--color-bg-surface);
+    --surface-3: var(--color-bg-raised);
+    --line: var(--color-border-default);
+    --line-soft: var(--color-border-subtle);
+    --text: var(--color-text-primary);
+    --muted: var(--color-text-secondary);
+    --accent: var(--color-accent);
+    --accent-strong: var(--color-accent-hover);
+    --accent-ink: var(--color-accent-ink);
+    --green: var(--color-success);
+    --danger: var(--color-danger);
+  }
+
+  :where(button, .button-link) {
+    min-height: var(--control-height);
+    border-radius: var(--radius-sm);
+    transition:
+      color var(--motion-fast) ease,
+      background-color var(--motion-fast) ease,
+      border-color var(--motion-fast) ease,
+      box-shadow var(--motion-fast) ease,
+      transform var(--motion-fast) ease;
+  }
+
+  :where(button.primary, .button-link.primary) {
+    min-height: var(--control-height-lg);
+  }
+
+  :where(input:not([type='range']):not([type='checkbox']):not([type='radio']), select, textarea) {
+    min-height: var(--control-height);
+    border-color: var(--color-border-default);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-app);
+    color: var(--color-text-primary);
+  }
+
+  :where(.hub-card, .library-card, .result-card, .system-action, .job-card, .quality-main, .review-main) {
+    border-color: var(--color-border-default);
+    border-radius: var(--radius-md);
+  }
+
+  :where(.panel-badge, .state-badge, .job-state, .review-badge, .model-quick-facts span) {
+    border-radius: var(--radius-pill);
+    font-size: var(--font-size-meta);
+  }
+
+  :where(.message, .quality-feedback, .reset-feedback)[class*='error'],
+  :where(.message).error {
+    border-color: var(--color-danger);
+    color: var(--color-danger);
+  }
+
+  :where(.message).success {
+    border-color: var(--color-success);
+    color: var(--color-success);
+  }
+
+  :where(.message).warning {
+    border-color: var(--color-warning);
+    color: var(--color-warning);
+    background: var(--color-warning-soft);
+  }
+
+  :where(.eyebrow, .card-kicker) {
+    color: var(--color-accent);
+    font-size: var(--font-size-meta);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+}
+@layer components {
+  .encoder-prompts { display: grid; gap: 12px; margin: 12px 0 24px; }
+  .encoder-prompt { border: 1px solid currentColor; border-left-width: 4px; border-radius: 10px; padding: 14px; min-width: 0; }
+  .encoder-clip { color: var(--color-info); background: var(--color-info-soft); }
+  .encoder-t5 { color: var(--color-prompt-t5); background: var(--color-prompt-t5-soft); }
+  .encoder-prompt pre { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; margin: 10px 0; color: inherit; max-height: 180px; overflow-y: auto; }
+  .encoder-prompt small { color: inherit; }
+}
+@layer components {
+  .prompt-assist-diff { border: 1px solid var(--color-info); border-radius: 10px; padding: 14px; margin: 14px 0; }
+  .prompt-assist-diff > p { margin: 8px 0; font-size: 12px; }
+  .prompt-assist-diff h3 { font-size: 12px; margin: 0 0 8px; }
+  .prompt-assist-diff-text { white-space: pre-wrap; overflow-wrap: anywhere; padding: 12px; border: 1px solid var(--muted); border-radius: 8px; line-height: 1.7; max-height: 260px; overflow-y: auto; }
+  .prompt-assist-diff del { color: var(--color-danger); background: var(--color-danger-soft); text-decoration: line-through; }
+  .prompt-assist-diff ins { color: var(--color-success); background: var(--color-success-soft); text-decoration: underline; text-underline-offset: 3px; }
+}
+@layer components {
+  #promptAssistDiffColumns[hidden] { display: none; }
+}

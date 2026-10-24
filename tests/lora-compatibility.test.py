@@ -1,10 +1,11 @@
+from helpers.ai_source import read_source
 """Exercise compatibility without importing GPU services or loading model weights."""
 import ast
 from pathlib import Path
 import unittest
 
 source = Path(__file__).resolve().parents[1] / "ai_service.py"
-tree = ast.parse(source.read_text(encoding="utf-8-sig"))
+tree = ast.parse(read_source(source, encoding="utf-8-sig"))
 functions = [node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name in {"lora_family", "lora_matches", "apply_active_loras"}]
 namespace = {}
 exec(compile(ast.Module(body=functions, type_ignores=[]), str(source), "exec"), namespace)

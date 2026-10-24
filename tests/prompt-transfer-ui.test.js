@@ -2,7 +2,7 @@ const assert=require('node:assert/strict'),fs=require('fs'),vm=require('vm'),os=
 const store=require('../app/prompt-store');
 const dir=fs.mkdtempSync(path.join(os.tmpdir(),'atelier-transfer-ui-')),file=path.join(dir,'prompts.json');
 fs.copyFileSync(store.FILE,file);
-const source=fs.readFileSync(path.join(__dirname,'../app/public/prompt-catalog.js'),'utf8');
+const source=require('./helpers/source').read(path.join(__dirname,'../app/public/prompt-catalog.js'),'utf8');
 const controls=new Map(),downloads=[],messages=[];let applied=0,offline=false,requestCount=0;
 function control(){return {value:'',disabled:false,hidden:false,textContent:'',files:[],addEventListener(type,fn){this[type]=fn;},click(){if(this.onClick)this.onClick();}};}
 const panel={querySelector(selector){if(!controls.has(selector))controls.set(selector,control());return controls.get(selector);}};

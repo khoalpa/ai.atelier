@@ -1,10 +1,11 @@
+from helpers.ai_source import read_source
 import ast
 from pathlib import Path
 import numpy as np
 import cv2
 from PIL import Image
 
-tree=ast.parse((Path(__file__).resolve().parents[1]/'ai_service.py').read_text(encoding='utf-8'))
+tree=ast.parse(read_source(Path(__file__).resolve().parents[1]/'ai_service.py', encoding='utf-8'))
 names={'sleeveless_reference','arm_reconstruction_masks','fill_garment_mask_holes','reference_skin_mask'}
 ns={'np':np,'cv2':cv2,'Image':Image}
 exec(compile(ast.Module(body=[node for node in tree.body if isinstance(node,ast.FunctionDef) and node.name in names],type_ignores=[]),'<arms>', 'exec'),ns)

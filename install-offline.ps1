@@ -12,7 +12,7 @@ if ([IO.Path]::GetFullPath($InstallPath) -eq [IO.Path]::GetPathRoot([IO.Path]::G
 & (Join-Path $source 'verify-offline-release.ps1') -ReleasePath $source | Out-Null
 $target = [IO.Path]::GetFullPath($InstallPath)
 New-Item -ItemType Directory -Path $target -Force | Out-Null
-$preserved = @('workspace','models','.venv-ai','.venv-sam2')
+$preserved = @('workspace','models','weights','runtime','node_modules','.git','.venv-ai','.venv-sam2')
 Get-ChildItem -LiteralPath $source -Force | Where-Object { $_.Name -notin $preserved } | Copy-Item -Destination $target -Recurse -Force
 foreach ($name in @('workspace','models')) {
   $sourceItem = Join-Path $source $name; $targetItem = Join-Path $target $name
@@ -20,7 +20,8 @@ foreach ($name in @('workspace','models')) {
 }
 $configDirectory = Join-Path $target 'workspace'; New-Item -ItemType Directory -Path $configDirectory -Force | Out-Null
 $configPath = Join-Path $configDirectory 'config.json'
-$existing = if (Test-Path -LiteralPath $configPath) { Get-Content -LiteralPath $configPath -Raw | ConvertFrom-Json -AsHashtable } else { @{} }
+$existing = @{}
+if (Test-Path -LiteralPath $configPath) { $saved=Get-Content -LiteralPath $configPath -Raw | ConvertFrom-Json; foreach($property in $saved.PSObject.Properties){$existing[$property.Name]=$property.Value} }
 if (-not $InpaintModelPath) { $InpaintModelPath = if ($existing['inpaintModel']) { $existing['inpaintModel'] } else { Join-Path $target 'models\text-to-image\stable-diffusion-3.5-large' } }
 if (-not $ChromaModelPath) { $ChromaModelPath = if ($existing['chromaModel']) { $existing['chromaModel'] } else { Join-Path $target 'models\flux\chroma1-hd' } }
 $existing['inpaintModel'] = [IO.Path]::GetFullPath($InpaintModelPath)

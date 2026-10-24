@@ -1,3 +1,4 @@
+from helpers.ai_source import read_source
 """Edge markers survive model preparation; the mask shares the same full frame."""
 import ast
 import sys
@@ -26,7 +27,7 @@ assert restored.getbbox()==mask.getbbox()
 try:prepare_inputs(source,Image.new('L',(1,1)),(320,512))
 except ValueError:pass
 else:raise AssertionError('Mismatched image and mask must fail')
-tree=ast.parse((root/'ai_service.py').read_text(encoding='utf-8'))
+tree=ast.parse(read_source(root/'ai_service.py', encoding='utf-8'))
 candidate=next(node for node in ast.walk(tree) if isinstance(node,ast.FunctionDef) and node.name=='generate_candidate')
 assert any(isinstance(node,ast.Call) and isinstance(node.func,ast.Name) and node.func.id=='prepare_inputs' for node in ast.walk(candidate))
 print('OK: full-frame image/mask geometry preserves edge markers and binary mask alignment.')

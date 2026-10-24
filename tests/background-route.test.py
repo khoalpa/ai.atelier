@@ -3,7 +3,7 @@ import io,json,sys,tempfile,unittest
 from pathlib import Path
 from PIL import Image
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-import ai_service
+import services.ai.http as ai_service
 class RouteTests(unittest.TestCase):
     def test_new_cutout_endpoint_and_input_validation(self):
         saved_root,saved_segment=ai_service.ROOT,ai_service.birefnet_mask

@@ -15,4 +15,3 @@
 [data-repair-hint]{line-height:1.5;padding:8px;border-left:3px solid var(--accent)}
 body[data-studio-task="chroma"] #scopePreviewButton{display:none}
 @media(max-width:600px){.reference-examples{grid-template-columns:1fr}.scope-preview{padding:12px}}
-

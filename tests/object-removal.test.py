@@ -1,3 +1,4 @@
+from helpers.ai_source import read_source
 """Regressions for actual erase semantics, ROI geometry and orchestration."""
 import ast
 from contextlib import nullcontext
@@ -75,7 +76,7 @@ print('OK: clean core, protected holes, borders, conservative scoring, low contr
 
 # Exercise the production orchestration with a fake model: same code path as API,
 # real files in a temporary directory, no GPU or user image mutation.
-tree = ast.parse((ROOT/'ai_service.py').read_text(encoding='utf-8'))
+tree = ast.parse(read_source(ROOT/'ai_service.py', encoding='utf-8'))
 names = {'inpaint', 'effective_step_policy', 'prepare_dual_inpaint_masks',
          'adaptive_inpaint_context_padding', 'inpaint_removal_check',
          'texture_preserving_core_recovery', 'detect_core_structural_artifacts', 'adaptive_local_edge_blend'}

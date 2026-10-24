@@ -7,7 +7,7 @@ fields.edgeWidth.value='16';fields.edgeSoftness.value='50';fields.edgeDecontam.v
 const context={window:{},document:{getElementById:id=>fields[id]},sourceImage:{naturalWidth:3000,naturalHeight:2000},studioMode:'enhance',canvas:{scrollIntoView(){}},render(){},setMessage(){},canvasPoint:event=>({x:event.x,y:event.y}),current:{id:'uploads/test.png'},activeJobId:'',
     editableMaskStats:()=>({selected}),binaryMaskDataUrl:(invert,protect)=>protect?'protected-pixels':'selected-pixels',refreshStudioReadiness(){},
     fetch:async()=>({ok:true,json:async()=>({serviceReady:true,modelReady:true,skin:{version:1,modelReady:true},edgeVersion:1,maxPixels:16777216,maxSide:8192})})};
-vm.createContext(context);vm.runInContext(fs.readFileSync(path.join(root,'app/public/image-enhancement.js'),'utf8'),context);
+vm.createContext(context);vm.runInContext(require('./helpers/source').read(path.join(root,'app/public/image-enhancement.js'),'utf8'),context);
 (async()=>{
   const api=context.window.ImageEnhancement;api.setup();await new Promise(setImmediate);
   assert(api.requirements(true,false).every(r=>r[1]));

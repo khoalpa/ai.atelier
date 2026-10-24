@@ -1,0 +1,13 @@
+{
+  "python": "3.10",
+  "platform": "win_amd64",
+  "missingMetadataRequirements": [
+    "nvidia-ml-py",
+    "opencv-contrib-python",
+    "opencv-python",
+    "polars",
+    "sounddevice",
+    "ultralytics-thop"
+  ],
+  "note": "Snapshot of the existing runtime, including its dependency gaps. Offline setup must resolve these before being treated as a new-machine installer."
+}

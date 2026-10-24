@@ -1,5 +1,5 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert');
-const source=fs.readFileSync('app/public/app.js','utf8');
+const source=require('./helpers/source').read('app/public/app.js','utf8');
 const handlers={},canvas={addEventListener:(name,fn)=>handlers[name]=fn};
 const image={src:'/source.png'},person={value:'2'},restored=[];
 const context={canvas,sourceImage:image,drawing:true,lastPoint:{},history:['changed'],aiPoints:[{x:9}],$:()=>person,maskCtx:{putImageData:x=>restored.push(x)},protectCtx:{putImageData:x=>restored.push(x)},manualProtectCtx:{clearRect:()=>{},putImageData:x=>restored.push(x)},manualProtectCanvas:{width:10,height:10},render:()=>{},refreshStudioReadiness:()=>{}};

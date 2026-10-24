@@ -1,3 +1,4 @@
+from helpers.ai_source import read_source
 """Hard gates, repairs, unknown pose, and target coverage regressions."""
 import ast
 import sys
@@ -51,7 +52,7 @@ blend=inward_blend(long,5)
 assert not np.asarray(blend)[np.asarray(long)==0].any()
 
 # A uniform erroneous patch must be caught even if preservation is perfect.
-tree=ast.parse((ROOT/'ai_service.py').read_text(encoding='utf-8'))
+tree=ast.parse(read_source(ROOT/'ai_service.py', encoding='utf-8'))
 names={'catvton_geometry_consistency','color_material_consistency'}
 ns=dict(np=np,cv2=cv2,Image=Image,ImageFilter=ImageFilter)
 exec(compile(ast.Module(body=[n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name in names],type_ignores=[]),'<quality>', 'exec'),ns)

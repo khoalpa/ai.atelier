@@ -3,7 +3,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const vm = require('vm');
-const source = fs.readFileSync(path.join(__dirname, '../app/server.js'), 'utf8');
+const source = require('./helpers/source').read(path.join(__dirname, '../app/server.js'), 'utf8');
 const code = source.slice(source.indexOf('async function selectResult('), source.indexOf('async function proxyToAi('));
 
 (async () => {
@@ -27,13 +27,13 @@ const code = source.slice(source.indexOf('async function selectResult('), source
   try {
     await context.selectResult({}, {});
     assert.equal(response.status, 200);
-    let saved = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+    let saved = JSON.parse(require('./helpers/source').read(metadataPath, 'utf8'));
     assert.equal(saved.selectedSeed, 2);
     assert.deepEqual(saved.selectedMetrics, metrics);
     assert.equal(saved.selectedQualityScore, 45);
     assert.equal(saved.qualityGate.passed, false);
     assert.equal(saved.bodyAudit.passed, false);
-    assert.equal(fs.readFileSync(path.join(directory, 'selected.png'), 'utf8'), 'second image');
+    assert.equal(require('./helpers/source').read(path.join(directory, 'selected.png'), 'utf8'), 'second image');
     // A v2 candidate cannot inherit another candidate's passing decision, even
     // when its old scalar metrics would have passed the legacy gate.
     saved.qualityVersion=2;
@@ -41,13 +41,13 @@ const code = source.slice(source.indexOf('async function selectResult('), source
       qualityGate:{version:2,passed:false,reasons:['color-material'],requiresVisualReview:true}};
     fs.writeFileSync(metadataPath,JSON.stringify(saved));
     await context.selectResult({},{});
-    saved=JSON.parse(fs.readFileSync(metadataPath,'utf8'));
+    saved=JSON.parse(require('./helpers/source').read(metadataPath,'utf8'));
     assert.equal(saved.qualityGate.passed,false);
     assert.deepEqual(saved.qualityGate.reasons,['color-material']);
     delete saved.results[0].qualityGate;
     fs.writeFileSync(metadataPath,JSON.stringify(saved));
     await context.selectResult({},{});
-    saved=JSON.parse(fs.readFileSync(metadataPath,'utf8'));
+    saved=JSON.parse(require('./helpers/source').read(metadataPath,'utf8'));
     assert.equal(saved.qualityGate.passed,false);
     assert.deepEqual(saved.qualityGate.reasons,['missing-candidate-assessment']);
     // Legacy runs have no candidate scores. A different selection must not inherit them.
@@ -57,14 +57,14 @@ const code = source.slice(source.indexOf('async function selectResult('), source
     fs.writeFileSync(path.join(directory, 'result_seed_3.png'), 'legacy image');
     await context.selectResult({}, {});
     assert.equal(response.status, 200);
-    saved = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+    saved = JSON.parse(require('./helpers/source').read(metadataPath, 'utf8'));
     assert.equal(saved.selectedMetrics, null);
     assert.equal(saved.selectedQualityScore, null);
     assert.equal(saved.qualityGate.passed, null);
     seed = 404;
     await context.selectResult({}, {});
     assert.equal(response.status, 400);
-    assert.equal(fs.readFileSync(path.join(directory, 'selected.png'), 'utf8'), 'legacy image');
+    assert.equal(require('./helpers/source').read(path.join(directory, 'selected.png'), 'utf8'), 'legacy image');
   } finally {
     fs.rmSync(root, {recursive: true, force: true});
   }

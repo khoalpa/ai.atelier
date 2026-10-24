@@ -1,3 +1,4 @@
+from helpers.ai_source import read_source
 """Seam repair cannot spill onto unselected pixels, even after feathering."""
 import ast
 from pathlib import Path
@@ -5,7 +6,7 @@ import cv2
 import numpy as np
 from PIL import Image, ImageFilter
 
-tree = ast.parse((Path(__file__).resolve().parents[1] / 'ai_service.py').read_text(encoding='utf-8'))
+tree = ast.parse(read_source(Path(__file__).resolve().parents[1] / 'ai_service.py', encoding='utf-8'))
 fn = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'repair_local_seams')
 scope = dict(np=np, cv2=cv2, Image=Image, ImageFilter=ImageFilter)
 exec(compile(ast.Module(body=[fn], type_ignores=[]), '<seam>', 'exec'), scope)

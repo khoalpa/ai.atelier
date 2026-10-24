@@ -1,3 +1,4 @@
+from helpers.ai_source import read_source
 """Confident fabric labels unlock collars without unlocking faces or hands."""
 import ast
 from pathlib import Path
@@ -12,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 import character_quality
 
-tree = ast.parse((ROOT/'ai_service.py').read_text(encoding='utf-8'))
+tree = ast.parse(read_source(ROOT/'ai_service.py', encoding='utf-8'))
 function = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'automatic_protected_detail_mask')
 env = dict(np=np, cv2=cv2, Image=Image, ROOT=ROOT)
 exec(compile(ast.Module(body=[function], type_ignores=[]), '<production-protection>', 'exec'), env)

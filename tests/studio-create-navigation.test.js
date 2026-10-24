@@ -1,5 +1,5 @@
 const fs=require('fs'),path=require('path'),vm=require('vm'),assert=require('assert');
-const source=fs.readFileSync(path.join(__dirname,'../app/public/app.js'),'utf8');
+const source=require('./helpers/source').read(path.join(__dirname,'../app/public/app.js'),'utf8');
 const events=[];
 const bar={hidden:true,scrollIntoView(options){events.push(['scroll',options]);}};
 const primary={focus(options){events.push(['focus',options]);}};

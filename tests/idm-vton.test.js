@@ -3,8 +3,8 @@ const fs=require('node:fs');
 const vm=require('node:vm');
 const path=require('node:path');
 const root=path.resolve(__dirname,'..');
-const source=fs.readFileSync(path.join(root,'app/public/app.js'),'utf8');
-const server=fs.readFileSync(path.join(root,'app/server.js'),'utf8');
+const source=require('./helpers/source').read(path.join(root,'app/public/app.js'),'utf8');
+const server=require('./helpers/source').read(path.join(root,'app/server.js'),'utf8');
 const extract=(text,start,end)=>text.slice(text.indexOf(start),text.indexOf(end,text.indexOf(start)));
 (async()=>{
   const elements={tryonModelSelect:{value:'idm-vton'},tryonModelHint:{}};

@@ -8,7 +8,8 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $projectRoot = $PSScriptRoot
-$python = Join-Path $projectRoot '.venv-sam2\Scripts\python.exe'
+. (Join-Path $projectRoot 'scripts\runtime.ps1')
+$python = Resolve-AtelierRuntime -Root $projectRoot -Kind python
 $entry = Join-Path $projectRoot 'ai_service.py'
 $aiUrl = "http://127.0.0.1:$AiPort"
 $webUrl = "http://127.0.0.1:$WebPort"

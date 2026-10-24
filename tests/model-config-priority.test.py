@@ -1,3 +1,4 @@
+from helpers.ai_source import read_source
 import ast
 import os
 import re
@@ -6,7 +7,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 root = Path(__file__).resolve().parents[1]
-tree = ast.parse((root/'ai_service.py').read_text(encoding='utf-8'))
+tree = ast.parse(read_source(root/'ai_service.py', encoding='utf-8'))
 node = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'configured_path')
 with tempfile.TemporaryDirectory() as folder:
     base = Path(folder)
@@ -25,5 +26,5 @@ with tempfile.TemporaryDirectory() as folder:
         config.clear()
         assert resolve('INPAINT_MODEL', 'inpaintModel', fallback) == fallback
 for filename in ('start-all.ps1', 'start-ai.ps1'):
-    assert not re.search(r'\$env:INPAINT_MODEL\s*=', (root/filename).read_text(encoding='utf-8'), re.I)
+    assert not re.search(r'\$env:INPAINT_MODEL\s*=', read_source(root/filename, encoding='utf-8'), re.I)
 print('OK: launchers preserve saved model choice and explicit environment overrides.')

@@ -1,5 +1,5 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert');
-const source=fs.readFileSync('app/public/app.js','utf8');
+const source=require('./helpers/source').read('app/public/app.js','utf8');
 const controls={},handlers={};
 const canvas={style:{},addEventListener:(name,fn)=>handlers[name]=fn,
   getBoundingClientRect:()=>({left:100,top:50,width:800,height:1200})};

@@ -1,3 +1,4 @@
+from helpers.ai_source import read_source
 """Verify the actual IDM argument adapter without allocating model weights."""
 import ast
 import sys
@@ -56,7 +57,7 @@ for invalid in ['', 'x'*401, 123]:
     except ValueError:
         pass
 
-tree=ast.parse((root/'ai_service.py').read_text(encoding='utf-8'))
+tree=ast.parse(read_source(root/'ai_service.py', encoding='utf-8'))
 loader=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='load_tryon_pipe')
 released=[]
 scope={'tryon_pipe':object(),'tryon_pipe_model_id':'catvton'}

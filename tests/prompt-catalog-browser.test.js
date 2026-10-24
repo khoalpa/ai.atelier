@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict'),fs=require('fs'),vm=require('vm');
-const source=fs.readFileSync(require('path').join(__dirname,'../app/public/prompt-catalog.js'),'utf8');
+const source=require('./helpers/source').read(require('path').join(__dirname,'../app/public/prompt-catalog.js'),'utf8');
 async function scenario(fail){
   const catalog=structuredClone(require('../app/prompt-store').readCatalog()),storage=new Map([['atelier.promptLibrary.v1',JSON.stringify(catalog.library)],['atelier.accessoryPresetPrompts.v1',JSON.stringify({hat:'Legacy hat'})]]);
   const fields={inpaintNegativePrompt:{value:''}},messages=[];let load,request,updated=false;

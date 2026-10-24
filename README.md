@@ -1,5 +1,10 @@
 # AI Atelier — Studio ảnh ngoại tuyến
 
+Bản **3.0** tách giao diện, API và AI thành các mô-đun; thống nhất hàng đợi sinh ảnh
+và dùng SQLite cho metadata vận hành. Xem [kiến trúc](docs/ARCHITECTURE-3.0.md) và
+[khởi động, chuyển dữ liệu, hoàn nguyên](docs/OPERATIONS-3.0.md). Ảnh gốc và kết quả
+đã lưu được giữ nguyên; các điểm khởi động hiện có vẫn hoạt động.
+
 Bản 2.7 hoàn thiện năm ca còn lỗi của bộ nghiệm thu: giữ thân áo khi đổi tư thế, khung toàn thân thấy rõ tay, nối tóc và chất liệu nền khi mở rộng, cùng sửa vùng vải bị khóa nhầm khi thay áo. Bộ nghiệm thu nội bộ đạt 16/16 ca; ca thay áo khó có bước hoàn thiện thủ công. Xem [kết quả và bằng chứng 2.7](docs/ACCEPTANCE-FIXES-2.7.md). Các công cụ [chất lượng nền 2.6](docs/BACKGROUND-QUALITY-2.6.md) và [quản lý dịch vụ 2.5](docs/STABILITY-2.5.md) tiếp tục được sử dụng.
 
 

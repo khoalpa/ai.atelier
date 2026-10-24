@@ -7,11 +7,12 @@
 .venv*/
 __pycache__/
 *.py[cod]
-workspace/
-models/
-weights/
-vendor/
+/workspace/
+/models/
+/weights/
+/vendor/
 node_modules/
-samples/
+/samples/
 dist/
+/runtime/
 *.log

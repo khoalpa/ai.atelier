@@ -1,3 +1,4 @@
+from helpers.ai_source import read_source
 """Reference routing must not cut cuffs or use a whole-person background mask."""
 import ast
 from pathlib import Path
@@ -5,7 +6,7 @@ from types import SimpleNamespace
 import numpy as np
 from PIL import Image, ImageFilter
 
-tree=ast.parse((Path(__file__).resolve().parents[1]/'ai_service.py').read_text(encoding='utf-8'))
+tree=ast.parse(read_source(Path(__file__).resolve().parents[1]/'ai_service.py', encoding='utf-8'))
 functions=[n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name in {'preprocess_garment_image','normalize_garment_reference'}]
 points=[[0,0,0] for _ in range(17)]
 for i,(x,y) in {0:(50,10),1:(45,10),5:(25,30),6:(75,30),7:(15,55),8:(85,55),9:(10,80),10:(90,80),11:(40,75),12:(60,75)}.items():points[i]=[x,y,1]

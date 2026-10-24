@@ -1,5 +1,5 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert'),path=require('path');
-const source=fs.readFileSync(path.join(__dirname,'../app/public/app.js'),'utf8');
+const source=require('./helpers/source').read(path.join(__dirname,'../app/public/app.js'),'utf8');
 const context={};vm.createContext(context);
 vm.runInContext(source.slice(source.indexOf('function referenceSetupSummary('),source.indexOf('async function loadReferenceReadiness(')),context);
 const summary=context.referenceSetupSummary;

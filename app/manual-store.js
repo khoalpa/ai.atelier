@@ -1,6 +1,6 @@
 'use strict';
 const fs=require('node:fs/promises'),path=require('node:path'),crypto=require('node:crypto'),{execFile}=require('node:child_process'),{promisify}=require('node:util');
-const execute=promisify(execFile),Core=require('./public/manual-core');
+const execute=promisify(execFile),Core=require('../packages/editor-core/document');
 const ID=/^[a-f0-9-]{36}$/,ASSET=/^\/manual-assets\/([a-f0-9]{64})\.png$/;
 const fail=message=>{throw Error(message);};
 function number(v,min,max){if(!Number.isFinite(v)||v<min||v>max)fail('Thông số chỉnh sửa vượt giới hạn.');return v;}
@@ -14,13 +14,14 @@ function stroke(s,mask=false){
   const out={tool:mask?'erase':s.tool,points:points(s.points),size:number(s.size,1,1000),softness:number(s.softness,0,1),opacity:number(s.opacity,0,1),color:color(s.color||'#000000'),selection:selection(s.selection)};
   if(['clone','heal'].includes(s.tool))out.anchor=point(s.anchor);return out;
 }
-async function atomic(file,value){await fs.mkdir(path.dirname(file),{recursive:true});const temp=file+'.'+crypto.randomUUID()+'.tmp';try{await fs.writeFile(temp,JSON.stringify(value));await fs.rename(temp,file);}finally{await fs.unlink(temp).catch(()=>{});}}
-async function read(file,fallback){try{return JSON.parse(await fs.readFile(file,'utf8'));}catch(e){if(e.code==='ENOENT')return fallback;throw e;}}
+const metadata=require('../packages/storage/metadata');
+async function atomic(file,value){return metadata.write(file,value);}
+async function read(file,fallback){return metadata.read(file,fallback);}
 function createStore(root,options={}){
   const home=path.join(root,'workspace','manual'),assets=path.join(home,'assets'),projects=path.join(home,'projects');
-  const python=options.python||path.join(root,'.venv-sam2','Scripts','python.exe'),script=options.script||path.join(root,'scripts','manual-image-io.py');
+  const python=options.python||require('../packages/runtime/paths').python(root),script=options.script||path.join(root,'scripts','manual-image-io.py');
   let saveQueue=Promise.resolve();
-  const serial=fn=>{const work=saveQueue.then(fn);saveQueue=work.catch(()=>{});return work;};
+  const serial=fn=>{const work=saveQueue.then(()=>require('./process-lock').locked(path.join(home,'save.lock'),fn));saveQueue=work.catch(()=>{});return work;};
   async function asset(url){const match=ASSET.exec(url||'');if(!match)fail('Ảnh của phiên chỉnh sửa không hợp lệ.');const file=path.join(assets,match[1]+'.png'),bytes=await fs.readFile(file);if(bytes.length<24)fail('Ảnh không hợp lệ.');const width=bytes.readUInt32BE(16),height=bytes.readUInt32BE(20);Core.dimensions(width,height);return {file,width,height,url};}
   async function document(input){
     if(input?.version!==1)fail('Phiên chỉnh sửa không được hỗ trợ.');
@@ -67,14 +68,14 @@ function createStore(root,options={}){
     const value={id,revision:(previous?.revision||0)+1,name:String(body.name||'Ảnh chỉnh thủ công').trim().slice(0,120)||'Ảnh chỉnh thủ công',updatedAt:new Date().toISOString(),document:await document(body.document)};
     if(previous?.archived)value.archived=true;
     if(body.thumbnail){const thumb=await asset(body.thumbnail);if(thumb.width>512||thumb.height>512)fail('Ảnh xem trước quá lớn.');value.thumbnail=body.thumbnail;}else if(previous?.thumbnail)value.thumbnail=previous.thumbnail;
-    await atomic(path.join(home,'versions',id,`${value.revision}.json`),value);await atomic(path.join(projects,id+'.json'),value);return value;
+    metadata.batchWrite([[path.join(home,'versions',id,`${value.revision}.json`),value],[path.join(projects,id+'.json'),value]]);return value;
   });}
-  async function list(options={}){await fs.mkdir(projects,{recursive:true});const files=(await fs.readdir(projects)).filter(f=>/^[a-f0-9-]{36}\.json$/.test(f));const all=[];for(let i=0;i<files.length;i+=20)all.push(...await Promise.all(files.slice(i,i+20).map(f=>read(path.join(projects,f),null))));return all.filter(p=>p&&(options.archived?p.archived:!p.archived)&&(!options.sourceId||p.document.source.sourceId===options.sourceId)).map(({id,revision,name,updatedAt,thumbnail,document:d})=>({id,revision,name,updatedAt,thumbnail:thumbnail||d.source.url,sourceId:d.source.sourceId})).sort((a,b)=>b.updatedAt.localeCompare(a.updatedAt));}
+  async function list(options={}){await fs.mkdir(projects,{recursive:true});const files=(metadata.entries(projects)).filter(f=>/^[a-f0-9-]{36}\.json$/.test(f));const all=[];for(let i=0;i<files.length;i+=20)all.push(...await Promise.all(files.slice(i,i+20).map(f=>read(path.join(projects,f),null))));return all.filter(p=>p&&(options.archived?p.archived:!p.archived)&&(!options.sourceId||p.document.source.sourceId===options.sourceId)).map(({id,revision,name,updatedAt,thumbnail,document:d})=>({id,revision,name,updatedAt,thumbnail:thumbnail||d.source.url,sourceId:d.source.sourceId})).sort((a,b)=>b.updatedAt.localeCompare(a.updatedAt));}
   async function archive(id,archived=true){return serial(async()=>{const p=await load(id);p.archived=archived;await atomic(path.join(projects,id+'.json'),p);return p;});}
   async function resolveOutput(url){const match=/^\/outputs\/manual\/([a-f0-9-]{36})\/result\.(png|jpg|webp)$/.exec(url||'');if(!match)return null;const meta=await read(path.join(root,'workspace','outputs','manual',match[1],'metadata.json'),null);if(!meta?.projectId)return null;return {projectId:meta.projectId,revision:meta.revision};}
-  async function versions(id){await load(id);const names=(await fs.readdir(path.join(home,'versions',id))).filter(f=>/^\d+\.json$/.test(f));const result=[];for(const name of names){const p=await read(path.join(home,'versions',id,name));result.push({revision:p.revision,name:p.name,updatedAt:p.updatedAt,thumbnail:p.thumbnail||p.document.source.url});}return result.sort((a,b)=>b.revision-a.revision);}
+  async function versions(id){await load(id);const names=(metadata.entries(path.join(home,'versions',id))).filter(f=>/^\d+\.json$/.test(f));const result=[];for(const name of names){const p=await read(path.join(home,'versions',id,name));result.push({revision:p.revision,name:p.name,updatedAt:p.updatedAt,thumbnail:p.thumbnail||p.document.source.url});}return result.sort((a,b)=>b.revision-a.revision);}
   async function exportImage(body){
-    const project=await load(body.id,body.revision),{bytes,format}=await imageBytes({data:body.data});if(!['png','jpeg','webp'].includes(format))fail('Định dạng xuất không hợp lệ.');const Spec=require('./public/export-core'),spec=body.spec?Spec.validate(body.spec):null,expected=spec?Spec.dimensions(project.document.geometry.width,project.document.geometry.height,spec):project.document.geometry;if(spec&&spec.format!=='image/'+format)fail('Định dạng không khớp mẫu xuất.');const size=await convert(bytes,'--verify');if(size.width!==expected.width||size.height!==expected.height)fail('Kích thước ảnh xuất không khớp phiên đã lưu.');
+    const project=await load(body.id,body.revision),{bytes,format}=await imageBytes({data:body.data});if(!['png','jpeg','webp'].includes(format))fail('Định dạng xuất không hợp lệ.');const Spec=require('../packages/editor-core/export'),spec=body.spec?Spec.validate(body.spec):null,expected=spec?Spec.dimensions(project.document.geometry.width,project.document.geometry.height,spec):project.document.geometry;if(spec&&spec.format!=='image/'+format)fail('Định dạng không khớp mẫu xuất.');const size=await convert(bytes,'--verify');if(size.width!==expected.width||size.height!==expected.height)fail('Kích thước ảnh xuất không khớp phiên đã lưu.');
     const id=body.exportId||crypto.randomUUID();if(!ID.test(id))fail('Mã ảnh xuất không hợp lệ.');const dir=path.join(root,'workspace','outputs','manual',id),staging=dir+'.'+crypto.randomUUID()+'.tmp',ext=format==='jpeg'?'jpg':format,sha256=crypto.createHash('sha256').update(bytes).digest('hex');
     const previous=await read(path.join(dir,'metadata.json'),null);if(previous){if(previous.projectId!==project.id||previous.revision!==project.revision||previous.sha256!==sha256)fail('Mã xuất đã được dùng cho ảnh khác.');return {url:`/outputs/manual/${id}/result.${ext}`,projectId:project.id,revision:project.revision,...size};}
     await fs.mkdir(staging,{recursive:true});

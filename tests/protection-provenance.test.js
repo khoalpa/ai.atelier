@@ -1,5 +1,5 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert'),path=require('path');
-const source=fs.readFileSync(path.join(__dirname,'../app/public/app.js'),'utf8');
+const source=require('./helpers/source').read(path.join(__dirname,'../app/public/app.js'),'utf8');
 const layer=alphas=>({getImageData:()=>({data:Uint8ClampedArray.from(alphas.flatMap(a=>[0,0,0,a]))})});
 let output;
 const outCtx={createImageData:()=>({data:new Uint8ClampedArray(8)}),putImageData:image=>output=image.data};

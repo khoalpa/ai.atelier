@@ -1,5 +1,5 @@
 const assert=require('assert'),fs=require('fs'),vm=require('vm'),os=require('os'),path=require('path');
-const context={window:{},localStorage:{getItem:()=>null},Date,Number,Math};vm.createContext(context);vm.runInContext(fs.readFileSync(path.join(__dirname,'../app/public/studio-guidance.js'),'utf8'),context);
+const context={window:{},localStorage:{getItem:()=>null},Date,Number,Math};vm.createContext(context);vm.runInContext(require('./helpers/source').read(path.join(__dirname,'../app/public/studio-guidance.js'),'utf8'),context);
 const guide=context.window.StudioGuidance;
 assert(guide.recovery('CUDA out of memory').includes('Giảm kích thước'));
 assert(guide.recovery('Failed to fetch').includes('trùng'));

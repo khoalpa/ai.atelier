@@ -1,12 +1,12 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert');
-const source=fs.readFileSync('app/public/app.js','utf8');
+const source=require('./helpers/source').read('app/public/app.js','utf8');
 const code=source.slice(source.indexOf('async function createAutomaticMask('),source.indexOf('async function detectPeopleInImage('));
 const controls={accessoryPreset:{value:'shirt'},garmentCategory:{value:'overall'},personSelect:{value:'0'},autoMaskButton:{},segmentButton:{}};
 const requests=[],displayed=[];
 let mutate=null;
 const context={current:{id:'characters/c001.png'},studioMode:'inpaint',$:id=>controls[id],setMessage(){},binaryMaskDataUrl:()=>'',displayMask:(mask)=>displayed.push(mask),displayProtectedMask(){},segmentWithAi:async()=>requests.push('generic'),fetch:async(_,opts)=>{const body=JSON.parse(opts.body);requests.push(body);if(mutate)mutate();return {ok:true,json:async()=>({ok:true,category:body.category,mask:'mask',accepted:true,coverage:.1})}}};
 context.window={ATELIER_PROMPTS:require('../app/prompt-store').readCatalog()};
-vm.createContext(context);vm.runInContext(fs.readFileSync('app/public/outfit-workflow.js','utf8'),context);vm.runInContext(code,context);
+vm.createContext(context);vm.runInContext(require('./helpers/source').read('app/public/outfit-workflow.js','utf8'),context);vm.runInContext(code,context);
 (async()=>{
  for(const [region,category] of Object.entries({shirt:'upper_body',pants:'lower_body',outfit:'overall'})){
   controls.accessoryPreset.value=region;

@@ -1,5 +1,5 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert'),path=require('path');
-const script=fs.readFileSync(path.join(__dirname,'../app/public/app.js'),'utf8');
+const script=require('./helpers/source').read(path.join(__dirname,'../app/public/app.js'),'utf8');
 const helpers=script.slice(script.indexOf('function refreshContinuationActions('),script.indexOf('function updateProgressVisibility('));
 const controls={};for(const id of ['studioContinueInpaint','studioContinueTryon','comparePanel','studioCompareStage'])controls[id]={disabled:false,hidden:false};
 let cleared=false;controls.resultsGrid={querySelectorAll:()=>[],replaceChildren:()=>{cleared=true}};
@@ -18,7 +18,7 @@ vm.createContext(context);vm.runInContext(helpers,context);
   await context.continueFromSelectedResult('inpaint');assert.equal(fetched.length,2);assert.equal(messages.at(-1).kind,'error');
   context.studioSelectedResult='data:image/png;base64,X';context.activeJobId='running';context.activityState={status:'running'};
   await context.continueFromSelectedResult('inpaint');assert.equal(fetched.length,2);
-  const html=fs.readFileSync(path.join(__dirname,'../app/public/index.html'),'utf8');
+  const html=require('./helpers/source').read(path.join(__dirname,'../app/public/index.html'),'utf8');
   context.activityState={jobId:'old-run',status:'completed'};context.activeJobId=null;
   context.dismissedProgressJobs=new Set();
   for(const id of ['activityCenter','editorLiveProgress','chromaLiveProgress','editorPromptTrace','chromaPromptTrace'])controls[id]={hidden:false};

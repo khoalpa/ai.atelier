@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "tasks": {
+    "character": {"route":"/character-render","taskType":"character","label":"Tư thế & biểu cảm","resume":"replay"},
+    "character-regenerate": {"route":"/character-regenerate","taskType":"character","label":"Tạo lại tư thế & biểu cảm","resume":"replay"},
+    "tryon": {"route":"/tryon","taskType":"tryon","label":"Thay trang phục","resume":"replay"},
+    "batch-tryon": {"route":"/batch-tryon","taskType":"batch-tryon","label":"Thay trang phục nhiều ảnh","resume":"remaining-items"},
+    "inpaint": {"route":"/inpaint","taskType":"inpaint","label":"Xóa vật thể","resume":"replay"},
+    "outpaint": {"route":"/outpaint","taskType":"outpaint","label":"Mở rộng ảnh","resume":"replay"},
+    "enhance": {"route":"/enhance","taskType":"enhance","label":"Cải thiện ảnh","resume":"replay"},
+    "makeup": {"route":"/makeup","taskType":"makeup","label":"Trang điểm","resume":"replay"},
+    "makeup-compare": {"route":"/makeup-compare","taskType":"makeup","label":"So sánh trang điểm","resume":"replay"},
+    "text-to-image": {"route":"/chroma-generate","taskType":"text-to-image","label":"Tạo ảnh mới","resume":"replay"},
+    "sd35-conditioned": {"route":"/sd35-conditioned-generate","taskType":"text-to-image","label":"Tạo ảnh có hướng dẫn","resume":"replay"},
+    "sdxl-conditioned": {"route":"/sdxl-conditioned-generate","taskType":"text-to-image","label":"Tạo ảnh SDXL có hướng dẫn","resume":"replay"}
+  }
+}

@@ -1,0 +1,69 @@
+@layer responsive {
+  @media (max-width: 560px) {
+    :root {
+      --control-height: 2.5rem;
+      --control-height-lg: 2.75rem;
+    }
+
+    :where(button, .button-link, input, select, textarea) {
+      font-size: var(--font-size-body);
+    }
+
+    .primary-nav {
+      overflow: hidden;
+    }
+
+    .primary-nav .nav-item {
+      display: flex;
+      min-height: 2.75rem;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.125rem;
+      font-size: 0.5625rem;
+      line-height: 1;
+    }
+
+    .primary-nav .nav-item > span { font-size: 0.875rem; }
+
+    .header-actions .icon-button,
+    .studio-command-toggle { min-width: 2.75rem; min-height: 2.75rem; }
+
+    .studio-command-state small { display: none; }
+    .studio-command-bar .studio-command-state { max-width: calc(100% - 10.5rem); }
+  }
+
+  @media (max-width: 920px) {
+    .app-header {
+      backdrop-filter: none;
+    }
+
+    .primary-nav {
+      grid-template-columns: repeat(6, minmax(3.25rem, 1fr));
+      overflow-x: auto;
+    }
+
+    .primary-nav .nav-item {
+      min-width: 0;
+      padding-inline: var(--space-1);
+      white-space: nowrap;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      scroll-behavior: auto;
+      animation-duration: 0.01ms;
+      animation-iteration-count: 1;
+      transition-duration: 0.01ms;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    :root {
+      --color-border-subtle: var(--palette-536171);
+      --color-border-default: var(--palette-778698);
+      --color-text-secondary: var(--palette-d7e0e8);
+    }
+  }
+}

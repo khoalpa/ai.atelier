@@ -1,3 +1,4 @@
+from helpers.ai_source import read_source
 """Exercise the AI service guard over real HTTP without loading GPU models."""
 import ast
 import json
@@ -46,7 +47,7 @@ finally:
     server.server_close()
     thread.join()
 
-tree = ast.parse((Path(__file__).resolve().parents[1] / 'ai_service.py').read_text(encoding='utf-8'))
+tree = ast.parse(read_source(Path(__file__).resolve().parents[1] / 'ai_service.py', encoding='utf-8'))
 handler = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == 'Handler')
 post = next(node for node in handler.body if isinstance(node, ast.FunctionDef) and node.name == 'do_POST')
 assert ast.unparse(post.decorator_list[0]) == 'trusted_request(PORT)'

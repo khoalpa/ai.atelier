@@ -1,3 +1,4 @@
+from helpers.ai_source import read_source
 """Reconstruction includes old fabric, respecting explicit and identity protection."""
 import ast
 from pathlib import Path
@@ -6,7 +7,7 @@ import cv2
 from PIL import Image
 
 root = Path(__file__).resolve().parents[1]
-tree = ast.parse((root / 'ai_service.py').read_text(encoding='utf-8'))
+tree = ast.parse(read_source(root / 'ai_service.py', encoding='utf-8'))
 function = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == 'reconstruction_edit_mask')
 namespace = {'np': np, 'Image': Image}
 exec(compile(ast.Module(body=[function], type_ignores=[]), '<reconstruction>', 'exec'), namespace)
@@ -28,12 +29,13 @@ assert r[110, 50] == 0  # background stays outside the edit
 auto, auto_added = namespace['reconstruction_edit_mask'](old, old, protected)
 assert not np.asarray(auto_added).any()
 assert np.array_equal(np.asarray(auto), np.where(p, 0, np.asarray(old)))
-html = (root / 'app/public/index.html').read_text(encoding='utf-8')
-js = (root / 'app/public/app.js').read_text(encoding='utf-8')
+html = read_source(root / 'app/public/index.html', encoding='utf-8')
+js = read_source(root / 'app/public/app.js', encoding='utf-8')
 assert 'id="reconstructExposedBodyToggle" type="checkbox" checked' in html
 assert js.count("reconstructExposedBody:$('reconstructExposedBodyToggle').checked") == 2
 head_function = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == 'automatic_protected_detail_mask')
 namespace['cv2'] = cv2
+namespace['ROOT'] = root
 exec(compile(ast.Module(body=[head_function], type_ignores=[]), '<head>', 'exec'), namespace)
 points = [[50, 20, 1.0] for _ in range(17)]
 points[5], points[6] = [30, 40, 1.0], [70, 40, 1.0]

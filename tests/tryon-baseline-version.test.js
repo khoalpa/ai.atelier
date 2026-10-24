@@ -1,5 +1,5 @@
 const fs=require('fs'),vm=require('vm'),path=require('path'),assert=require('assert');
-const source=fs.readFileSync('app/server.js','utf8');
+const source=require('./helpers/source').read('app/server.js','utf8');
 const code=source.slice(source.indexOf('async function compareGoldenBaseline('),source.indexOf('async function cleanupJobs('));
 let version=1,category='upper_body',response;
 const metrics={qualityScore:90,referenceSimilarity:.8,seamScore:90,anatomyScore:100,textureContinuity:90};

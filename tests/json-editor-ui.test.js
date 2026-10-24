@@ -13,7 +13,7 @@ class Node{
   querySelectorAll(){return Object.values(elements);}
   showModal(){this.open=true;}close(){this.open=false;}click(){if(this.onclick)return this.onclick();if(this.events.click)return this.events.click();}remove(){}
 }
-const html=fs.readFileSync(path.join(project,'app/public/index.html'),'utf8'),elements={};
+const html=require('./helpers/source').read(path.join(project,'app/public/index.html'),'utf8'),elements={};
 for(const match of html.matchAll(/id="(jsonEditor[^"]+)"/g))elements[match[1]]=new Node();
 const window={events:{},confirm:()=>true,addEventListener(name,fn){this.events[name]=fn;}};
 const document={getElementById:id=>elements[id],createElement:tag=>new Node(tag),body:new Node(),addEventListener(){}};
@@ -26,7 +26,7 @@ const context={window,document,Option:class extends Node{constructor(text,value)
     return {ok:true,json:async()=>({ok:true,...result})};
   }catch(error){return {ok:false,json:async()=>({ok:false,error:error.message})};}
 },URL:{createObjectURL:()=> 'blob:download',revokeObjectURL(){}},Blob:class{},setTimeout:fn=>fn()};
-vm.runInNewContext(fs.readFileSync(path.join(project,'app/public/json-editor.js'),'utf8'),context);window.events.DOMContentLoaded();
+vm.runInNewContext(require('./helpers/source').read(path.join(project,'app/public/json-editor.js'),'utf8'),context);window.events.DOMContentLoaded();
 (async()=>{
   await window.AtelierJsonEditor.open('prompts');assert(elements.jsonEditorDialog.open);assert.equal(elements.jsonEditorFile.options.length,7);
   elements.jsonEditorGroup.value=JSON.stringify(['uiPlaceholders']);elements.jsonEditorGroup.onchange();

@@ -257,7 +257,10 @@ def generate(body, env):
     active(job_id)
     output_dir = Path(env['OUTPUTS']) / 'chroma'
     output_dir.mkdir(parents=True, exist_ok=True)
-    stamp = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
+    # Clock resolution on Windows can give consecutive generations the same
+    # timestamp. Never let a refinement overwrite its source image.
+    import uuid
+    stamp = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ') + '-' + uuid.uuid4().hex[:12]
     results, inference_started = [], time.perf_counter()
     try:
         for index in range(cfg['count']):

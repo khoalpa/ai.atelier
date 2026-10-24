@@ -31,7 +31,7 @@
 		border-radius:50%;font-size:10px;
 		font-weight:800;animation:activity-spin 1.1s linear infinite
 	}
-	.activity-center.done 
+	.activity-center.done
 	.activity-spinner{
 		border-color:var(--palette-34704d);
 		color:var(--palette-9be1b4);animation:none

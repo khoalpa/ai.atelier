@@ -8,7 +8,9 @@ function webRevision(root) {
     if (entry.isDirectory()) walk(file);
     else if (/\.(js|html|css|json)$/.test(entry.name)) hash.update(path.relative(root,file)).update(fs.readFileSync(file));
   } }
-  hash.update(fs.readFileSync(path.join(root,'version.json'))); walk(path.join(root,'app')); return hash.digest('hex');
+  hash.update(fs.readFileSync(path.join(root,'version.json')));
+  for(const name of ['app','apps','packages'])if(fs.existsSync(path.join(root,name)))walk(path.join(root,name));
+  return hash.digest('hex');
 }
 function aiRevision(root) { const hash=crypto.createHash('sha256');for(const name of JSON.parse(fs.readFileSync(path.join(root,'version.json'),'utf8')).aiSources||[]) {const file=path.join(root,name);if(fs.existsSync(file))hash.update(fs.readFileSync(file));}return hash.digest('hex'); }
 module.exports = {readVersion, webRevision, aiRevision};

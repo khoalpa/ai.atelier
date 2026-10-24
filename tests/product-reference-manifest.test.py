@@ -1,3 +1,4 @@
+from helpers.ai_source import read_source
 """Uploaded products must use their manifest and never normalize a different sample."""
 import ast
 import json
@@ -8,7 +9,7 @@ from pathlib import Path
 from PIL import Image
 
 root = Path(__file__).resolve().parents[1]
-tree = ast.parse((root/'ai_service.py').read_text(encoding='utf-8'))
+tree = ast.parse(read_source(root/'ai_service.py', encoding='utf-8'))
 function = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == 'catvton_reference_matrix')
 with tempfile.TemporaryDirectory() as directory:
     root = Path(directory)

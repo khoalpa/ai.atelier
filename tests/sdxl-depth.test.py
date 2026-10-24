@@ -1,3 +1,4 @@
+from helpers.ai_source import read_source
 """Check depth inference, orientation, and delivery to both SDXL ControlNets."""
 import ast
 import sys
@@ -40,7 +41,7 @@ with patch.dict(sys.modules, {'transformers': SimpleNamespace(AutoImageProcessor
     assert direct[0, 0, 0] == 0 and direct[1, 1, 0] == 255
     assert inverted[0, 0, 0] == 255 and inverted[1, 1, 0] == 0
 
-tree = ast.parse((ROOT / 'ai_service.py').read_text(encoding='utf-8'))
+tree = ast.parse(read_source(ROOT / 'ai_service.py', encoding='utf-8'))
 function = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == 'sdxl_conditioned_generate')
 function.decorator_list = []
 with tempfile.TemporaryDirectory() as directory:

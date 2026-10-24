@@ -1,3 +1,5 @@
+from services.ai.runtime import metadata
+from helpers.ai_source import read_source
 """Check outpainting geometry, lossless source preservation and job integration."""
 import ast
 import contextlib
@@ -158,7 +160,7 @@ with patch.dict(os.environ, ATELIER_OUTPAINT_MAX_PIXELS='100'):
         raise AssertionError('pixel limit')
 
 # Exercise the real orchestration function with a deterministic fake GPU pipeline.
-tree = ast.parse((ROOT/'ai_service.py').read_text(encoding='utf-8'))
+tree = ast.parse(read_source(ROOT/'ai_service.py', encoding='utf-8'))
 runner = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'outpaint')
 runner.decorator_list = []
 with tempfile.TemporaryDirectory() as folder:
@@ -191,13 +193,14 @@ with tempfile.TemporaryDirectory() as folder:
         encode_image=lambda image:'data:image/png;base64,test', json=json)
     namespace['outpaint_semantics']=lambda image,manual=None:(Image.new('L',image.size,0),Image.new('L',image.size,0),
                                                             manual or Image.new('L',image.size,0),[])
+    namespace['metadata']=metadata
     exec(compile(ast.Module(body=[runner],type_ignores=[]),str(ROOT/'ai_service.py'),'exec'), namespace)
     body = dict(jobId='test',sampleId='source.png',width=180,height=120,left=30,top=20,count=2)
     response = namespace['outpaint'](body)
     assert response['ok'] and len(response['results']) == 2
     assert requests[0][1] == 'outpaint'
     assert events[-1]['status'] == 'completed'
-    metadata = json.loads((root/response['directory']/'metadata.json').read_text(encoding='utf-8'))
+    metadata = json.loads(read_source(root/response['directory']/'metadata.json', encoding='utf-8'))
     assert metadata['status'] == 'completed' and metadata['geometry']['left'] == 30
     for item in response['results']:
         assert item['originalRegionMAE'] == 0
@@ -233,7 +236,7 @@ with tempfile.TemporaryDirectory() as folder:
     assert detailed['results'][0]['originalRegionMAE'] == 0
     assert events[-1]['completedSteps'] == 8+len(calls)-before-1
     assert all(call['strength']==.35 for call in calls[before+1:])
-    detail_metadata = json.loads((root/detailed['directory']/'metadata.json').read_text(encoding='utf-8'))
+    detail_metadata = json.loads(read_source(root/detailed['directory']/'metadata.json', encoding='utf-8'))
     assert detail_metadata['detailRegions']
     progress = [e['completedSteps'] for e in events[detail_event_start:] if 'completedSteps' in e]
     assert progress == sorted(progress), 'progress must include every refinement pass'
@@ -257,7 +260,7 @@ with tempfile.TemporaryDirectory() as folder:
         preserveOriginal=False,detailPass=True,materialRefine=True,sourceEnhance=True,count=2,
         steps=4,fabricSteps=10,maxSide=1024,prompt='Keep pale blue lace'))
     material_folder=root/material_result['directory']
-    material_metadata=json.loads((material_folder/'metadata.json').read_text(encoding='utf-8'))
+    material_metadata=json.loads(read_source(material_folder/'metadata.json', encoding='utf-8'))
     assert len(material_metadata['materialVariants'])==2
     fabric_calls=[call for call in calls[before:] if call['strength']==.45]
     assert fabric_calls and all(call['num_inference_steps']==10 for call in fabric_calls)
@@ -312,7 +315,7 @@ with tempfile.TemporaryDirectory() as folder:
     seam_result=namespace['outpaint'](dict(jobId='seam',sampleId='large.png',width=1529,height=2044,left=139,
                                          preserveOriginal=False,seamRepair=True,seamWidth=48,seamSteps=4,steps=4,maxSide=512))
     seam_folder=root/seam_result['directory']
-    seam_metadata=json.loads((seam_folder/'metadata.json').read_text(encoding='utf-8'))
+    seam_metadata=json.loads(read_source(seam_folder/'metadata.json', encoding='utf-8'))
     assert seam_metadata['seamRegions'] and seam_metadata['patchCompositing']=='immutable-base-normalized-weights'
     assert seam_result['results'][0]['diagnostics']['final']['protectedMAE']==0
     assert seam_result['results'][0]['diagnostics']['final']['sourceCoreMAE']==0

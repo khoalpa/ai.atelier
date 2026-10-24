@@ -142,14 +142,14 @@ window.QualityLearning = (() => {
           await api('feedback', {...request, preference:button.dataset.qualityPrefer}); await refreshDialog();
           await refreshReport(document.querySelector('.quality-settings'));
         } else if (button.hasAttribute('data-quality-continue')) {
-          if (typeof activeJobId !== 'undefined' && activeJobId) throw new Error('Hãy đợi tác vụ hiện tại hoàn tất.');
+          if (typeof globalThis.AtelierApp.activeJobId !== 'undefined' && globalThis.AtelierApp.activeJobId) throw new Error('Hãy đợi tác vụ hiện tại hoàn tất.');
           const response = await fetch(target === 'improved' ? result.improved : result.original);
           if (!response.ok) throw new Error('Không đọc được ảnh đã lưu.');
           const blob = await response.blob();
-          await uploadSourceImage(new File([blob], 'anh-chinh-sua-tiep.png', {type:blob.type}));
+          await globalThis.AtelierApp.uploadSourceImage(new File([blob], 'anh-chinh-sua-tiep.png', {type:blob.type}));
           await api('feedback', {...request, selected:true});
-          currentDialog.close(); setStudioMode('inpaint'); activateAppView('create');
-          setMessage('Đã mở ảnh để chỉnh sửa tiếp. Chọn công cụ và vùng cần sửa.', 'success');
+          currentDialog.close(); globalThis.AtelierApp.setStudioMode('inpaint'); globalThis.AtelierApp.activateAppView('create');
+          globalThis.AtelierApp.setMessage('Đã mở ảnh để chỉnh sửa tiếp. Chọn công cụ và vùng cần sửa.', 'success');
         }
       } catch (error) { status(error.message, true); }
       finally { button.disabled = false; }

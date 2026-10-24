@@ -1,6 +1,7 @@
 'use strict';
 const fs=require('node:fs/promises'),path=require('node:path'),crypto=require('node:crypto');
-const {acquire}=require('./process-lock'), Core=require('./public/manual-core'),Export=require('./public/export-core');
+const {acquire}=require('./process-lock'), Core=require('../packages/editor-core/document'),Export=require('../packages/editor-core/export');
+const contracts=require('../packages/contracts/jobs');
 const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 function createRunner(root,{store,manualStore,renderer,ai,canRun=()=>true,pollMs=1000}) {
   const owner=crypto.randomUUID();let release=null,timer=null,busy=false,stopped=false,active='',lastError='';
@@ -21,11 +22,12 @@ function createRunner(root,{store,manualStore,renderer,ai,canRun=()=>true,pollMs
     const output=await manualStore.exportImage({id:project.id,revision:project.revision,exportId:item.id,data,spec,name:item.name,index:p.index});
     return {...output,filename:spec?Export.filename(item.name,spec,output,p.index):item.name.replace(/\.[^.]+$/,'')+'-chinh-mau.png'};
   }
-  async function character(item,checkpoint){
-    const jobId=item.jobId||item.checkpoint?.jobId||'character-'+item.id;
+  async function executeAI(item,checkpoint,kind){
+    const jobId=item.jobId||item.checkpoint?.jobId||item.payload?.jobId||kind+'-'+item.id;
+    const definition=contracts.tasks[kind];if(!definition)throw Error('Loại tác vụ không được hỗ trợ.');
     async function recover(){
       while(!stopped){let state;try{state=await ai('/job-status',{jobId});}catch(e){if(e.code!=='AI_CONNECTION')throw e;await delay(pollMs);continue;}
-        if(state.status==='completed')return {results:state.results};
+        if(state.status==='completed')return state.response||{ok:true,...state,results:state.results};
         if(['running','cancelling'].includes(state.status)){await delay(pollMs);continue;}
         if(state.status==='unknown')throw Error('Chưa xác nhận được lượt AI trước. Lô đã dừng để tránh tạo ảnh trùng.');
         if(state.resumable)return submit('/resume-job',{jobId});
@@ -38,7 +40,7 @@ function createRunner(root,{store,manualStore,renderer,ai,canRun=()=>true,pollMs
       return recover();
     }
     await checkpoint({jobId,submitted:true});
-    return submit('/character-render',{...item.payload,jobId});
+    return submit(definition.route,{...item.payload,jobId});
   }
   async function run(id){
     active=id;let heartbeat;
@@ -47,12 +49,12 @@ function createRunner(root,{store,manualStore,renderer,ai,canRun=()=>true,pollMs
       heartbeat=setInterval(()=>store.action({action:'heartbeat',id,owner}).catch(e=>{lastError=e.message;}),8000);
       for(const item of q.items){
         if(stopped) return;
-        if(item.status==='completed')continue;
+        if(['completed','cancelled'].includes(item.status))continue;
         q=await store.get(id);if(q.stopRequested)break;
         await store.action({action:'item',id,owner,itemId:item.id,status:'running'});
         try {
           const checkpoint=async value=>{await store.action({action:'item',id,owner,itemId:item.id,status:'running',checkpoint:value,jobId:value.jobId});};
-          const result=q.kind==='character'?await character(item,checkpoint):await renderItem(item,q.kind);
+          const result=contracts.tasks[q.kind]?await executeAI(item,checkpoint,q.kind):await renderItem(item,q.kind);
           if(stopped)return;
           await store.action({action:'item',id,owner,itemId:item.id,status:'completed',result});
         }catch(error){
@@ -66,7 +68,7 @@ function createRunner(root,{store,manualStore,renderer,ai,canRun=()=>true,pollMs
   async function tick(){if(busy||stopped)return;busy=true;try{
     if(!release)release=await acquire(path.join(root,'workspace/work-queue/runner.lock'));
     if(!release||!await canRun())return;
-    const rows=await store.list();const next=rows.filter(q=>q.execution==='server'&&q.requested&&!q.stopRequested&&q.status!=='completed').sort((a,b)=>a.createdAt.localeCompare(b.createdAt))[0];
+    const rows=await store.list();const next=rows.filter(q=>q.execution==='server'&&q.requested&&!q.stopRequested&&!['completed','cancelled'].includes(q.status)).sort((a,b)=>a.createdAt.localeCompare(b.createdAt))[0];
     if(next){lastError='';await run(next.id);}
   }catch(e){lastError=e.message;}finally{busy=false;}}
   function start(){if(timer)return;stopped=false;timer=setInterval(tick,pollMs);timer.unref();tick();}

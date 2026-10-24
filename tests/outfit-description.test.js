@@ -1,5 +1,5 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert');
-const script=fs.readFileSync('app/public/outfit-workflow.js','utf8');
+const script=require('./helpers/source').read('app/public/outfit-workflow.js','utf8');
 function harness({batch=false,category='upper_body',auto=false,cancel=false}={}){
   const values={tryonInputMode:'description',garmentCategory:category,tryonDescription:'white linen shirt',tryonDescriptionNegative:'logos',tryonDescriptionModel:'sdxl',batchScope:'selected',personSelect:'0',tryonCount:'2',tryonSteps:'35'};
   const controls=Object.fromEntries(Object.entries(values).map(([id,value])=>[id,{value,disabled:false}]));

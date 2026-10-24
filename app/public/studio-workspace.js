@@ -49,7 +49,7 @@
     document.querySelectorAll('[data-studio-mode]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.studioMode===task)));
     const count=task==='character'?byId('characterCount').value:task==='makeup'?2:task==='enhance'?1:byId(task==='outpaint'?'outpaintCount':task==='inpaint'?'inpaintCount':task==='chroma'?'chromaCount':'tryonCount')?.value;
     const hint=byId('studioCommandHint');
-    if(hint&&!activeJobId)hint.textContent=hint.textContent.replace(/ · \d+ phương án$/,'')+` · ${count||1} phương án`;
+    if(hint&&!globalThis.AtelierApp.activeJobId)hint.textContent=hint.textContent.replace(/ · \d+ phương án$/,'')+` · ${count||1} phương án`;
   }
   function setup(){
     try{const saved=JSON.parse(localStorage.getItem('studioPanelLayout')||'{}');state=saved&&typeof saved==='object'&&!Array.isArray(saved)?saved:{};}catch{state={};}
@@ -82,7 +82,7 @@
       const collapse=!Object.keys(panels).every(name=>state[name]);
       Object.keys(panels).forEach(name=>setPanel(name,collapse));
       document.querySelectorAll('#appMain details').forEach(detail=>{detail.open=!collapse;});
-      setStudioCommandCollapsed(collapse);studioCommandManuallyCollapsed=collapse;
+      globalThis.AtelierApp.setStudioCommandCollapsed(collapse);globalThis.AtelierApp.studioCommandManuallyCollapsed=collapse;
       if(byId('activityCenter')&&!byId('activityCenter').hidden&&byId('activityCenter').classList.contains('is-collapsed')!==collapse)byId('activityCollapse').click();
     };bar.append(all);
     const updateAll=()=>{const collapsed=Object.keys(panels).every(name=>state[name]);all.setAttribute('aria-expanded',String(!collapsed));labelToggle(all,collapsed?'Mở tất cả':'Thu tất cả');};
@@ -113,7 +113,7 @@
     byId('emptyCanvasState').innerHTML='<strong>Thêm ảnh để bắt đầu</strong><p>Kéo ảnh vào vùng này hoặc chọn ảnh trên máy.</p><button type="button">Chọn ảnh nguồn</button>';
     byId('emptyCanvasState').querySelector('button').onclick=()=>byId('sourceImageFile').click();
     byId('canvasWrap').addEventListener('dragover',event=>{if(event.dataTransfer.types.includes('Files'))event.preventDefault();});
-    byId('canvasWrap').addEventListener('drop',event=>{if(!event.dataTransfer.files.length)return;event.preventDefault();uploadSourceImage(event.dataTransfer.files[0]).catch(error=>setMessage(error.message,'error'));});
+    byId('canvasWrap').addEventListener('drop',event=>{if(!event.dataTransfer.files.length)return;event.preventDefault();globalThis.AtelierApp.uploadSourceImage(event.dataTransfer.files[0]).catch(error=>globalThis.AtelierApp.setMessage(error.message,'error'));});
     document.addEventListener('focusin',event=>{if(!event.target.closest('[data-panel-toggle]'))reveal(event.target);});
     document.addEventListener('click',event=>{
       const step=event.target.closest('[data-step-target]');if(step)reveal(byId(step.dataset.stepTarget));
@@ -124,11 +124,11 @@
       }
     },true);
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!document.querySelector('dialog[open]'))Object.keys(panels).forEach(name=>setPanel(name,false));});
-    for(const id of ['qualityPreset','inpaintQualityPreset','outpaintCount','tryonCount','inpaintCount','chromaCount'])byId(id)?.addEventListener('change',()=>refreshStudioReadiness());
+    for(const id of ['qualityPreset','inpaintQualityPreset','outpaintCount','tryonCount','inpaintCount','chromaCount'])byId(id)?.addEventListener('change',()=>globalThis.AtelierApp.refreshStudioReadiness());
     const observer=new ResizeObserver(()=>{
       const top=header.offsetHeight+workspace.querySelector('.canvas-toolbar').offsetHeight+tools.offsetHeight;
       workspace.style.setProperty('--studio-results-top',`${top}px`);
-      if(typeof fitCanvas==='function')fitCanvas();
+      if(typeof globalThis.AtelierApp.fitCanvas==='function')globalThis.AtelierApp.fitCanvas();
     });observer.observe(byId('canvasWrap'));observer.observe(header);observer.observe(tools);observer.observe(workspace.querySelector('.canvas-toolbar'));
     const icons=['M12 3l2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z','M3 3h7v7H3ZM14 3h7v7h-7ZM3 14h7v7H3ZM14 14h7v7h-7Z','M4 12l5 5L20 6','M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18M12 7v5l3 2','M12 3l9 5v9l-9 5-9-5V8ZM3 8l9 5 9-5M12 13v9','M5 4h14v16H5ZM8 8h8M8 12h8M8 16h5'];
     document.querySelectorAll('.primary-nav .nav-item>span').forEach((span,index)=>{span.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${icons[index]}"/></svg>`;});
@@ -159,7 +159,7 @@
   }
   function applyQualityDefaults(){
     for(const [id,value] of [['qualityPreset','quality'],['inpaintQualityPreset','detail']]){const field=byId(id);if(field){field.value=value;field.dispatchEvent(new Event('change'));}}
-    byId('outpaintQuality').click();applyTextToImagePreset('balanced');
+    byId('outpaintQuality').click();globalThis.AtelierApp.applyTextToImagePreset('balanced');
     syncJourney();
   }
   global.StudioWorkspace={setup,syncJourney,reveal,setPanel,applyQualityDefaults};

@@ -1,5 +1,5 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert');
-const source=fs.readFileSync('app/public/app.js','utf8');
+const source=require('./helpers/source').read('app/public/app.js','utf8');
 const code=source.slice(source.indexOf('let inpaintPromptReviewPending='),source.indexOf('async function loadRuntimeModelStatus'));
 class Element extends EventTarget{
   constructor(){super();this.value='';this.returnValue='';}
@@ -12,7 +12,7 @@ class Element extends EventTarget{
 const elements=new Map(),get=id=>{if(!elements.has(id))elements.set(id,new Element());return elements.get(id);};
 const calls=[],jobs=[];let previewFailure=false;
 const context={Event,Promise,setTimeout,clearTimeout,$:get,studioResultInstructionsDirty:()=>false,current:{id:'sample'},sourceImage:{},editableMaskStats:()=>({selected:10,minimum:1}),activeJobId:'',binaryMaskDataUrl:()=> 'mask',seedForRun:()=>42,setMessage:()=>{},createJobId:()=> 'job',setActiveJob:id=>jobs.push(id),settleJob:async()=>{},fetch:async(url,options)=>{calls.push({url,body:JSON.parse(options.body)});return{ok:!previewFailure,json:async()=>url==='/api/inpaint-prompts'?{ok:!previewFailure,prompt:'assembled',negativePrompt:'avoid'}:{ok:false,error:'test stop'}};}};
-vm.createContext(context);vm.runInContext(fs.readFileSync('app/public/outfit-workflow.js','utf8'),context);vm.runInContext(code,context);
+vm.createContext(context);vm.runInContext(require('./helpers/source').read('app/public/outfit-workflow.js','utf8'),context);vm.runInContext(code,context);
 const tick=()=>new Promise(resolve=>setImmediate(resolve));
 (async()=>{
   let result=context.runInpaint();await tick();

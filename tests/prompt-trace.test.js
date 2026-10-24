@@ -1,5 +1,5 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert');
-const source=fs.readFileSync('app/public/app.js','utf8');
+const source=require('./helpers/source').read('app/public/app.js','utf8');
 const start=source.indexOf('function promptTraceMarkup('),end=source.indexOf('function renderRunPromptTraces(');
 const context={STAGE_LABELS:{'inpaint-generating':'Inpainting'},escapeHtml:value=>String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'),JSON,String,Object,Array};
 vm.createContext(context);vm.runInContext(source.slice(start,end),context);
@@ -24,7 +24,7 @@ assert(liveCode.includes('liveContent.innerHTML='));
 assert(!liveCode.includes('target.innerHTML='),'Polling must not destroy the prompt scroll container');
 assert(!liveCode.includes('target.after(promptHost)'),'Polling must not detach the prompt during scrollbar drag');
 const os=require('os'),path=require('path');
-const serverSource=fs.readFileSync('app/server.js','utf8');
+const serverSource=require('./helpers/source').read('app/server.js','utf8');
 const route=serverSource.slice(serverSource.indexOf("  if (req.method === 'GET' && pathname === '/api/output-prompts')"),serverSource.indexOf("  if (req.method === 'GET' && pathname === '/api/library-assets')"));
 const temp=fs.mkdtempSync(path.join(os.tmpdir(),'atelier-prompt-test-'));
 try{

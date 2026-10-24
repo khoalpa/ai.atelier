@@ -1,5 +1,5 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert'),path=require('path');
-const source=fs.readFileSync(path.join(__dirname,'../app/public/studio-workspace.js'),'utf8');
+const source=require('./helpers/source').read(path.join(__dirname,'../app/public/studio-workspace.js'),'utf8');
 const classes=()=>({values:new Set(),toggle(name,on){on?this.values.add(name):this.values.delete(name);},contains(name){return this.values.has(name);}});
 const panel={classList:classes(),contains(node){return node===input;}},main={classList:classes()};
 const buttons=[{dataset:{layoutIcon:'settings'},innerHTML:'<svg></svg>',setAttribute(name,value){this[name]=value;}},{dataset:{},setAttribute(name,value){this[name]=value;}}];

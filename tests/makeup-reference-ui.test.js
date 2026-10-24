@@ -19,7 +19,7 @@ const context={window:{Makeup:{isLocked:()=>locked,referenceReady:()=>ready,desc
    {ok:true,plan,warnings:['Màu là gợi ý']};
   return {ok:!fail||url!='/api/makeup-reference',json:async()=>data};
  }};
-vm.createContext(context);vm.runInContext(fs.readFileSync('app/public/makeup-library.js','utf8'),context);
+vm.createContext(context);vm.runInContext(require('./helpers/source').read('app/public/makeup-library.js','utf8'),context);
 (async()=>{
  initialize();await new Promise(setImmediate);
  assert.equal(fields.makeupReferenceSelect.children.length,2,'Legacy image API has no ok field');

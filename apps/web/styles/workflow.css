@@ -1,0 +1,13 @@
+.library-page,.library-card-actions,.workflow-actions {display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.library-page {margin:12px 0;}.library-page>span:first-child {margin-right:auto;}
+.library-card-actions button {font-size:12px;min-height:32px;padding:6px 10px;}
+.library-filters [aria-pressed=true] {border-color:var(--accent);color:var(--accent);}
+.workflow-dialog {width:min(900px,calc(100vw - 24px));max-height:calc(100dvh - 32px);overflow:auto;background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:14px;padding:20px;}
+.workflow-dialog::backdrop {background:#000a;}.workflow-dialog label {display:grid;gap:6px;margin:12px 0;}.workflow-dialog input,.workflow-dialog select {max-width:100%;}
+.project-timeline {display:grid;gap:12px;margin:16px 0;}.project-timeline article {display:flex;gap:12px;padding:10px;border:1px solid var(--line);border-radius:10px;}.project-timeline img {width:100px;height:90px;object-fit:contain;}.project-timeline article>div {display:grid;gap:6px;align-content:start;}
+.workflow-card {padding:16px;border:1px solid var(--line);border-radius:12px;margin:12px 0;background:var(--surface);}.workflow-card>p {color:var(--muted);}.workflow-card label {display:grid;gap:6px;margin:8px 0;}.workflow-card .button-row {flex-wrap:wrap;}
+.workflow-grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;}.workflow-version {display:flex;gap:8px;align-items:center;}.workflow-version img {width:56px;height:48px;object-fit:contain;}.workflow-version button {flex:1;white-space:normal;}
+.manual-inspector .workflow-card {padding:8px;margin:8px 0;}.manual-inspector .workflow-actions button {font-size:12px;padding:6px;}.workflow-error {color:var(--danger,#f88);}
+@media(max-width:650px){.workflow-dialog{padding:12px;}.library-toolbar select{width:100%;}.project-timeline img{width:72px;height:72px;}}
+
+body[data-experience="simple"] .nav-item[data-view="model"],body[data-experience="simple"] .nav-item[data-view="prompts"] {display:none;}

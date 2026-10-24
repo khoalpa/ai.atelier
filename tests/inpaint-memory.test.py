@@ -1,3 +1,4 @@
+from helpers.ai_source import read_source
 """Exercise loader memory policy without loading model weights."""
 import ast
 import os
@@ -6,7 +7,7 @@ import types
 from pathlib import Path
 from unittest.mock import Mock
 
-source = ast.parse((Path(__file__).resolve().parents[1] / 'ai_service.py').read_text(encoding='utf-8'))
+source = ast.parse(read_source(Path(__file__).resolve().parents[1] / 'ai_service.py', encoding='utf-8'))
 loader = next(node for node in source.body if isinstance(node, ast.FunctionDef) and node.name == 'load_inpaint_pipe')
 vae_memory = next(node for node in source.body if isinstance(node, ast.FunctionDef) and node.name == 'configure_vae_memory')
 for architecture, memory_gb, expected in [('flux', 16, 'sequential'), ('flux', 32, 'model'), ('sdxl', 16, 'model')]:

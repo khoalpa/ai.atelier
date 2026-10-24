@@ -1,5 +1,5 @@
 const fs=require('fs'),path=require('path'),vm=require('vm'),assert=require('assert');
-const source=fs.readFileSync(path.join(__dirname,'../app/public/app.js'),'utf8');
+const source=require('./helpers/source').read(path.join(__dirname,'../app/public/app.js'),'utf8');
 const nodes={resultsGrid:{children:[],innerHTML:''},resultsDialog:{open:false,classList:{remove(){}},showModal(){this.open=true}},comparePanel:{hidden:false},studioResultsFilmstrip:{children:[]},studioResultsTray:{hidden:true,scrollIntoView(){this.scrolled=true}}};
 const context={$:id=>nodes[id],activateAppView(){},setMessage(){},escapeHtml:value=>String(value),outputUrl:file=>'/'+file.replace(/^workspace\//,'')};
 vm.createContext(context);

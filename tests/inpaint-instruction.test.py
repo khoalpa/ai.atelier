@@ -1,3 +1,4 @@
+from helpers.ai_source import read_source
 """Verify prompt composition without loading model weights."""
 import ast
 from pathlib import Path
@@ -7,14 +8,14 @@ import json
 
 root = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(root))
-source = ast.parse((root / 'ai_service.py').read_text(encoding='utf-8'))
+source = ast.parse(read_source(root / 'ai_service.py', encoding='utf-8'))
 names = {'build_inpaint_instruction', 'build_inpaint_negative_prompt'}
 nodes = [node for node in source.body if isinstance(node, ast.FunctionDef) and node.name in names]
 nodes += [node for node in source.body if isinstance(node, ast.Assign) and any(isinstance(target, ast.Name) and target.id == 'INPAINT_TARGETS' for target in node.targets)]
 with tempfile.TemporaryDirectory() as temporary:
     test_root = Path(temporary)
     (test_root / 'workspace').mkdir()
-    catalog = json.loads((root / 'workspace/prompts.json').read_text(encoding='utf-8'))
+    catalog = json.loads(read_source(root / 'workspace/prompts.json', encoding='utf-8'))
     for mode, text in {'base_layer': 'Use a neutral base layer.', 'reconstruct_body': 'Restore the covered body surfaces.', 'background': 'Continue the surrounding background.'}.items():
         catalog['processingModes'][mode]['prompt'] = text
     (test_root / 'workspace/prompts.json').write_text(json.dumps(catalog), encoding='utf-8')

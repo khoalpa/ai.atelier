@@ -1,5 +1,5 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
-const source=fs.readFileSync(require.resolve('../app/public/character-extra.js'),'utf8');
+const source=require('./helpers/source').read(require.resolve('../app/public/character-extra.js'),'utf8');
 function queueContext(rows,post){
   const calls=[],context={queue:rows,running:false,stop:false,api:{locked:()=>false,setBusy(){},notice:(...args)=>calls.push(['notice',...args]),post:async(route,body)=>{calls.push([route,body]);return post(route,body);}},el:()=>({}),createJobId:()=>`test-${calls.length}`,setActiveJob(){},settleJob:async()=>{},persist(){},renderQueue(){}};
   vm.createContext(context);vm.runInContext(source.slice(source.indexOf('  async function runBatch('),source.indexOf('  function setup(')),context);return {context,calls};

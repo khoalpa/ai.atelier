@@ -1,3 +1,4 @@
+from helpers.ai_source import read_source
 """Incomplete pose masks need a confident, complete fallback or must fail."""
 import ast
 from pathlib import Path
@@ -5,7 +6,7 @@ import numpy as np
 import cv2
 from PIL import Image
 
-tree=ast.parse((Path(__file__).resolve().parents[1]/'ai_service.py').read_text(encoding='utf-8'))
+tree=ast.parse(read_source(Path(__file__).resolve().parents[1]/'ai_service.py', encoding='utf-8'))
 node=next(node for node in tree.body if isinstance(node,ast.FunctionDef) and node.name=='catvton_dedicated_mask')
 points=[[100,20,1.] for _ in range(17)]
 for index,position in {5:(60,50),6:(140,50),7:(50,90),8:(150,90),9:(45,125),10:(155,125),11:(75,170),12:(125,170)}.items():

@@ -1,5 +1,5 @@
 const assert = require('assert'), fs = require('fs'), path = require('path'), http = require('http'), vm = require('vm');
-const source = fs.readFileSync(path.join(__dirname, '../app/server.js'), 'utf8');
+const source = require('./helpers/source').read(path.join(__dirname, '../app/server.js'), 'utf8');
 const code = source.slice(source.indexOf('function parseJson('), source.indexOf('function decodePngDataUrl(')) +
   source.slice(source.indexOf('async function proxyToAi('), source.indexOf('function serveFile(')) +
   source.slice(source.indexOf('async function handleRequest('), source.indexOf('let webRestartPending'));
@@ -11,7 +11,7 @@ async function listen(server) {await new Promise(resolve => server.listen(0, '12
     req.on('end', () => res.end(JSON.stringify({ok: true, bytes, endpoint: req.url})));
   });
   const aiPort = await listen(ai);
-  const context = {URL, Buffer, http, HOST: '127.0.0.1', PORT: 0, AI_PORT: aiPort, webRestartPending:false, serviceManager:{busy:()=>false},
+  const context = {taskRoutes:null,taskCoordinator:null,URL, Buffer, http, HOST: '127.0.0.1', PORT: 0, AI_PORT: aiPort, webRestartPending:false, serviceManager:{busy:()=>false},
     send: (res, status, body) => {res.writeHead(status, {'Content-Type':'application/json'}); res.end(body);}};
   vm.createContext(context); vm.runInContext(code, context);
   const web = http.createServer((req, res) => context.handleRequest(req, res).catch(error => {res.statusCode = 500; res.end(error.message);}));

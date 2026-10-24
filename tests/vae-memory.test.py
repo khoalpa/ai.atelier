@@ -1,8 +1,9 @@
+from helpers.ai_source import read_source
 import ast
 from pathlib import Path
 from types import SimpleNamespace
 
-tree = ast.parse((Path(__file__).resolve().parents[1] / 'ai_service.py').read_text(encoding='utf-8'))
+tree = ast.parse(read_source(Path(__file__).resolve().parents[1] / 'ai_service.py', encoding='utf-8'))
 ns = {}
 exec(compile(ast.Module(body=[n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'configure_vae_memory'], type_ignores=[]), '<vae-memory>', 'exec'), ns)
 configure = ns['configure_vae_memory']

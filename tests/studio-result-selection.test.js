@@ -2,8 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const assert = require('assert');
 
-const html = fs.readFileSync(path.join(__dirname, '../app/public/index.html'), 'utf8');
-const script = fs.readFileSync(path.join(__dirname, '../app/public/app.js'), 'utf8');
+const html = require('./helpers/source').read(path.join(__dirname, '../app/public/index.html'), 'utf8');
+const script = require('./helpers/source').read(path.join(__dirname, '../app/public/app.js'), 'utf8');
 
 for (const id of [
   'studioFocusStatus',

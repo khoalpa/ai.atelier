@@ -1,6 +1,7 @@
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
-$python = Join-Path $projectRoot '.venv-sam2\Scripts\python.exe'
+. (Join-Path $projectRoot 'scripts\runtime.ps1')
+$python = Resolve-AtelierRuntime -Root $projectRoot -Kind python
 $checkpoint = Join-Path $projectRoot 'models\segmentation\sam2.1_hiera_tiny.pt'
 
 if (-not (Test-Path -LiteralPath $python)) {

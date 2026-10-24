@@ -1,0 +1,1924 @@
+{
+  "web": [
+    {
+      "kind": "const",
+      "declarations": [
+        "$ = "
+      ]
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "canvas = "
+      ]
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "ctx = "
+      ]
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "maskCanvas = "
+      ]
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "maskCtx = "
+      ]
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "protectCanvas = "
+      ]
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "protectCtx = "
+      ]
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "manualProtectCanvas = "
+      ]
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "manualProtectCtx = "
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "images = "
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "current = "
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "sourceImage = "
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "drawing = "
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "tool = "
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "lastPoint = "
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "history = "
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "aiPoints = "
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "currentRunDirectory = "
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "studioSelectedResult = "
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "studioPendingResult = "
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "studioViewingResult = "
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "libraryFilter = "
+      ]
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "librarySelected = "
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "libraryAssets = "
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "garmentDataUrl = "
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "detectedPeople = "
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "reviewState = "
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "auditItems = "
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "activeJobId = "
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "jobPollTimer = "
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "jobEventSource = "
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "guidedReviewItems = "
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "guidedReviewIndex = "
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "activityState = "
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "activityClockTimer = "
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "studioCommandCollapseTimer = "
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "studioCommandAutoKey = "
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "studioCommandManuallyCollapsed = "
+      ]
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "MAX_HISTORY = "
+      ]
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "reviewKey="
+      ]
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "currentReview="
+      ]
+    },
+    {
+      "fn": "createJobId"
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "SEED_MAX = "
+      ]
+    },
+    {
+      "fn": "randomSeed"
+    },
+    {
+      "fn": "setupSeedControl"
+    },
+    {
+      "fn": "seedForRun"
+    },
+    {
+      "fn": "setCustomSeed"
+    },
+    {
+      "fn": "setActiveJob"
+    },
+    {
+      "fn": "connectJobStream"
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "STAGE_LABELS="
+      ]
+    },
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {
+      "kind": "const",
+      "declarations": [
+        "PIPELINE_STAGES="
+      ]
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "INPAINT_STAGES="
+      ]
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "OUTPAINT_STAGES="
+      ]
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "TEXT_TO_IMAGE_STAGES="
+      ]
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "escapeHtml="
+      ]
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "readableRequestError="
+      ]
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "formatDuration="
+      ]
+    },
+    {
+      "fn": "downloadFullSizeImage"
+    },
+    {
+      "fn": "openImageAtFullSize"
+    },
+    {},
+    {
+      "kind": "const",
+      "declarations": [
+        "dismissedProgressJobs="
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "currentAppView="
+      ]
+    },
+    {
+      "fn": "activityProgress"
+    },
+    {
+      "fn": "generationProgressInfo"
+    },
+    {
+      "fn": "closeGenerationProgress"
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "imagePromptRequest="
+      ]
+    },
+    {
+      "fn": "loadImagePromptTrace"
+    },
+    {
+      "fn": "promptTraceMarkup"
+    },
+    {
+      "fn": "renderPromptTrace"
+    },
+    {
+      "fn": "renderRunPromptTraces"
+    },
+    {
+      "fn": "generationActionState"
+    },
+    {
+      "fn": "showGenerationResult"
+    },
+    {
+      "fn": "presentStudioResults"
+    },
+    {
+      "fn": "refreshContinuationActions"
+    },
+    {
+      "fn": "continueFromSelectedResult"
+    },
+    {
+      "fn": "updateProgressVisibility"
+    },
+    {
+      "fn": "renderGenerationLive"
+    },
+    {
+      "fn": "renderActivity"
+    },
+    {
+      "fn": "pollJobStatus"
+    },
+    {
+      "fn": "settleJob"
+    },
+    {
+      "fn": "applyJobState"
+    },
+    {
+      "fn": "resumeActiveJob"
+    },
+    {
+      "fn": "cancelActiveJob"
+    },
+    {
+      "fn": "calibrateQuality"
+    },
+    {
+      "fn": "buildGoldenBaseline"
+    },
+    {
+      "fn": "compareBaseline"
+    },
+    {
+      "fn": "showJobs"
+    },
+    {
+      "fn": "cleanupOldJobs"
+    },
+    {
+      "fn": "runBenchmark"
+    },
+    {
+      "fn": "buildDashboard"
+    },
+    {
+      "fn": "checkSystem"
+    },
+    {
+      "fn": "backupData"
+    },
+    {
+      "fn": "loadBackups"
+    },
+    {
+      "fn": "restoreSelectedBackup"
+    },
+    {
+      "fn": "saveBenchmarkReview"
+    },
+    {
+      "fn": "renderGuidedReview"
+    },
+    {
+      "fn": "reviewBenchmark"
+    },
+    {
+      "fn": "showReviewReadiness"
+    },
+    {
+      "fn": "runTargetedRetryQueue"
+    },
+    {
+      "fn": "showRetryComparisons"
+    },
+    {
+      "fn": "calibrateWeights"
+    },
+    {
+      "fn": "compareWeights"
+    },
+    {
+      "fn": "activateWeights"
+    },
+    {
+      "fn": "confirmDefaultWeights"
+    },
+    {
+      "fn": "saveReferenceProfile"
+    },
+    {
+      "fn": "referenceSetupSummary"
+    },
+    {
+      "fn": "loadReferenceReadiness"
+    },
+    {
+      "fn": "qualifyReference"
+    },
+    {
+      "fn": "checkAcceptance"
+    },
+    {
+      "fn": "setMessage"
+    },
+    {
+      "fn": "showCompare"
+    },
+    {
+      "fn": "loadReviewState"
+    },
+    {
+      "fn": "setReviewStatus"
+    },
+    {
+      "fn": "renderAuditQueue"
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "editorZoom=",
+        "editorPan=",
+        "editorPanStart=",
+        "editorPanMode="
+      ]
+    },
+    {
+      "fn": "updateEditorTransform"
+    },
+    {
+      "fn": "setEditorZoom"
+    },
+    {
+      "fn": "fitCanvas"
+    },
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {
+      "fn": "render"
+    },
+    {
+      "fn": "snapshot"
+    },
+    {
+      "fn": "canvasPoint"
+    },
+    {
+      "fn": "paint"
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "canvasPointerStart=",
+        "canvasFirstClick="
+      ]
+    },
+    {
+      "fn": "restoreCanvasBeforeDoubleClick"
+    },
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {
+      "fn": "loadImage"
+    },
+    {
+      "fn": "renderImageOptions"
+    },
+    {
+      "fn": "editorHasChanges"
+    },
+    {
+      "fn": "restoreControlDefault"
+    },
+    {
+      "fn": "resetEditorSession"
+    },
+    {
+      "fn": "showEmptyEditorState"
+    },
+    {
+      "fn": "deselectCurrentImage"
+    },
+    {
+      "fn": "uploadSourceImage"
+    },
+    {
+      "fn": "setTool"
+    },
+    {
+      "fn": "segmentWithAi"
+    },
+    {
+      "fn": "displayMask"
+    },
+    {
+      "fn": "displayProtectedMask"
+    },
+    {
+      "fn": "createAutomaticMask"
+    },
+    {
+      "fn": "detectPeopleInImage"
+    },
+    {
+      "fn": "preprocessGarment"
+    },
+    {
+      "fn": "binaryMaskDataUrl"
+    },
+    {
+      "fn": "editableMaskStats"
+    },
+    {
+      "fn": "highlightMaskTools"
+    },
+    {
+      "fn": "showMaskGuide"
+    },
+    {
+      "fn": "createMaskFromInpaintPreset"
+    },
+    {
+      "fn": "save"
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "inpaintPromptReviewPending="
+      ]
+    },
+    {
+      "fn": "reviewGenerationPrompts"
+    },
+    {
+      "fn": "runInpaint"
+    },
+    {
+      "fn": "loadRuntimeModelStatus"
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "regionDetection = ",
+        "regionController = "
+      ]
+    },
+    {
+      "fn": "selectedRegions"
+    },
+    {
+      "fn": "applyDetectedRegions"
+    },
+    {
+      "fn": "detectWithManagedModel"
+    },
+    {
+      "fn": "runAdetailerRefine"
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "loraStatusRequest="
+      ]
+    },
+    {
+      "fn": "loadLoraStatus"
+    },
+    {
+      "fn": "loadModels"
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "modelInventory="
+      ]
+    },
+    {
+      "fn": "formatModelSize"
+    },
+    {
+      "fn": "renderModelInventory"
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "renderModelInventoryWithoutPercent="
+      ]
+    },
+    {},
+    {
+      "kind": "const",
+      "declarations": [
+        "modelNameCompare="
+      ]
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "modelSize="
+      ]
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "modelVram="
+      ]
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "renderModelInventoryLicenseBase="
+      ]
+    },
+    {},
+    {
+      "kind": "const",
+      "declarations": [
+        "modelStatusRank="
+      ]
+    },
+    {
+      "fn": "compareInventoryModels"
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "renderModelInventorySortedBase="
+      ]
+    },
+    {},
+    {
+      "kind": "const",
+      "declarations": [
+        "renderModelInventoryWithSort="
+      ]
+    },
+    {},
+    {
+      "fn": "downloadableModels"
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "formatDownloadBytes="
+      ]
+    },
+    {
+      "fn": "updateDownloadAllModelsButton"
+    },
+    {
+      "fn": "loadModelCandidates"
+    },
+    {
+      "fn": "startModelDownload"
+    },
+    {
+      "fn": "downloadAllModels"
+    },
+    {
+      "fn": "loadModelCapabilities"
+    },
+    {
+      "fn": "loadInpaintModelOptions"
+    },
+    {
+      "fn": "selectModelForFeature"
+    },
+    {
+      "fn": "setModelManagerTab"
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "loadModelsBase="
+      ]
+    },
+    {},
+    {
+      "kind": "let",
+      "declarations": [
+        "registeredModelsState=",
+        "lastRegisteredModelId="
+      ]
+    },
+    {
+      "fn": "renderRegisteredModels"
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "renderRegisteredModelsUnsorted="
+      ]
+    },
+    {},
+    {
+      "kind": "const",
+      "declarations": [
+        "loadModelsRegisteredBase="
+      ]
+    },
+    {},
+    {
+      "kind": "const",
+      "declarations": [
+        "renderRegisteredModelsWithSort="
+      ]
+    },
+    {},
+    {
+      "kind": "const",
+      "declarations": [
+        "loadModelCapabilitiesBase="
+      ]
+    },
+    {},
+    {
+      "fn": "sortCapabilityCards"
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "loadModelCapabilitiesSortedBase="
+      ]
+    },
+    {},
+    {
+      "fn": "loadChromaStatus"
+    },
+    {
+      "fn": "runChromaSmoke"
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "textToImageModels="
+      ]
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "TEXT_PIPELINE_HINTS="
+      ]
+    },
+    {
+      "fn": "textControlUnavailableReason"
+    },
+    {
+      "fn": "updateTextToImagePipeline"
+    },
+    {
+      "fn": "loadTextToImageLoras"
+    },
+    {
+      "fn": "updateTextToImageAvailability"
+    },
+    {
+      "fn": "loadTextToImageModels"
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "modelSelectorRefreshPromise=",
+        "modelStartupScanPromise="
+      ]
+    },
+    {
+      "fn": "refreshModelSelectors"
+    },
+    {
+      "fn": "startModelSelectorStartupScan"
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "textQuality="
+      ]
+    },
+    {
+      "fn": "TEXT_TO_IMAGE_PRESETS"
+    },
+    {
+      "fn": "syncTextToImageControls"
+    },
+    {
+      "fn": "applyTextToImagePreset"
+    },
+    {
+      "fn": "runChromaGenerate"
+    },
+    {
+      "fn": "runExtendedTextPipeline"
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "pendingPromptAssist="
+      ]
+    },
+    {
+      "fn": "promptAssistDiff"
+    },
+    {
+      "fn": "renderPromptAssistDiff"
+    },
+    {
+      "fn": "renderPromptAssistFeedback"
+    },
+    {
+      "fn": "openPromptAssistPreview"
+    },
+    {
+      "fn": "requestPromptSuggestion"
+    },
+    {
+      "fn": "runPromptAssist"
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "analyzedModelUrl="
+      ]
+    },
+    {
+      "fn": "analyzeModelUrl"
+    },
+    {
+      "fn": "downloadAndRegisterModelUrl"
+    },
+    {
+      "fn": "registerManagedModel"
+    },
+    {
+      "fn": "activateManagedModel"
+    },
+    {
+      "fn": "quarantineManagedModel"
+    },
+    {
+      "fn": "restoreManagedModel"
+    },
+    {
+      "fn": "deleteManagedModel"
+    },
+    {
+      "fn": "exportModelManifest"
+    },
+    {
+      "fn": "configureLora"
+    },
+    {
+      "fn": "runLoraAbTest"
+    },
+    {
+      "fn": "runLoraMatrix"
+    },
+    {
+      "fn": "runLoraStrengthMatrix"
+    },
+    {
+      "fn": "selectPrimary"
+    },
+    {
+      "fn": "tryonQualityFeedback"
+    },
+    {
+      "fn": "runTryon"
+    },
+    {
+      "fn": "outputUrl"
+    },
+    {
+      "fn": "runBatchTryon"
+    },
+    {
+      "fn": "runRegressionAudit"
+    },
+    {
+      "fn": "exportApproved"
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "PRESETS="
+      ]
+    },
+    {
+      "fn": "applyPreset"
+    },
+    {
+      "fn": "init"
+    },
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {
+      "kind": "let",
+      "declarations": [
+        "progressVisibilityFrame="
+      ]
+    },
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {
+      "kind": "const",
+      "declarations": [
+        "HUBS = "
+      ]
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "PROMPT_LIBRARY_KEY="
+      ]
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "PRESET_PROMPTS_KEY="
+      ]
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "EDITABLE_PRESET_LABELS="
+      ]
+    },
+    {
+      "fn": "readEditablePresetOverrides"
+    },
+    {
+      "fn": "readEditablePresetPrompt"
+    },
+    {
+      "fn": "renderPresetPromptEditor"
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "studioResultModes="
+      ]
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "studioResultDrafts="
+      ]
+    },
+    {
+      "fn": "studioResultInstructionsDirty"
+    },
+    {
+      "fn": "showStudioResultInstructions"
+    },
+    {
+      "fn": "loadStudioResultInstructions"
+    },
+    {
+      "fn": "setupStudioResultInstructions"
+    },
+    {
+      "fn": "renderProcessingModeEditor"
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "DEFAULT_PROMPT_LIBRARY="
+      ]
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "PROMPT_SLOT_LABELS="
+      ]
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "LEGACY_INPAINT_LIBRARY_TEXT="
+      ]
+    },
+    {
+      "fn": "readPromptLibrary"
+    },
+    {
+      "fn": "writePromptLibrary"
+    },
+    {
+      "fn": "applyManagedPromptDefaults"
+    },
+    {
+      "fn": "renderPromptManager"
+    },
+    {
+      "fn": "systemStateLabel"
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "RESET_SCOPE_UI="
+      ]
+    },
+    {
+      "fn": "formatResetSize"
+    },
+    {
+      "fn": "reloadSourceImages"
+    },
+    {
+      "fn": "resetWorkspaceScope"
+    },
+    {
+      "fn": "openModelManager"
+    },
+    {
+      "fn": "loadSystemOverview"
+    },
+    {
+      "fn": "qualityMetric"
+    },
+    {
+      "fn": "runQualityAction"
+    },
+    {
+      "fn": "loadQualityOverview"
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "jobsRefreshTimer="
+      ]
+    },
+    {
+      "fn": "jobStatusLabel"
+    },
+    {
+      "fn": "jobProgress"
+    },
+    {
+      "fn": "runJobAction"
+    },
+    {
+      "fn": "loadJobsOverview"
+    },
+    {
+      "fn": "startJobsLiveUpdates"
+    },
+    {
+      "kind": "const",
+      "declarations": [
+        "REVIEW_CATEGORY_LABELS="
+      ]
+    },
+    {
+      "fn": "runReviewAction"
+    },
+    {
+      "fn": "loadReviewOverview"
+    },
+    {
+      "fn": "restartAtelierWeb"
+    },
+    {
+      "fn": "renderHub"
+    },
+    {
+      "fn": "renderLibrary"
+    },
+    {
+      "fn": "loadLibraryAssets"
+    },
+    {
+      "fn": "changeLibraryRemoval"
+    },
+    {
+      "fn": "updateLibraryBulkBar"
+    },
+    {
+      "fn": "activateAppView"
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "studioMode="
+      ]
+    },
+    {
+      "kind": "let",
+      "declarations": [
+        "studioTaskMasks="
+      ]
+    },
+    {
+      "fn": "switchTaskMask"
+    },
+    {
+      "fn": "loadTryonModelOptions"
+    },
+    {
+      "fn": "refreshStudioReadiness"
+    },
+    {
+      "fn": "revealStudioCreateAction"
+    },
+    {
+      "fn": "setStudioCommandCollapsed"
+    },
+    {
+      "fn": "scheduleStudioCommandCollapse"
+    },
+    {
+      "fn": "updateStudioCommandVisibility"
+    },
+    {
+      "fn": "updateStudioCommandBar"
+    },
+    {
+      "fn": "setExperienceMode"
+    },
+    {
+      "fn": "setStudioMode"
+    },
+    {
+      "fn": "restoreModelSortPreferences"
+    },
+    {
+      "fn": "setupExperience"
+    },
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {}
+  ],
+  "api": [
+    {
+      "variable": "http"
+    },
+    {
+      "variable": "fs"
+    },
+    {
+      "variable": "path"
+    },
+    {
+      "variable": "crypto"
+    },
+    {},
+    {},
+    {},
+    {},
+    {
+      "variable": "editHistory"
+    },
+    {
+      "variable": "jsonConfigStore"
+    },
+    {
+      "variable": "ROOT"
+    },
+    {
+      "variable": "manualStore"
+    },
+    {
+      "variable": "qualityService"
+    },
+    {
+      "variable": "PUBLIC_DIR"
+    },
+    {
+      "variable": "SAMPLES_DIR"
+    },
+    {
+      "variable": "UPLOADS_DIR"
+    },
+    {
+      "variable": "MASKS_DIR"
+    },
+    {
+      "variable": "OUTPUTS_DIR"
+    },
+    {
+      "variable": "REVIEW_DIR"
+    },
+    {
+      "variable": "REVIEW_STATE"
+    },
+    {
+      "variable": "JOBS_DIR"
+    },
+    {
+      "variable": "BACKUPS_DIR"
+    },
+    {
+      "variable": "RESET_ARCHIVE_DIR"
+    },
+    {
+      "variable": "REFERENCES_DIR"
+    },
+    {
+      "variable": "RETRY_COMPARISONS"
+    },
+    {
+      "variable": "MODEL_REGISTRY"
+    },
+    {
+      "variable": "MODEL_CANDIDATES"
+    },
+    {
+      "variable": "EXTERNAL_MODEL_SOURCES"
+    },
+    {
+      "variable": "MODEL_DOWNLOADS"
+    },
+    {
+      "variable": "MODEL_DOWNLOADER"
+    },
+    {
+      "variable": "MODEL_DOWNLOAD_PYTHON"
+    },
+    {
+      "variable": "MODEL_HISTORY"
+    },
+    {
+      "variable": "CONFIG_FILE"
+    },
+    {
+      "variable": "assetCatalog"
+    },
+    {
+      "variable": "regionStore"
+    },
+    {
+      "variable": "workQueue"
+    },
+    {
+      "variable": "exportPresets"
+    },
+    {
+      "variable": "backupStore"
+    },
+    {
+      "variable": "HOST"
+    },
+    {
+      "variable": "PORT"
+    },
+    {
+      "variable": "AI_PORT"
+    },
+    {
+      "variable": "LLM_BASE_URL"
+    },
+    {
+      "variable": "LLM_MODEL"
+    },
+    {
+      "variable": "MAKEUP_LLM_MODEL"
+    },
+    {},
+    {
+      "variable": "VERSION"
+    },
+    {
+      "variable": "acceptanceStore"
+    },
+    {
+      "variable": "backgroundRenderer"
+    },
+    {
+      "variable": "serviceManager"
+    },
+    {
+      "variable": "queueRunner"
+    },
+    {
+      "assign": "serviceManager"
+    },
+    {
+      "variable": "MIME"
+    },
+    {
+      "fn": "send"
+    },
+    {
+      "fn": "safeJoin"
+    },
+    {
+      "fn": "resolveSamplePath"
+    },
+    {
+      "fn": "listImages"
+    },
+    {
+      "fn": "listUploadedImages"
+    },
+    {
+      "fn": "listOutputAssets"
+    },
+    {
+      "fn": "allLibraryAssets"
+    },
+    {
+      "fn": "listReferenceAssets"
+    },
+    {
+      "fn": "uploadSourceImage"
+    },
+    {
+      "fn": "listJobs"
+    },
+    {
+      "fn": "latestOutputBySource"
+    },
+    {
+      "fn": "parseJson"
+    },
+    {
+      "fn": "decodePngDataUrl"
+    },
+    {
+      "fn": "decodeImageDataUrl"
+    },
+    {
+      "fn": "callAiJson"
+    },
+    {
+      "variable": "PROMPT_ASSIST_TASKS"
+    },
+    {
+      "fn": "parseAssistResult"
+    },
+    {
+      "fn": "isPromptRequest"
+    },
+    {
+      "fn": "assistantFallback"
+    },
+    {
+      "fn": "uniquePromptTerms"
+    },
+    {
+      "fn": "normalizeImagePrompt"
+    },
+    {
+      "fn": "normalizeNegativePrompt"
+    },
+    {
+      "fn": "requestLocalLlm"
+    },
+    {
+      "fn": "promptAssist"
+    },
+    {
+      "fn": "readModelRegistry"
+    },
+    {
+      "fn": "readLocalConfig"
+    },
+    {
+      "fn": "resolveModelPath"
+    },
+    {
+      "fn": "directorySize"
+    },
+    {
+      "fn": "verifyModelEntry"
+    },
+    {
+      "fn": "activeModelPath"
+    },
+    {
+      "fn": "saveModelRegistry"
+    },
+    {
+      "fn": "inferLocalModelKind"
+    },
+    {
+      "fn": "inferLocalArchitecture"
+    },
+    {
+      "fn": "discoverLocalModels"
+    },
+    {
+      "fn": "sd35DepthOperationalState"
+    },
+    {
+      "fn": "modelOperationalState"
+    },
+    {
+      "fn": "listModels"
+    },
+    {
+      "variable": "modelOperationalStateStrict"
+    },
+    {
+      "assign": "modelOperationalState"
+    },
+    {
+      "variable": "MODEL_DISPLAY_METADATA"
+    },
+    {
+      "fn": "readModelDownloadStatus"
+    },
+    {
+      "fn": "processIsAlive"
+    },
+    {
+      "fn": "liveModelDownloadStatus"
+    },
+    {
+      "variable": "liveModelDownloadStatusBase"
+    },
+    {
+      "assign": "liveModelDownloadStatus"
+    },
+    {
+      "fn": "readExternalModelSources"
+    },
+    {
+      "fn": "saveExternalModelSources"
+    },
+    {
+      "variable": "INTEGRATED_MODEL_NOTES"
+    },
+    {
+      "variable": "MODEL_LICENSE_POLICIES"
+    },
+    {
+      "variable": "LOCALLY_USABLE_RESTRICTED_MODELS"
+    },
+    {
+      "fn": "hasHuggingFaceToken"
+    },
+    {
+      "fn": "readDownloadCatalog"
+    },
+    {
+      "fn": "safeModelSourceUrl"
+    },
+    {
+      "fn": "inferArchitecture"
+    },
+    {
+      "fn": "slugModelId"
+    },
+    {
+      "fn": "fetchJson"
+    },
+    {
+      "fn": "analyzeModelSource"
+    },
+    {
+      "variable": "analyzeModelSourceBase"
+    },
+    {
+      "assign": "analyzeModelSource"
+    },
+    {
+      "fn": "analyzeModelUrl"
+    },
+    {
+      "fn": "reconcileExternalRegistrations"
+    },
+    {
+      "fn": "listModelCandidates"
+    },
+    {
+      "fn": "readOllamaModels"
+    },
+    {
+      "fn": "listModelCandidates"
+    },
+    {
+      "fn": "launchModelDownload"
+    },
+    {
+      "fn": "startModelDownload"
+    },
+    {
+      "variable": "modelDownloadQueue"
+    },
+    {
+      "variable": "activeQueuedModelId"
+    },
+    {
+      "fn": "canAutoDownloadModel"
+    },
+    {
+      "fn": "scheduleModelDownloadQueue"
+    },
+    {
+      "fn": "processModelDownloadQueue"
+    },
+    {
+      "fn": "startAllModelDownloads"
+    },
+    {
+      "fn": "registerModelUrl"
+    },
+    {
+      "variable": "MODEL_FEATURES"
+    },
+    {
+      "fn": "compatibleWithFeature"
+    },
+    {
+      "fn": "modelCapabilities"
+    },
+    {
+      "fn": "selectFeatureModel"
+    },
+    {
+      "fn": "registerModel"
+    },
+    {
+      "fn": "activateModel"
+    },
+    {
+      "fn": "exportModelManifest"
+    },
+    {
+      "fn": "quarantineModel"
+    },
+    {
+      "fn": "restoreQuarantinedModel"
+    },
+    {
+      "fn": "deleteModel"
+    },
+    {
+      "fn": "readReviewState"
+    },
+    {
+      "fn": "reviewKey"
+    },
+    {
+      "fn": "writeReviewState"
+    },
+    {
+      "fn": "updateReview"
+    },
+    {
+      "fn": "exportApprovedManifest"
+    },
+    {
+      "fn": "calibrateQuality"
+    },
+    {
+      "fn": "calibrateWeights"
+    },
+    {
+      "fn": "allBenchmarkReports"
+    },
+    {
+      "variable": "QUALITY_FILE_PATTERN"
+    },
+    {
+      "fn": "directoryChildren"
+    },
+    {
+      "fn": "qualityDataTargets"
+    },
+    {
+      "fn": "reviewDataTargets"
+    },
+    {
+      "fn": "resetTargets"
+    },
+    {
+      "fn": "targetStats"
+    },
+    {
+      "fn": "resetDataOverview"
+    },
+    {
+      "fn": "resetWorkspaceData"
+    },
+    {
+      "fn": "latestBenchmarkReportsByCategory"
+    },
+    {
+      "fn": "latestBenchmarkReport"
+    },
+    {
+      "fn": "benchmarkReview"
+    },
+    {
+      "fn": "reviewReadiness"
+    },
+    {
+      "fn": "buildRetryPlan"
+    },
+    {
+      "fn": "readRetryComparisons"
+    },
+    {
+      "fn": "saveRetryComparison"
+    },
+    {
+      "fn": "listRetryComparisons"
+    },
+    {
+      "fn": "compareScoreWeights"
+    },
+    {
+      "fn": "activateScoreWeights"
+    },
+    {
+      "fn": "confirmDefaultWeights"
+    },
+    {
+      "fn": "saveReferenceProfile"
+    },
+    {
+      "fn": "referenceReadinessPayload"
+    },
+    {
+      "fn": "referenceReadiness"
+    },
+    {
+      "fn": "benchmarkWithPreflight"
+    },
+    {
+      "fn": "releaseAcceptance"
+    },
+    {
+      "fn": "listBackups"
+    },
+    {
+      "fn": "restoreBackup"
+    },
+    {
+      "fn": "buildGoldenBaseline"
+    },
+    {
+      "fn": "compareGoldenBaseline"
+    },
+    {
+      "fn": "cleanupJobs"
+    },
+    {
+      "fn": "buildQualityDashboard"
+    },
+    {
+      "fn": "backupWorkspace"
+    },
+    {
+      "fn": "proxyAiHealth"
+    },
+    {
+      "fn": "proxyAiGet"
+    },
+    {
+      "fn": "readAiGet"
+    },
+    {
+      "fn": "systemOverview"
+    },
+    {
+      "fn": "saveMask"
+    },
+    {
+      "fn": "qualityOverview"
+    },
+    {
+      "fn": "selectResult"
+    },
+    {
+      "fn": "proxyToAi"
+    },
+    {
+      "fn": "serveFile"
+    },
+    {
+      "fn": "streamJobEvents"
+    },
+    {
+      "fn": "handleRequest"
+    },
+    {
+      "variable": "webRestartPending"
+    },
+    {
+      "fn": "restartWebServer"
+    },
+    {
+      "variable": "server"
+    }
+  ]
+}

@@ -8,9 +8,14 @@ $ErrorActionPreference = 'Stop'
 $appVersion = (Get-Content -LiteralPath (Join-Path $PSScriptRoot 'version.json') -Raw | ConvertFrom-Json).version
 $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 $releaseRoot = Join-Path $Destination "ai-image-offline-$appVersion-$stamp"
+. (Join-Path $PSScriptRoot 'scripts\runtime.ps1')
+$node = Resolve-AtelierRuntime -Root $PSScriptRoot -Kind node
+& $node (Join-Path $PSScriptRoot 'scripts\build-web.js') | Out-Host
+if ($LASTEXITCODE -ne 0) { throw 'Không dựng được giao diện phát hành.' }
 New-Item -ItemType Directory -Path $releaseRoot -Force | Out-Null
 
 $required = @('version.json','service_lifecycle.py','ai_service.py','background_edit.py','character.py','character_geometry.py','character_runtime.py','character_controls.py','character_quality.py','character_workflow.py','quality_learning.py','quality_report.py','object_removal.py','catvton_inputs.py','vton_pilot.py','tryon_geometry.py','tryon_quality.py','local_request_security.py','sd35_depth_control.py','idm_vton_runtime.py','prompt_catalog.py','prompt_limits.py','processing_mode_prompts.py','outpainting.py','outpaint_quality.py','new_image.py','image_enhancement.py','skin_retouch.py','skin_edge.py','makeup.py','makeup_comparison.py','makeup_reference.py','samples','open_app.bat','start.ps1','start-all.ps1','start-ai.ps1','restart-ai.ps1','scripts','app','tests','docs','README.md','verify-offline-release.ps1','test-clean-install.ps1','install-offline.ps1','update-offline.ps1','rollback-offline.ps1')
+$required += @('apps','packages','services','package.json','pnpm-lock.yaml','requirements-ai.lock','requirements-ai-sources.lock','requirements-ai-audit.json')
 foreach ($item in $required) {
   $source = Join-Path $PSScriptRoot $item
   if (-not (Test-Path -LiteralPath $source)) { throw "Thiếu thành phần phát hành: $item" }

@@ -2,7 +2,7 @@ const fs=require('fs'),vm=require('vm'),assert=require('assert'),os=require('os'
 const fields={};
 for(const [id,value] of Object.entries({outpaintWidth:1280,outpaintHeight:1536,outpaintLeft:128,outpaintTop:0,outpaintRatio:'custom'}))fields[id]={value:String(value)};
 const context={sourceImage:{naturalWidth:1024,naturalHeight:1536},$:id=>fields[id],console};
-vm.createContext(context);vm.runInContext(fs.readFileSync('app/public/outpaint.js','utf8'),context);
+vm.createContext(context);vm.runInContext(require('./helpers/source').read('app/public/outpaint.js','utf8'),context);
 for(const id of ['outpaintSteps','outpaintGuidance','outpaintResolution','outpaintOverlap'])fields[id]={value:'',dataset:{}};
 fields.outpaintModel={value:'flux-1-fill-dev'};fields.outpaintQualityHint={};
 context.applyOutpaintModelProfile();

@@ -8,7 +8,7 @@ class Element {
   get offsetWidth(){return parseFloat(this.style.width)||0;}
   get offsetHeight(){return parseFloat(this.style.height)||0;}
 }
-const fields=Object.fromEntries([...fs.readFileSync('app/public/index.html','utf8').matchAll(/id="(makeupCompare[^"]+)"/g)].map(([,id])=>[id,new Element()]));
+const fields=Object.fromEntries([...require('./helpers/source').read('app/public/index.html','utf8').matchAll(/id="(makeupCompare[^"]+)"/g)].map(([,id])=>[id,new Element()]));
 const catalog=require('../app/makeup-styles.json'),calls=[],restored=[],messages=[];
 let setup,busy=false,active=false,ready=true,descriptionReady=true,current={style:'natural',styleName:'Màu tham chiếu',lip:'#b23b42',description:'Son đỏ'},resolveRun,lastRequest,lastState;
 const context={Image:class extends Element {constructor(){super('img');}},setTimeout,
@@ -25,7 +25,7 @@ const context={Image:class extends Element {constructor(){super('img');}},setTim
     if(url.endsWith('job-status'))return {ok:true,json:async()=>lastState};
     return {ok:true,json:async()=>({ok:true})};
   }};
-vm.createContext(context);vm.runInContext(fs.readFileSync('app/public/makeup-compare.js','utf8'),context);
+vm.createContext(context);vm.runInContext(require('./helpers/source').read('app/public/makeup-compare.js','utf8'),context);
 const ui=context.window.MakeupCompare;
 const inputs=()=>fields.makeupCompareChoices.querySelectorAll('input');
 function check(id,value){const input=inputs().find(x=>x.dataset.compareStyle===id);input.checked=value;input.onchange();}

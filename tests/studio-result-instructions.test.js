@@ -1,5 +1,5 @@
 const assert=require('assert'),fs=require('fs'),vm=require('vm');
-const source=fs.readFileSync(require('path').join(__dirname,'../app/public/app.js'),'utf8');
+const source=require('./helpers/source').read(require('path').join(__dirname,'../app/public/app.js'),'utf8');
 const controls=Object.fromEntries(['inpaintFillMode','inpaintFillModePrompt','saveInpaintFillModePrompt','inpaintFillModePromptStatus'].map(id=>[id,{value:'',addEventListener(event,handler){this[event]=handler;}}]));
 controls.inpaintFillMode.value='base_layer';
 let modes=[{id:'base_layer',prompt:'Base instructions'},{id:'background',prompt:'Background instructions'}];

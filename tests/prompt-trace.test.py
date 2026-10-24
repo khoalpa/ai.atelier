@@ -1,3 +1,5 @@
+from services.ai.runtime import metadata
+from helpers.ai_source import read_source
 import ast
 import sys
 import json
@@ -12,10 +14,11 @@ from concurrent.futures import ThreadPoolExecutor
 
 source = Path(__file__).resolve().parents[1] / 'ai_service.py'
 sys.path.insert(0, str(source.parent))
-tree = ast.parse(source.read_text(encoding='utf-8'))
+tree = ast.parse(read_source(source, encoding='utf-8'))
 names = {'trace_generation', 'prompt_history', 'traced_pipeline_call', 'update_job'}
 namespace = dict(ContextVar=ContextVar, wraps=wraps, datetime=datetime, timezone=timezone, json=json,
                  job_lock=threading.Lock(), jobs={}, prompt_trace_context=ContextVar('test_trace', default=None))
+namespace['metadata']=metadata
 exec(compile(ast.Module(body=[node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name in names], type_ignores=[]), str(source), 'exec'), namespace)
 
 class Generator:
@@ -48,7 +51,7 @@ class PromptTraceTest(unittest.TestCase):
         self.assertEqual(history[1]['prompts']['prompt'], [long_prompt + ' retry'])
         self.assertTrue(history[1]['autoRetry'])
         self.assertEqual(history[0]['seed'],42)
-        persisted=json.loads((namespace['JOBS_DIR']/'one.json').read_text(encoding='utf-8'))
+        persisted=json.loads(read_source(namespace['JOBS_DIR']/'one.json', encoding='utf-8'))
         self.assertEqual(persisted['promptHistory'],history)
         self.assertIsNone(namespace['prompt_trace_context'].get())
     def test_failure_retains_call_and_resets_context(self):

@@ -1,5 +1,5 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert');
-const source=fs.readFileSync('app/public/app.js','utf8');
+const source=require('./helpers/source').read('app/public/app.js','utf8');
 const code=source.slice(source.indexOf('async function calibrateQuality()'),source.indexOf('async function buildGoldenBaseline()'));
 const controls=Object.fromEntries(['minimumQuality','minimumSimilarity','minimumSeam','minimumAnatomy'].map(id=>[id,{value:99}]));
 let result={ok:true,qualityVersion:1,calibrationReady:true,approvedCount:20,recommendation:{minimumQuality:60,minimumSimilarity:.5,minimumSeam:65,minimumAnatomy:90}},message;

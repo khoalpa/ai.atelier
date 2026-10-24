@@ -3,8 +3,8 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const root = path.resolve(__dirname, '..');
-const server = fs.readFileSync(path.join(root, 'app/server.js'), 'utf8');
-const client = fs.readFileSync(path.join(root, 'app/public/app.js'), 'utf8');
+const server = require('./helpers/source').read(path.join(root, 'app/server.js'), 'utf8');
+const client = require('./helpers/source').read(path.join(root, 'app/public/app.js'), 'utf8');
 
 for (const feature of [
   "pathname === '/api/models/delete'",

@@ -1,5 +1,5 @@
 const fs = require('fs'), vm = require('vm'), http = require('http'), assert = require('assert');
-const source = fs.readFileSync(require('path').join(__dirname, '../app/server.js'), 'utf8');
+const source = require('./helpers/source').read(require('path').join(__dirname, '../app/server.js'), 'utf8');
 const code = source.slice(source.indexOf('async function proxyToAi('), source.indexOf('function serveFile('));
 (async () => {
   for (const interrupted of [false, true]) {
@@ -11,7 +11,7 @@ const code = source.slice(source.indexOf('async function proxyToAi('), source.in
       } else res.end('{"ok":true}');
     });
     await new Promise(resolve => ai.listen(0, '127.0.0.1', resolve));
-    const context = {http, Buffer, AI_PORT: ai.address().port, parseJson: async () => ({}), send: (res, status, data) => {res.writeHead(status); res.end(data);}};
+    const context = {taskCoordinator:null,http, Buffer, AI_PORT: ai.address().port, parseJson: async () => ({}), send: (res, status, data) => {res.writeHead(status); res.end(data);}};
     vm.createContext(context); vm.runInContext(code, context);
     const web = http.createServer((req, res) => context.proxyToAi(req, res));
     await new Promise(resolve => web.listen(0, '127.0.0.1', resolve));

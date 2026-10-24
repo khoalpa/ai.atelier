@@ -5,7 +5,7 @@ const context={$:id=>controls[id],window:{ATELIER_INPAINT_MODELS:[
   {id:'flux',architecture:'flux',removalProfile:{steps:40,guidance:30,strength:1,nativeResolution:1024,supportsNegativePrompt:false}},
   {id:'sdxl',architecture:'sdxl',removalProfile:{steps:35,guidance:6,strength:.95,nativeResolution:1024,supportsNegativePrompt:true}}
 ]}};
-vm.createContext(context);vm.runInContext(fs.readFileSync('app/public/outfit-workflow.js','utf8'),context);
+vm.createContext(context);vm.runInContext(require('./helpers/source').read('app/public/outfit-workflow.js','utf8'),context);
 context.applyDescriptionModelSettings();
 assert.equal(context.descriptionRunSettings().guidance,30);
 assert.equal(context.descriptionRunSettings().maxSide,1024);

@@ -4,7 +4,7 @@ for(const id of ['outpaintSteps','outpaintGuidance','outpaintResolution','outpai
 for(const id of ['outpaintPreserve','outpaintDetail','outpaintMaterialRefine','outpaintSeamRepair','outpaintSourceEnhance','outpaintChooseLayout'])fields[id]={checked:false};
 Object.assign(fields,{outpaintModel:{value:'flux-1-fill-dev'},outpaintEstimate:{},outpaintRun:{},outpaintCount:{value:'2'},outpaintWidth:{value:'1536'},outpaintHeight:{value:'1024'},outpaintLeft:{value:'256'},outpaintTop:{value:'0'}});
 const context={$:id=>fields[id],sourceImage:{naturalWidth:1024,naturalHeight:1024}};
-vm.createContext(context);vm.runInContext(fs.readFileSync('app/public/outpaint.js','utf8'),context);
+vm.createContext(context);vm.runInContext(require('./helpers/source').read('app/public/outpaint.js','utf8'),context);
 vm.runInContext('outpaintServiceReady=true',context);
 fields.outpaintPreserve.checked=true;fields.outpaintChooseLayout.checked=true;
 context.applyOutpaintPreset('fast');assert.equal(fields.outpaintSteps.value,'24');assert(!fields.outpaintDetail.checked);

@@ -9,7 +9,7 @@ function createQualityService(root, options = {}) {
   let child = null, sequence = 0, stopped = false, restartTimer = null;
   const pending = new Map();
   const python = options.python || process.env.ATELIER_QUALITY_PYTHON ||
-    path.join(root, '.venv-sam2', 'Scripts', 'python.exe');
+    require('../packages/runtime/paths').python(root);
   function start() {
     if (child || stopped) return;
     if (!fs.existsSync(python)) throw new Error('Không tìm thấy Python cho bộ kiểm tra chất lượng.');

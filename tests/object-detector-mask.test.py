@@ -1,3 +1,4 @@
+from helpers.ai_source import read_source
 """YOLO object boxes must go through SAM, not erase their whole rectangle."""
 import ast
 from pathlib import Path
@@ -8,7 +9,7 @@ import numpy as np
 from PIL import Image
 
 root=Path(__file__).resolve().parents[1]
-tree=ast.parse((root/'ai_service.py').read_text(encoding='utf-8'))
+tree=ast.parse(read_source(root/'ai_service.py', encoding='utf-8'))
 node=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='detect_regions')
 class Tensor:
     def detach(self):return self

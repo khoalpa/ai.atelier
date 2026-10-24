@@ -70,7 +70,7 @@ window.MakeupCompare=(()=>{
   function addImage(card,item){
     card.item=item;const viewport=document.createElement('div'),pixels=document.createElement('div'),before=new Image(),after=new Image();
     viewport.className='makeup-compare-viewport';viewport.tabIndex=0;viewport.setAttribute('aria-label','Ảnh so sánh · '+item.comparisonName);
-    pixels.className='makeup-compare-pixels';before.src=outputUrl(item.comparisonFile);after.src=outputUrl(item.file);
+    pixels.className='makeup-compare-pixels';before.src=globalThis.AtelierApp.outputUrl(item.comparisonFile);after.src=globalThis.AtelierApp.outputUrl(item.file);
     before.alt='Ảnh gốc';after.alt=item.comparisonName;before.draggable=after.draggable=false;
     pixels.append(before,after);viewport.append(pixels);card.imageHost.append(viewport);
     Object.assign(card,{viewport,pixels,before,after});viewport.onscroll=()=>synchronize(card);
@@ -118,24 +118,24 @@ window.MakeupCompare=(()=>{
   function show(next){
     jobId=next.jobId||'';state={...next,status:next.status||'completed'};cards.clear();el('makeupCompareGrid').replaceChildren();zoom='fit';center={x:.5,y:.5};original=false;
     el('makeupCompareZoom').value='fit';el('makeupCompareOriginal').checked=false;running=['running','cancelling'].includes(state.status);
-    activateAppView('create');setStudioMode('makeup');render();el('makeupCompareBoard').scrollIntoView({block:'start'});
+    globalThis.AtelierApp.activateAppView('create');globalThis.AtelierApp.setStudioMode('makeup');render();el('makeupCompareBoard').scrollIntoView({block:'start'});
   }
   async function start(){
-    if(running||window.Makeup.isLocked()||inpaintPromptReviewPending||descriptionTryonRunning)return;
-    let body;try{body={...window.Makeup.comparisonSource(),comparisonStyles:selectedStyles()};}catch(error){return setMessage(error.message,'error');}
-    const id=createJobId('makeup-compare');jobId=id;running=true;window.Makeup.setExtensionBusy(true);setActiveJob(id);
+    if(running||window.Makeup.isLocked()||globalThis.AtelierApp.inpaintPromptReviewPending||descriptionTryonRunning)return;
+    let body;try{body={...window.Makeup.comparisonSource(),comparisonStyles:selectedStyles()};}catch(error){return globalThis.AtelierApp.setMessage(error.message,'error');}
+    const id=globalThis.AtelierApp.createJobId('makeup-compare');jobId=id;running=true;window.Makeup.setExtensionBusy(true);globalThis.AtelierApp.setActiveJob(id);
     show({jobId:id,comparison:true,status:'running',results:[],comparisonEntries:body.comparisonStyles.map(style=>({...style,status:'queued',progress:0}))});
     let status='failed',error='',detached=false;
     try{const result=await request('/api/makeup-compare',{...body,jobId:id});status=result.status;update(result);}
-    catch(failure){error=failure.message;setMessage(error,'error');
+    catch(failure){error=failure.message;globalThis.AtelierApp.setMessage(error,'error');
       try{const latest=await request('/api/job-status',{jobId:id});update(latest);detached=latest.comparison&&['running','cancelling'].includes(latest.status);if(['completed','cancelled','failed'].includes(latest.status))status=latest.status;}catch{}
       if(!detached&&['running','cancelling'].includes(state?.status))update({...state,status:'failed',comparisonEntries:state.comparisonEntries.map(entry=>entry.status==='completed'?entry:{...entry,status:'failed',error})});
     }
-    finally{if(!detached){await settleJob(id,status,error);running=false;}window.Makeup.setExtensionBusy(false);sync();}
+    finally{if(!detached){await globalThis.AtelierApp.settleJob(id,status,error);running=false;}window.Makeup.setExtensionBusy(false);sync();}
   }
   function setup(){
     el('makeupCompareStart').onclick=start;el('makeupCompareRefresh').onclick=refresh;
-    el('makeupCompareCancel').onclick=async()=>{if(!running)return;try{await request('/api/cancel-job',{jobId});state={...state,status:'cancelling'};render();}catch(error){setMessage(error.message,'error');}};
+    el('makeupCompareCancel').onclick=async()=>{if(!running)return;try{await request('/api/cancel-job',{jobId});state={...state,status:'cancelling'};render();}catch(error){globalThis.AtelierApp.setMessage(error.message,'error');}};
     el('makeupCompareZoom').onchange=event=>{zoom=event.target.value;setZoom();};
     el('makeupCompareOriginal').onchange=event=>{original=event.target.checked;setZoom();};
     window.addEventListener('resize',()=>{if(zoom==='fit')setZoom();});refresh();

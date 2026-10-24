@@ -416,17 +416,21 @@ class QualityStore:
         if self.settings()['mode'] == 'off':
             return
         folder = self.root / 'workspace/jobs'
-        if not folder.exists():
-            return
+        from services.ai.runtime import metadata
         cutoff = self.settings().get('enabledAt', self.settings()['installedAt'])
         cutoff_time = datetime.fromisoformat(cutoff).timestamp()
-        for path in sorted(folder.glob('*.json'), key=lambda p: p.stat().st_mtime):
-            if path.name.endswith(('.request.json', '.checkpoint.json')) or path.stat().st_mtime < cutoff_time:
+        for path in metadata.files(folder):
+            if path.name.endswith(('.request.json', '.checkpoint.json')):
                 continue
             if self.stop.is_set():
                 return
             try:
-                job = read_json(path)
+                job = metadata.read(path, {})
+                updated = job.get('updatedAt') or job.get('createdAt')
+                if updated and datetime.fromisoformat(updated.replace('Z', '+00:00')).timestamp() < cutoff_time:
+                    continue
+                if not updated and path.exists() and path.stat().st_mtime < cutoff_time:
+                    continue
             except (OSError, ValueError):
                 continue  # The inference service may still be writing this file.
             self.process(job)

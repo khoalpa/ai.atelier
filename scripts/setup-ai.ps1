@@ -1,6 +1,7 @@
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
-$basePython = 'C:\Users\lpak\AppData\Local\Programs\Python\Python310\python.exe'
+. (Join-Path $PSScriptRoot 'runtime.ps1')
+$basePython = Resolve-AtelierRuntime -Root $projectRoot -Kind python
 $python = Join-Path $projectRoot '.venv-sam2\Scripts\python.exe'
 $modelDir = Join-Path $projectRoot 'models\segmentation'
 

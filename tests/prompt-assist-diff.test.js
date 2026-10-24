@@ -1,5 +1,5 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert');
-const source=fs.readFileSync('app/public/app.js','utf8');
+const source=require('./helpers/source').read('app/public/app.js','utf8');
 const elements=new Map(),get=id=>{if(!elements.has(id))elements.set(id,{});return elements.get(id);};
 const context={$:get,escapeHtml:s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')};
 vm.createContext(context);vm.runInContext(source.slice(source.indexOf('function promptAssistDiff('),source.indexOf('function renderPromptAssistFeedback(')),context);

@@ -1,9 +1,10 @@
+from helpers.ai_source import read_source
 """Replacement prompts must not inherit object-removal instructions."""
 import ast
 from pathlib import Path
 
 root = Path(__file__).resolve().parents[1]
-tree = ast.parse((root / 'ai_service.py').read_text(encoding='utf-8'))
+tree = ast.parse(read_source(root / 'ai_service.py', encoding='utf-8'))
 node = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'resolve_inpaint_prompts')
 import sys
 sys.path.insert(0, str(root))

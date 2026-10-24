@@ -15,6 +15,12 @@ foreach ($required in @('version.json','service_lifecycle.py','app\work-queue-ru
   if (-not (Test-Path -LiteralPath (Join-Path $ReleasePath $required))) { $errors.Add("Thiếu thành phần chạy: $required") }
 }
 $versionFile = Join-Path $ReleasePath 'version.json'
+foreach ($required in @('apps/local-api/application.js','apps/web/manifest.json','packages/contracts/tasks.json','packages/storage/metadata.js','services/ai/application.py','services/ai/models/state.py','services/ai/models/pipelines.py','scripts/runtime.ps1','requirements-ai.lock')) {
+  if (-not (Test-Path -LiteralPath (Join-Path $ReleasePath $required))) { $errors.Add("Thiếu mô-đun: $required") }
+}
+foreach ($entry in (Get-Content -LiteralPath $versionFile -Raw | ConvertFrom-Json).aiSources) {
+  if (-not (Test-Path -LiteralPath (Join-Path $ReleasePath $entry))) { $errors.Add("Thiếu nguồn AI: $entry") }
+}
 if ((Test-Path -LiteralPath $versionFile) -and (Get-Content -LiteralPath $versionFile -Raw | ConvertFrom-Json).version -ne $manifest.version) { $errors.Add('Phiên bản trong gói không nhất quán.') }
 if ($errors.Count) { $errors | ForEach-Object { Write-Error $_ }; throw "Gói offline không hợp lệ: $($errors.Count) lỗi" }
 [pscustomobject]@{ ok=$true; version=$manifest.version; checkedFiles=$manifest.files.Count; includeModels=$manifest.includeModels }

@@ -3,11 +3,12 @@ const fs=require('node:fs/promises'),path=require('node:path'),crypto=require('n
 const testAsset=item=>/(^|[ /_-])(benchmark|fixture|verification|synthetic|diagnostic|smoke|test)([ /_.-]|$)/i.test(`${item.id} ${item.name} ${item.sourceId||""}`)||/\/(mask|protected_mask|target_pose|editable_mask|clean)\.png$/i.test(item.url||'');
 const searchText=value=>String(value||'').toLocaleLowerCase('vi').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/[^a-z0-9]+/g,' ').trim();
 const canonical=id=>!id?'':id.startsWith('output:')?'/outputs/'+id.slice(7):id.startsWith('reference:')?'/references/'+id.slice(10):id.startsWith('/')?id:id.startsWith('uploads/')?'/'+id:'/samples/'+id;
-async function read(file,fallback){try{return JSON.parse(await fs.readFile(file,'utf8'));}catch(e){if(e.code==='ENOENT')return fallback;throw e;}}
-async function atomic(file,value){await fs.mkdir(path.dirname(file),{recursive:true});const temp=file+'.'+crypto.randomUUID()+'.tmp';try{await fs.writeFile(temp,JSON.stringify(value));await fs.rename(temp,file);}finally{await fs.unlink(temp).catch(()=>{});}}
+const metadata=require('../packages/storage/metadata');
+async function read(file,fallback){return metadata.read(file,fallback);}
+async function atomic(file,value){return metadata.write(file,value);}
 function createCatalog(root){
   const file=path.join(root,'workspace','asset-catalog.json');let tail=Promise.resolve();
-  const serial=fn=>{const work=tail.then(fn);tail=work.catch(()=>{});return work;};
+  const serial=fn=>{const work=tail.then(()=>require('./process-lock').locked(file+'.lock',fn));tail=work.catch(()=>{});return work;};
   async function state(){return read(file,{version:1,assets:{},albums:[]});}
   async function update(body){return serial(async()=>{
     const data=await state();

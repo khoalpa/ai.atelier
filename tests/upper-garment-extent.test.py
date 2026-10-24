@@ -1,3 +1,4 @@
+from helpers.ai_source import read_source
 """A real SAM fabric region must survive the pose bounds and waist logic."""
 import ast
 from contextlib import nullcontext
@@ -7,7 +8,7 @@ import cv2
 import numpy as np
 from PIL import Image
 
-tree=ast.parse((Path(__file__).resolve().parents[1]/'ai_service.py').read_text(encoding='utf-8'))
+tree=ast.parse(read_source(Path(__file__).resolve().parents[1]/'ai_service.py', encoding='utf-8'))
 cloth=np.zeros((1000,600),np.uint8)
 cloth[280:650,200:410]=1  # shirt hem below hip landmarks at y=570
 cloth[180:400,130:210]=1  # bent raised sleeve above the old box's top
