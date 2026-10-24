@@ -10,7 +10,8 @@ import torch
 from PIL import Image, ImageDraw, ImageOps
 
 ROOT=Path(__file__).resolve().parents[1]
-sys.path.insert(0,str(ROOT))
+sys.path.insert(0, str(ROOT))
+from sample_catalog import resolve_sample
 import image_enhancement as ie
 
 OUT=ROOT/'workspace/diagnostics/image-enhancement'
@@ -21,7 +22,7 @@ CASES=[('portrait','outpaint-benchmark/portrait-left/reference.png','portrait'),
        ('interior','outpaint-benchmark/interior-left/reference.png','general')]
 records=[]
 for name,relative,profile in CASES:
-    path=ROOT/'samples'/relative;before_hash=hashlib.sha256(path.read_bytes()).hexdigest()
+    path=resolve_sample(ROOT, relative);before_hash=hashlib.sha256(path.read_bytes()).hexdigest()
     image=ImageOps.exif_transpose(Image.open(path)).convert('RGB');image.thumbnail((385,321))
     source=OUT/(name+'-input.png');image.save(source)
     protect=Image.new('L',image.size);ImageDraw.Draw(protect).rectangle((10,10,50,50),fill=255)

@@ -107,7 +107,8 @@ def sdxl_conditioned_generate(body: dict) -> dict:
     if model_state.sdxl_control_mode=="union-depth": call.update(control_image=depth_image,control_mode=1)
     else: call.update(image=depth_image)
     image = traced_pipeline_call(pipe, **call).images[0]
-    output_dir = OUTPUTS / datetime.now(timezone.utc).strftime("sdxl_%Y%m%dT%H%M%S%fZ")
+    from uuid import uuid4
+    output_dir = OUTPUTS / (datetime.now(timezone.utc).strftime("sdxl_%Y%m%dT%H%M%S%fZ") + '-' + uuid4().hex[:12])
     output_dir.mkdir(parents=True, exist_ok=False)
     image.save(output_dir / "result.png"); depth_image.save(output_dir / "depth.png")
     (output_dir / "metadata.json").write_text(json.dumps({"promptHistory": prompt_history()}, ensure_ascii=False, indent=2), encoding="utf-8")

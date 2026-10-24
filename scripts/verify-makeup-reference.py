@@ -13,6 +13,8 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 ROOT=Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from sample_catalog import resolve_sample
 BASE=sys.argv[1] if len(sys.argv)>1 else 'http://127.0.0.1:27866'
 OUT=ROOT/'workspace/diagnostics/makeup-reference';OUT.mkdir(parents=True,exist_ok=True)
 sys.stdout.reconfigure(encoding='utf-8')
@@ -29,11 +31,11 @@ samples=['outpaint-benchmark/portrait-left/reference.png',
          'synthetic-paired-vton-20261021/images/people/upper-body-03-p2.png',
          'synthetic-paired-vton-20261021/images/people/overall-05-p3.png']
 records=[];fixtures=[]
-def sample_path(sample):return ROOT/('workspace' if sample.startswith('uploads/') else 'samples')/sample
+def sample_path(sample):return ROOT/'workspace'/sample if sample.startswith('uploads/') else resolve_sample(ROOT,sample)
 # Full-body fixtures have very small faces. Use their original-resolution head
 # crops and record the crop; do not pretend these are additional source people.
 for index in range(1,len(samples)):
-    original=samples[index];image=Image.open(ROOT/'samples'/original).convert('RGB');w,h=image.size
+    original=samples[index];image=Image.open(resolve_sample(ROOT, original)).convert('RGB');w,h=image.size
     crop=(round(w*.25),round(h*.02),round(w*.75),round(h*.38))
     sample='uploads/makeup-reference-portrait-'+str(index)+'.png'
     image.crop(crop).save(sample_path(sample));samples[index]=sample

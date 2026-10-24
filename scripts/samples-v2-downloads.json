@@ -1,0 +1,1636 @@
+{
+  "schemaVersion": 1,
+  "assets": [
+    {
+      "id": "nature-mountain",
+      "label": "Núi và đường chân trời",
+      "title": "File:Zagedan Lakes, Mountain cirque, Caucasus Mountains.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Zagedan_Lakes,_Mountain_cirque,_Caucasus_Mountains.jpg",
+      "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/8/88/Zagedan_Lakes%2C_Mountain_cirque%2C_Caucasus_Mountains.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "author": "Vyacheslav Argenberg",
+      "credit": "Own work",
+      "description": "The Zagedan lakes are of ancient glacial origin. They are surrounded by karst rock formations in a mountain cirque, which represents a typical ancient glacial landform in the Caucasus Mountains. The glacier retreated about 11,000 years ago, leaving behind the landscape we see today. Zagedan Valley with high-altitude lakes. Karachay-Cherkessia, Caucasus Mountains, Russia.",
+      "width": 4912,
+      "height": 3264,
+      "bytes": 16445409,
+      "originalMetadata": {
+        "DateTime": {
+          "value": "2024-11-07 21:26:16",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Zagedan Lakes, Mountain cirque, Caucasus Mountains",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "Western Caucasus|Photos by Vyacheslav Argenberg|Mountain lakes|Self-published work|Cirques in Russia|Mountains with clouds in Russia|Featured pictures of Karachay-Cherkessia|Water reflections of mountains in Russia|Glacial geomorphology of Russia|2015 in Karachay-Cherkessia|Files with coordinates missing SDC location of creation|Russia photographs taken on 2015-08-12|River sources in Russia|Reflections in lakes in Russia|Clouds and blue sky in Karachay-Cherkessia|Lakes in summer|Mountains in summer|Featured pictures of nature in Russia|Shadows of clouds on mountains|Caucasus mountains of Karachay-Cherkessia|Rock formations of the Caucasus|Photos by Vyacheslav Argenberg in Caucasus, Russia|Photos by Vyacheslav Argenberg in 2015",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "featured|potd",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "GPSLatitude": {
+          "value": "43.648313",
+          "source": "commons-desc-page"
+        },
+        "GPSLongitude": {
+          "value": "40.959296",
+          "source": "commons-desc-page"
+        },
+        "GPSMapDatum": {
+          "value": "WGS-84",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "The Zagedan lakes are of ancient glacial origin. They are surrounded by karst rock formations in a mountain cirque, which represents a typical ancient glacial landform in the Caucasus Mountains. The glacier retreated about 11,000 years ago, leaving behind the landscape we see today. Zagedan Valley with high-altitude lakes. Karachay-Cherkessia, Caucasus Mountains, Russia.",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2015-08-12 13:48:27",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a href=\"//commons.wikimedia.org/wiki/User:Argenberg\" title=\"User:Argenberg\">Vyacheslav Argenberg</a>",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC BY 4.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution 4.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Attribution": {
+          "value": "© <a href=\"//commons.wikimedia.org/wiki/User:Argenberg\" title=\"User:Argenberg\">Vyacheslav Argenberg</a>",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by/4.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-4.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "review": "accepted",
+      "group": "scenes",
+      "tasks": [
+        "outpaint",
+        "enhance",
+        "background"
+      ]
+    },
+    {
+      "id": "nature-coast",
+      "label": "Bờ biển",
+      "title": "File:Gjipe beach, Albania.JPG",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Gjipe_beach,_Albania.JPG",
+      "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/1/11/Gjipe_beach%2C_Albania.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "author": "Pudelek",
+      "credit": "Own work",
+      "description": "Gjipe Beach, Albania.",
+      "width": 2304,
+      "height": 1536,
+      "bytes": 5396960,
+      "originalMetadata": {
+        "DateTime": {
+          "value": "2014-10-30 17:54:22",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Gjipe beach, Albania",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "Taken with Nikon D3100|Self-published work|Featured pictures of Albania|Images by Marcin Szala|Sailboats in Albania|Featured pictures of coasts|Albania photographs taken on 2014-08-12|1 boat in Albania|Gjipe",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "quality|featured|potd",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "Gjipe Beach, Albania.",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2014-08",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a href=\"//commons.wikimedia.org/wiki/User:Pudelek\" title=\"User:Pudelek\">Pudelek</a>",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC BY-SA 3.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution-Share Alike 3.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by-sa/3.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-sa-3.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "review": "accepted",
+      "group": "scenes",
+      "tasks": [
+        "outpaint",
+        "enhance",
+        "background"
+      ]
+    },
+    {
+      "id": "nature-forest",
+      "label": "Rừng cây",
+      "title": "File:Forest path through a deciduous forest in spring, Finland.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Forest_path_through_a_deciduous_forest_in_spring,_Finland.jpg",
+      "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/7/72/Forest_path_through_a_deciduous_forest_in_spring%2C_Finland.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "author": "Sanzzu",
+      "credit": "Own work",
+      "description": "A forest path winding through a lush deciduous forest in spring, with sunlight filtering through the leaves and wood anemones blooming by the trail.",
+      "width": 4272,
+      "height": 2848,
+      "bytes": 9200412,
+      "originalMetadata": {
+        "DateTime": {
+          "value": "2026-05-11 00:32:20",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Forest path through a deciduous forest in spring, Finland",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "Taken with Sony DSLR-A700|Deciduous forests|Forests in Finland|Forest paths|Self-published work|Forest trails|Forest paths in Finland|Forests in Finland in spring|Photographs taken in May",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "A forest path winding through a lush deciduous forest in spring, with sunlight filtering through the leaves and wood anemones blooming by the trail.",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2026-05-07 18:47:06",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:Sanzzu&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:Sanzzu (page does not exist)\">Sanzzu</a>",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC BY-SA 4.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution-Share Alike 4.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by-sa/4.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-sa-4.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "review": "accepted",
+      "group": "scenes",
+      "tasks": [
+        "outpaint",
+        "enhance",
+        "background"
+      ]
+    },
+    {
+      "id": "nature-lake",
+      "label": "Mặt hồ",
+      "title": "File:Jokulsarlon lake, Iceland.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Jokulsarlon_lake,_Iceland.jpg",
+      "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/a/a5/Jokulsarlon_lake%2C_Iceland.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "author": "Kenny Muir",
+      "credit": "https://www.flickr.com/photos/krmuir/142110701/",
+      "description": "Jökulsárlón, a glacial lake in Iceland. To the right, the mouth of the glacier Vatnajökull.",
+      "width": 2921,
+      "height": 1931,
+      "bytes": 1465966,
+      "originalMetadata": {
+        "DateTime": {
+          "value": "2006-07-02 21:38:11",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Jokulsarlon lake, Iceland",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "Jökulsárlón|Files from Flickr with changed licenses|Flickr images reviewed by trusted users|Dusk in Iceland|Featured pictures on Wikipedia, Indonesian|Featured pictures on Wikipedia, Turkish|Water reflections of mountains in Iceland|Water reflections of clouds in Iceland|Mountains at sunset in Iceland|Featured pictures of lakes|Reflections in lakes|Iceland photographs taken on 2006-05-07|Lakes at sunset|Water reflections of rocks in Iceland|Clouds and blue sky in Iceland|Mountains with snow in Iceland|Clouds at sunset in Iceland|Featured pictures of landscapes in Iceland|Water reflections of ice|Featured pictures from Flickr|Featured pictures of glaciers in Iceland",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "featured|poty|potd",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "<a href=\"https://en.wikipedia.org/wiki/J%C3%B6kuls%C3%A1rl%C3%B3n\" class=\"extiw\" title=\"en:Jökulsárlón\">Jökulsárlón</a>, a glacial lake in Iceland. To the right, the mouth of the glacier Vatnajökull.",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "Taken on 7 May 2006",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<a rel=\"nofollow\" class=\"external free\" href=\"https://www.flickr.com/photos/krmuir/142110701/\">https://www.flickr.com/photos/krmuir/142110701/</a>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.flickr.com/people/krmuir/\">Kenny Muir</a>",
+          "source": "commons-desc-page"
+        },
+        "Permission": {
+          "value": "Dear moneygrabbers! See the attribution clause below and follow the instructions if you are going to use this photo.",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseShortName": {
+          "value": "CC BY 2.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution 2.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Attribution": {
+          "value": "Kenneth Muir",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by/2.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-2.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "review": "accepted",
+      "group": "scenes",
+      "tasks": [
+        "outpaint",
+        "enhance",
+        "background"
+      ]
+    },
+    {
+      "id": "nature-night",
+      "label": "Đường phố ban đêm",
+      "title": "File:Québec city at night, view from Lévis city.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Qu%C3%A9bec_city_at_night,_view_from_L%C3%A9vis_city.jpg",
+      "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f4/Qu%C3%A9bec_city_at_night%2C_view_from_L%C3%A9vis_city.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "author": "Wilfredor",
+      "credit": "Own work\nSource materials for this file are available from Commons Archive:\nhttps://archive.org/details/wiki-commonsarchive\n\n",
+      "description": "Québec city at night, view from Lévis city",
+      "width": 5882,
+      "height": 3860,
+      "bytes": 10885422,
+      "originalMetadata": {
+        "DateTime": {
+          "value": "2025-11-29 01:48:12",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Québec city at night, view from Lévis city",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "Views of Quebec City from Lévis|Images with annotations|Self-published work|Featured pictures by User:Wilfredor|FoP-Canada|Images from Wiki Loves Monuments 2017|Featured pictures of cityscapes|Heritage properties in Canada with known IDs|Files with coordinates missing SDC location of creation|Images from Wiki Loves Monuments 2017 in Canada|Canada photographs taken on 2017-08-26|Files with source materials at Commons Archive|Images from Wiki Loves Monuments missing SDC depicts|Images from Wiki Loves Monuments missing SDC location of creation|Heritage properties in Canada missing SDC location of creation|Heritage properties in Canada missing SDC depicts|Skylines of Quebec City|Featured pictures of Quebec City|August 2017 in Quebec City|Château Frontenac at night|Saint Lawrence River in Quebec City|Quebec City night skylines|Skylines by Wilfredor|Photographs of Château Frontenac by User:Wilfredor|Featured pictures from Wiki Loves Monuments Canada 2017|Featured pictures of Canada by User:Wilfredor|Featured pictures of Château Frontenac by User:Wilfredor|Photographs of Quebec City by Wilfredor",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "quality|featured|potd",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "GPSLatitude": {
+          "value": "46.811811",
+          "source": "commons-desc-page"
+        },
+        "GPSLongitude": {
+          "value": "-71.187781",
+          "source": "commons-desc-page"
+        },
+        "GPSMapDatum": {
+          "value": "WGS-84",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "Québec city at night, view from Lévis city",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2017-08-26 20:10:43",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span><div><figure class=\"mw-halign-left\" typeof=\"mw:File\"><span><img src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9a/Commons_Archive_icon.svg/40px-Commons_Archive_icon.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"40\" height=\"49\" class=\"mw-file-element\" srcset=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9a/Commons_Archive_icon.svg/120px-Commons_Archive_icon.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail 2x\" data-file-width=\"44\" data-file-height=\"54\"></span><figcaption></figcaption></figure>\n<p>Source materials for this file are available from Commons Archive:<br>\n<a rel=\"nofollow\" class=\"external free\" href=\"https://archive.org/details/wiki-commonsarchive\">https://archive.org/details/wiki-commonsarchive</a>\n</p>\n</div>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a href=\"//commons.wikimedia.org/wiki/User:Wilfredor\" class=\"mw-redirect\" title=\"User:Wilfredor\">Wilfredor</a>",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC BY-SA 4.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution-Share Alike 4.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by-sa/4.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-sa-4.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "review": "accepted",
+      "group": "scenes",
+      "tasks": [
+        "outpaint",
+        "enhance",
+        "background"
+      ]
+    },
+    {
+      "id": "nature-field",
+      "label": "Đồng cỏ",
+      "title": "File:Front view of a stream with a tree as vanishing point, mountains and mist in the countryside of Vang Vieng.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Front_view_of_a_stream_with_a_tree_as_vanishing_point,_mountains_and_mist_in_the_countryside_of_Vang_Vieng.jpg",
+      "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/5/5c/Front_view_of_a_stream_with_a_tree_as_vanishing_point%2C_mountains_and_mist_in_the_countryside_of_Vang_Vieng.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "author": "Basile Morin",
+      "credit": "Own work",
+      "description": "Front view of a stream with a tree as vanishing point, mountains, and mist, early morning, during the monsoon, in the countryside of Vang Vieng, Laos.",
+      "width": 6628,
+      "height": 4143,
+      "bytes": 11851781,
+      "originalMetadata": {
+        "DateTime": {
+          "value": "2020-07-01 05:35:29",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Front view of a stream with a tree as vanishing point, mountains and mist in the countryside of Vang Vieng",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "Trees in Laos|Taken with Canon EOS 5D Mark IV and Canon EF 11-24mm F4L USM|Vanishing point|Self-published work|Featured pictures of Laos|Featured pictures of agriculture|Streams in Laos|Fog in Laos|Countryside in Laos|Paddy fields in Laos|Clouds in Laos|Featured pictures of landscapes|Featured pictures on Wikipedia, Persian|Monsoon in Laos|Exposure time 2/5 sec|Mountains with clouds|Water reflections of mountains in Laos|Files with coordinates missing SDC location of creation|Water reflections of clouds|Featured pictures by Basile Morin|Gray clouds|2020s photographs of Laos|Mist in Laos|Landscapes of Vang Vieng|Photographs taken on 2020-06-19|Photographs by Basile Morin|Vertical symmetry impressions|Long exposure photography of landscapes|Mountains of Vientiane Province",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "quality|featured",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "GPSLatitude": {
+          "value": "18.925365",
+          "source": "commons-desc-page"
+        },
+        "GPSLongitude": {
+          "value": "102.441703",
+          "source": "commons-desc-page"
+        },
+        "GPSMapDatum": {
+          "value": "WGS-84",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "Front view of a stream with a tree as vanishing point, mountains, and mist, early morning, during the monsoon, in the countryside of <a href=\"https://en.wikipedia.org/wiki/Vang_Vieng\" class=\"extiw\" title=\"en:Vang Vieng\">Vang Vieng</a>, <a href=\"https://en.wikipedia.org/wiki/Laos\" class=\"extiw\" title=\"en:Laos\">Laos</a>.",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2020-06-19 05:59:41",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a href=\"//commons.wikimedia.org/wiki/User:Basile_Morin\" title=\"User:Basile Morin\">Basile Morin</a>",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC BY-SA 4.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution-Share Alike 4.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by-sa/4.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-sa-4.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "review": "accepted",
+      "group": "scenes",
+      "tasks": [
+        "outpaint",
+        "enhance",
+        "background"
+      ]
+    },
+    {
+      "id": "interior-room",
+      "label": "Phòng khách",
+      "title": "File:Living room in apartment of Condomínio do Edifício Zaher, Le Blond, Rio de Janeiro, Brazil.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Living_room_in_apartment_of_Condom%C3%ADnio_do_Edif%C3%ADcio_Zaher,_Le_Blond,_Rio_de_Janeiro,_Brazil.jpg",
+      "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/3/36/Living_room_in_apartment_of_Condom%C3%ADnio_do_Edif%C3%ADcio_Zaher%2C_Le_Blond%2C_Rio_de_Janeiro%2C_Brazil.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "CC0",
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "author": "Wilfredor",
+      "credit": "Own work",
+      "description": "Living room in apartment of Condomínio do Edifício Zaher, Le Blond, Rio de Janeiro, Brazil",
+      "width": 8256,
+      "height": 4492,
+      "bytes": 9753706,
+      "originalMetadata": {
+        "DateTime": {
+          "value": "2026-07-23 02:38:21",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Living room in apartment of Condomínio do Edifício Zaher, Le Blond, Rio de Janeiro, Brazil",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "CC-Zero|Couches|Personality rights warning|Images with annotations|Leblon|Self-published work|Featured pictures by User:Wilfredor|Full consent|Interiors of houses in Brazil|Images from Rio de Janeiro Project|Files with coordinates missing SDC location of creation|Media created with Nikon Z7ii provided by the Quebec WikiClub|Files with Assessments template missing SDC Commons featured picture assessment|Houses interiors by Wilfredor|Old Houses of Brazil by Wilfredor",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "quality|featured|potd",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "GPSLatitude": {
+          "value": "-22.984469",
+          "source": "commons-desc-page"
+        },
+        "GPSLongitude": {
+          "value": "-43.231964",
+          "source": "commons-desc-page"
+        },
+        "GPSMapDatum": {
+          "value": "WGS-84",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "Living room in apartment of Condomínio do Edifício Zaher, Le Blond, Rio de Janeiro, Brazil",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2024-06-21 16:30:53",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a href=\"//commons.wikimedia.org/wiki/User:Wilfredor\" class=\"mw-redirect\" title=\"User:Wilfredor\">Wilfredor</a>",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Zero, Public Domain Dedication",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "false",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "personality",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "review": "accepted",
+      "group": "scenes",
+      "tasks": [
+        "outpaint",
+        "enhance",
+        "background"
+      ]
+    },
+    {
+      "id": "interior-hall",
+      "label": "Hành lang",
+      "title": "File:Long corridor with someone sitting on the floor in the distance at Marina Bay MRT Station Singapore.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Long_corridor_with_someone_sitting_on_the_floor_in_the_distance_at_Marina_Bay_MRT_Station_Singapore.jpg",
+      "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Long_corridor_with_someone_sitting_on_the_floor_in_the_distance_at_Marina_Bay_MRT_Station_Singapore.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "author": "Basile Morin",
+      "credit": "Own work",
+      "description": "Long corridor and strong perspective impression with bare walls and ceiling, with someone sitting on the floor, alone in the distance, at Marina Bay MRT Station, Singapore",
+      "width": 5268,
+      "height": 3282,
+      "bytes": 2770053,
+      "originalMetadata": {
+        "DateTime": {
+          "value": "2020-07-09 05:14:02",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Long corridor with someone sitting on the floor in the distance at Marina Bay MRT Station Singapore",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "Taken with Canon EOS 5D Mark IV and Canon EF 11-24mm F4L USM|Featured pictures of Singapore|Liminal spaces|Self-published work|Commons featured widescreen desktop backgrounds|Corridors in Singapore|Long exposure photographs of Singapore|Centered tunnel perspective|Exposure time 3/5 sec|White walls|White ceilings|Floor tiles in Singapore|Featured pictures of building interiors|Files with coordinates missing SDC location of creation|Featured pictures by Basile Morin|Singapore photographs taken on 2018-06-10|Photographs by Basile Morin|Symmetry impressions of building interiors|People sitting in corridors|Concourse of Marina Bay MRT Station",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "quality|featured",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "GPSLatitude": {
+          "value": "1.300678",
+          "source": "commons-desc-page"
+        },
+        "GPSLongitude": {
+          "value": "103.856212",
+          "source": "commons-desc-page"
+        },
+        "GPSMapDatum": {
+          "value": "WGS-84",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "Long corridor and strong perspective impression with bare walls and ceiling, with someone sitting on the floor, alone in the distance, at Marina Bay MRT Station, Singapore",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2018-06-10 17:34:36",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a href=\"//commons.wikimedia.org/wiki/User:Basile_Morin\" title=\"User:Basile Morin\">Basile Morin</a>",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC BY-SA 4.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution-Share Alike 4.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by-sa/4.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-sa-4.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "review": "accepted",
+      "group": "scenes",
+      "tasks": [
+        "outpaint",
+        "enhance",
+        "background"
+      ]
+    },
+    {
+      "id": "interior-kitchen-v2",
+      "label": "Nhà bếp",
+      "title": "File:Modern kitchen interior featuring wooden shelving and organized dishware in a cozy setting.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Modern_kitchen_interior_featuring_wooden_shelving_and_organized_dishware_in_a_cozy_setting.jpg",
+      "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/a/a3/Modern_kitchen_interior_featuring_wooden_shelving_and_organized_dishware_in_a_cozy_setting.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "author": "Shixart1985",
+      "credit": "Own work",
+      "description": "Bright kitchen displays a wooden shelf lined with glassware, jars, and cups. A stainless steel sink complements the modern decor, creating an inviting atmosphere for cooking and entertaining.",
+      "width": 4160,
+      "height": 6240,
+      "bytes": 16894098,
+      "originalMetadata": {
+        "DateTime": {
+          "value": "2026-04-17 11:57:58",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Modern kitchen interior featuring wooden shelving and organized dishware in a cozy setting",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "Kitchens|Self-published work|Creative Commons Attribution 2.0 missing SDC copyright license|Creative Commons Attribution missing SDC copyright status|Self-published work missing SDC copyright license",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "Bright kitchen displays a wooden shelf lined with glassware, jars, and cups. A stainless steel sink complements the modern decor, creating an inviting atmosphere for cooking and entertaining.",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2023-09-12 11:04:14",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a href=\"//commons.wikimedia.org/wiki/User:Shixart1985\" title=\"User:Shixart1985\">Shixart1985</a>",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC BY 2.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution 2.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by/2.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-2.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "review": "accepted",
+      "group": "scenes",
+      "tasks": [
+        "outpaint",
+        "enhance",
+        "background"
+      ]
+    },
+    {
+      "id": "interior-workshop-v2",
+      "label": "Xưởng gỗ",
+      "title": "File:Workshop interior filled with tools, wood materials, and natural light illuminating the creative space.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Workshop_interior_filled_with_tools,_wood_materials,_and_natural_light_illuminating_the_creative_space.jpg",
+      "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/d/dc/Workshop_interior_filled_with_tools%2C_wood_materials%2C_and_natural_light_illuminating_the_creative_space.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "author": "Shixart1985",
+      "credit": "Own work",
+      "description": "Workshop interior filled with tools, wood materials, and natural light illuminating the creative space",
+      "width": 4024,
+      "height": 6048,
+      "bytes": 9809478,
+      "originalMetadata": {
+        "DateTime": {
+          "value": "2026-04-22 20:23:41",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Workshop interior filled with tools, wood materials, and natural light illuminating the creative space",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "Tools|Woodworking|Self-published work",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "Workshop interior filled with tools, wood materials, and natural light illuminating the creative space",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2025-05-24 10:49:39",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a href=\"//commons.wikimedia.org/wiki/User:Shixart1985\" title=\"User:Shixart1985\">Shixart1985</a>",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC BY 2.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution 2.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by/2.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-2.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "review": "accepted",
+      "group": "scenes",
+      "tasks": [
+        "outpaint",
+        "enhance",
+        "background"
+      ]
+    },
+    {
+      "id": "texture-wood",
+      "label": "Vân gỗ",
+      "title": "File:Painted Wood Grain Texture DTXR-WD-GR-3.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Painted_Wood_Grain_Texture_DTXR-WD-GR-3.jpg",
+      "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Painted_Wood_Grain_Texture_DTXR-WD-GR-3.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "author": "Shadowmeld Photography",
+      "credit": "Own work",
+      "description": "Brown painted wood surface texture",
+      "width": 3872,
+      "height": 2592,
+      "bytes": 14533076,
+      "originalMetadata": {
+        "DateTime": {
+          "value": "2019-01-07 01:14:52",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Painted Wood Grain Texture DTXR-WD-GR-3",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "Self-published work|Wood textures|Physical surfaces",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "Brown painted wood surface texture",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2015-10-06 03:11:15",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a href=\"//commons.wikimedia.org/wiki/User:Shadowmeldphoto\" title=\"User:Shadowmeldphoto\">Shadowmeld Photography</a>",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC BY-SA 4.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution-Share Alike 4.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by-sa/4.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-sa-4.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "review": "accepted",
+      "group": "scenes",
+      "tasks": [
+        "outpaint",
+        "enhance",
+        "background"
+      ]
+    },
+    {
+      "id": "texture-tiles",
+      "label": "Bề mặt gạch",
+      "title": "File:Cream speckled ceramic cemented clean tile pattern floor ground texture.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cream_speckled_ceramic_cemented_clean_tile_pattern_floor_ground_texture.jpg",
+      "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/3/3c/Cream_speckled_ceramic_cemented_clean_tile_pattern_floor_ground_texture.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "CC0",
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "author": "Sisters.seamless",
+      "credit": "Own work",
+      "description": "this is a seamless texture of a tile surface photographed in a warm climate.\nIt was turned into a texture, using photo editing software, \"gimp\".",
+      "width": 2212,
+      "height": 2212,
+      "bytes": 1152984,
+      "originalMetadata": {
+        "DateTime": {
+          "value": "2022-08-27 13:24:27",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Cream speckled ceramic cemented clean tile pattern floor ground texture",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "CC-Zero|Tiles|Created with GIMP|Self-published work|Tileable textures",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "this is a seamless texture of a tile surface photographed in a warm climate.\nIt was turned into a texture, using photo editing software, \"gimp\".",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2020-06-25",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a href=\"//commons.wikimedia.org/wiki/User:Sisters.seamless\" title=\"User:Sisters.seamless\">Sisters.seamless</a>",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Zero, Public Domain Dedication",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "false",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "review": "accepted",
+      "group": "scenes",
+      "tasks": [
+        "outpaint",
+        "enhance",
+        "background"
+      ]
+    },
+    {
+      "id": "texture-fabric",
+      "label": "Vải dệt",
+      "title": "File:Pink Woven Cotton Silk Fabric Texture Free Creative Commons (6962346249).jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pink_Woven_Cotton_Silk_Fabric_Texture_Free_Creative_Commons_(6962346249).jpg",
+      "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/9/95/Pink_Woven_Cotton_Silk_Fabric_Texture_Free_Creative_Commons_%286962346249%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "author": "Pink Sherbet Photography from Utah, USA",
+      "credit": "Pink Woven Cotton Silk Fabric Texture Free Creative Commons",
+      "description": "My photos that have a creative commons license and are free for everyone to download, edit, alter and use as long as you give me,  \"D Sharon Pruitt\" credit as the original owner of the photo. Have fun and enjoy!",
+      "width": 5616,
+      "height": 3744,
+      "bytes": 14403617,
+      "originalMetadata": {
+        "DateTime": {
+          "value": "2015-05-28 13:36:22",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Pink Woven Cotton Silk Fabric Texture Free Creative Commons (6962346249)",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "Flickr images reviewed by FlickreviewR|Backgrounds|Pink textures|Files uploaded by The Photographer from Flickr|Files uploaded by The Photographer needing category checks|Textile textures|Photos from Tumblr|Flickr images missing SDC published in",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "My photos that have a <a rel=\"nofollow\" class=\"external text\" href=\"https://creativecommons.org/licenses/by/2.0/\">creative commons license</a> and are free for everyone to download, edit, alter and use as long as you give me,  \"D Sharon Pruitt\" credit as the original owner of the photo. Have fun and enjoy!",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2011-12-20 09:41",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.flickr.com/photos/pinksherbet/6962346249/\">Pink Woven Cotton Silk Fabric Texture Free Creative Commons</a>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.flickr.com/people/40645538@N00\">Pink Sherbet Photography</a> from Utah, USA",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC BY 2.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution 2.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by/2.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-2.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "review": "accepted",
+      "group": "scenes",
+      "tasks": [
+        "outpaint",
+        "enhance",
+        "background"
+      ]
+    },
+    {
+      "id": "texture-wall",
+      "label": "Bề mặt tường",
+      "title": "File:Burgundy rough cast finish clean seamless plaster building wall texture.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Burgundy_rough_cast_finish_clean_seamless_plaster_building_wall_texture.jpg",
+      "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/4/46/Burgundy_rough_cast_finish_clean_seamless_plaster_building_wall_texture.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "CC0",
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "author": "Sisters.seamless",
+      "credit": "Own work",
+      "description": "this is a seamless texture of a wall. photographed in a warm climate.\nIt was turned into a texture, using photo editing software, \"gimp\".",
+      "width": 1135,
+      "height": 1135,
+      "bytes": 316984,
+      "originalMetadata": {
+        "DateTime": {
+          "value": "2022-08-24 07:46:01",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Burgundy rough cast finish clean seamless plaster building wall texture",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "CC-Zero|Walls|Created with GIMP|Self-published work|Tileable textures",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "this is a seamless texture of a wall. photographed in a warm climate.\nIt was turned into a texture, using photo editing software, \"gimp\".",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2020-06-25",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a href=\"//commons.wikimedia.org/wiki/User:Sisters.seamless\" title=\"User:Sisters.seamless\">Sisters.seamless</a>",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Zero, Public Domain Dedication",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "false",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "review": "accepted",
+      "group": "scenes",
+      "tasks": [
+        "outpaint",
+        "enhance",
+        "background"
+      ]
+    },
+    {
+      "id": "real-vase",
+      "label": "Bình gốm thật",
+      "title": "File:Ceramic vase (2024-02-06) 03.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Ceramic_vase_(2024-02-06)_03.jpg",
+      "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/4/46/Ceramic_vase_%282024-02-06%29_03.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "author": "Vyacheslav Kirillin",
+      "credit": "Own work",
+      "description": "Ваза. Неизвестный мастер, XX в., керамика. Собрание ГМИИ РТ. Выставка Луизы Фасхутдиновой «Гөлханә/Дом цветов» в Национальной художественной галерее «Хазинэ», Казань.",
+      "width": 3864,
+      "height": 5152,
+      "bytes": 7337988,
+      "originalMetadata": {
+        "DateTime": {
+          "value": "2024-04-06 19:02:29",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Ceramic vase (2024-02-06) 03",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "Self-published work|Ceramic vases|Photographs by Engelberthumperdink|Taken with Sony DSC-W800|Golhane|Tatar ceramics|Vases in Kazan",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "Ваза. Неизвестный мастер, XX в., керамика. Собрание ГМИИ РТ. Выставка Луизы Фасхутдиновой «Гөлханә/Дом цветов» в Национальной художественной галерее «Хазинэ», Казань.",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2024-02-06 13:28:57",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<bdi><a href=\"https://www.wikidata.org/wiki/Q105078393\" class=\"extiw\" title=\"d:Q105078393\"><span title=\"Russian Wikimedian, journalist and local historian from Kazan (Tatarstan)\">Vyacheslav Kirillin</span></a></bdi>",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC BY-SA 4.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution-Share Alike 4.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by-sa/4.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-sa-4.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "review": "accepted",
+      "group": "objects",
+      "tasks": [
+        "background",
+        "inpaint"
+      ]
+    },
+    {
+      "id": "real-glass",
+      "label": "Đồ thủy tinh thật",
+      "title": "File:Beer bottles 2018 G1.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Beer_bottles_2018_G1.jpg",
+      "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/1/11/Beer_bottles_2018_G1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "license": "Public domain",
+      "licenseUrl": "",
+      "author": "George Chernilevsky",
+      "credit": "Own work",
+      "description": "Beer bottles of different colors. From left to right: brown 0.5 l, yellow-green 0.5 l, green 0.4 l, blue 0.46 l.",
+      "width": 4800,
+      "height": 3600,
+      "bytes": 3523564,
+      "originalMetadata": {
+        "DateTime": {
+          "value": "2018-04-09 07:32:55",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Beer bottles 2018 G1",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "Sunlight|Taken with Canon EOS 750D|Beer bottles|Glass bottles|Brown glass bottles|Self-published work|PD-self|Featured pictures by George Chernilevsky|Bottles in Ukraine|Photographs taken on 2018-03-22|4 objects|Featured photographs in the public domain|Green glass bottles|Blue glass bottles|Bottles on white background|Images by George Chernilevsky|Colorful shadows|Blue, brown, green, olive",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "quality|featured|potd",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "Beer bottles of different colors. From left to right: brown 0.5 l, yellow-green 0.5 l, green 0.4 l, blue 0.46 l.",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2018-03-22 09:09:55",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a href=\"//commons.wikimedia.org/wiki/User:George_Chernilevsky\" title=\"User:George Chernilevsky\">George Chernilevsky</a>",
+          "source": "commons-desc-page"
+        },
+        "Permission": {
+          "value": "<table class=\"licensetpl\" style=\"display:none\">\n<tbody><tr>\n<td><span class=\"licensetpl_short\">Public domain</span><span class=\"licensetpl_long\">Public domain</span><span class=\"licensetpl_link_req\">false</span><span class=\"licensetpl_attr_req\">false</span>\n</td></tr></tbody></table>\n<table style=\"width: 100%; clear: both; margin: 0.5em auto; background-color: var(--background-color-progressive-subtle, #f7f8ff); color: var(--color-base, #202122); border: var(--border-subtle, 2px solid #8888aa); border-spacing: 8px; padding: 0px;\" dir=\"ltr\" class=\"layouttemplate\" lang=\"en\">\n<tbody><tr>\n<td><span typeof=\"mw:File\"><span title=\"Public domain\"><img alt=\"Public domain\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/6/62/PD-icon.svg/120px-PD-icon.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"64\" height=\"64\" class=\"mw-file-element\" srcset=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/6/62/PD-icon.svg/250px-PD-icon.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail 2x\" data-file-width=\"196\" data-file-height=\"196\"></span></span>\n</td>\n<td>I, the copyright holder of this work, release this work into the <b><a href=\"https://en.wikipedia.org/wiki/en:public_domain\" class=\"extiw\" title=\"w:en:public domain\">public domain</a></b>. This applies worldwide.<br><small>In some countries this may not be legally possible; if so:</small><br><i>I grant anyone the right to use this work <b>for any purpose</b>, without any conditions, unless such conditions are required by law.</i>\n</td></tr></tbody></table>",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseShortName": {
+          "value": "Public domain",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Public domain",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "false",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Copyrighted": {
+          "value": "False",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "pd",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "review": "accepted",
+      "group": "objects",
+      "tasks": [
+        "background",
+        "inpaint"
+      ]
+    }
+  ]
+}

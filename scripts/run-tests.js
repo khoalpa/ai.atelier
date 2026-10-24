@@ -21,6 +21,9 @@ for(const name of ['.venv-sam2','.venv-ai','models','weights','vendor','samples'
   const source=path.join(root,name),target=path.join(stage,name);
   if(fs.existsSync(source)&&!fs.existsSync(target))fs.symlinkSync(source,target,'junction');
 }
+// Historical sample IDs can resolve to the private, read-only archive.
+const sampleArchive=path.join(root,'workspace','sample-archive'),stageArchive=path.join(stage,'workspace','sample-archive');
+if(fs.existsSync(sampleArchive)&&!fs.existsSync(stageArchive)){fs.mkdirSync(path.dirname(stageArchive),{recursive:true});fs.symlinkSync(sampleArchive,stageArchive,'junction');}
 for(const name of ['config.json','prompts.json','character-presets.json','makeup-styles.json','export-presets.json']) {
   const source=path.join(root,'workspace',name),target=path.join(stage,'workspace',name);
   if(fs.existsSync(source)){fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(source,target);}

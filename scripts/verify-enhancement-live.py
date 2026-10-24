@@ -14,6 +14,8 @@ from PIL import Image, ImageDraw
 import numpy as np
 
 ROOT=Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from sample_catalog import resolve_sample
 BASE=sys.argv[1] if len(sys.argv)>1 else 'http://127.0.0.1:27860'
 OUT=ROOT/'workspace/diagnostics/image-enhancement'
 OUT.mkdir(parents=True,exist_ok=True)
@@ -24,7 +26,7 @@ def api(endpoint,body=None):
     except HTTPError as error:return json.load(error)
 def encode(mask):
     stream=io.BytesIO();mask.save(stream,format='PNG');return 'data:image/png;base64,'+base64.b64encode(stream.getvalue()).decode()
-source='outpaint-benchmark/studio-left/source.png';path=ROOT/'samples'/source
+source='outpaint-benchmark/studio-left/source.png';path=resolve_sample(ROOT, source)
 before=hashlib.sha256(path.read_bytes()).hexdigest();size=Image.open(path).size
 protect=Image.new('L',size);ImageDraw.Draw(protect).rectangle((size[0]//4,0,size[0]*3//4,size[1]//3),fill=255)
 selected=Image.new('L',size);ImageDraw.Draw(selected).rectangle((20,20,size[0]-21,size[1]-21),fill=255)

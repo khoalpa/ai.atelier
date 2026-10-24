@@ -47,7 +47,14 @@ function createStore(root,options={}){
   }
   async function imageBytes(body){
     if(body.data){const match=/^data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/=]+)$/.exec(body.data);if(!match)fail('Chỉ hỗ trợ PNG, JPEG hoặc WebP.');const bytes=Buffer.from(match[2],'base64');if(!bytes.length||bytes.length>80*1024*1024)fail('Ảnh tối đa 80 MB.');return {bytes,format:match[1]};}
-    const url=String(body.url||'');const pairs=[['/samples/',path.join(root,'samples')],['/uploads/',path.join(root,'workspace','uploads')],['/outputs/',path.join(root,'workspace','outputs')]];
+    const url=String(body.url||'');
+    if(url.startsWith('/samples/')){
+      const file=require('../packages/samples/catalog').resolve(root,decodeURIComponent(url.slice(9)));
+      if(!file||! /\.(png|jpe?g|webp)$/i.test(file))fail('Đường dẫn ảnh không hợp lệ.');
+      if((await fs.stat(file)).size>80*1024*1024)fail('Ảnh tối đa 80 MB.');
+      return {bytes:await fs.readFile(file),format:path.extname(file).slice(1)};
+    }
+    const pairs=[['/uploads/',path.join(root,'workspace','uploads')],['/outputs/',path.join(root,'workspace','outputs')]];
     for(const [prefix,base] of pairs)if(url.startsWith(prefix)){
       const file=path.resolve(base,decodeURIComponent(url.slice(prefix.length)));if(!file.startsWith(base+path.sep)||! /\.(png|jpe?g|webp)$/i.test(file))fail('Đường dẫn ảnh không hợp lệ.');
       const real=await fs.realpath(file),realBase=await fs.realpath(base);if(!real.startsWith(realBase+path.sep))fail('Ảnh phải nằm trong thư viện.');const stat=await fs.stat(file);if(stat.size>80*1024*1024)fail('Ảnh tối đa 80 MB.');return {bytes:await fs.readFile(file),format:path.extname(file).slice(1)};

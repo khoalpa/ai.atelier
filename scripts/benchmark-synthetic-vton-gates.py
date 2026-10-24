@@ -20,14 +20,15 @@ from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from sample_catalog import collection_path, project_path
 LEFFA_ROOT = ROOT / "vendor" / "Leffa"
-DATASET = ROOT / "samples" / "synthetic-paired-vton-20261021"
+DATASET = collection_path(ROOT, 'synthetic-paired-vton-20261021')
 INPUT_ROOT = ROOT / "workspace" / "diagnostics" / "synthetic-vton-reconstruction_20261021-final-inputs-v5"
 OUTPUT = ROOT / "workspace" / "diagnostics" / "synthetic-vton-model-benchmark_20261021"
 IDM_DC = ROOT / "models" / "tryon" / "IDM-VTON-DC"
 LEFFA_DC = ROOT / "models" / "tryon" / "Leffa-DC"
 POSE_CHECKPOINT = ROOT / "models" / "pose" / "densepose" / "densepose_r50_fpn_dl_fixed.torchscript"
-sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(LEFFA_ROOT))
 
 THRESHOLDS = {
@@ -192,8 +193,8 @@ def run_idm() -> int:
         for case in cases:
             case_dir = model_dir / case["id"]
             case_dir.mkdir(parents=True, exist_ok=True)
-            source = Image.open(ROOT / case["sourceTarget"]).convert("RGB")
-            product = Image.open(ROOT / case["product"]).convert("RGB")
+            source = Image.open(project_path(ROOT,case["sourceTarget"])).convert("RGB")
+            product = Image.open(project_path(ROOT,case["product"])).convert("RGB")
             mask = Image.open(ROOT / case["mask"]).convert("L")
             started = time.perf_counter()
             record = {
@@ -272,8 +273,8 @@ def run_leffa() -> int:
         for case in cases:
             case_dir = model_dir / case["id"]
             case_dir.mkdir(parents=True, exist_ok=True)
-            source = Image.open(ROOT / case["sourceTarget"]).convert("RGB")
-            product = Image.open(ROOT / case["product"]).convert("RGB")
+            source = Image.open(project_path(ROOT,case["sourceTarget"])).convert("RGB")
+            product = Image.open(project_path(ROOT,case["product"])).convert("RGB")
             mask = Image.open(ROOT / case["mask"]).convert("L")
             source_canvas, content_box = resize_and_center(source)
             product_canvas, _ = resize_and_center(product)
@@ -338,7 +339,7 @@ def make_sheet(cases: list[dict]) -> Path:
         draw.text((index * cell_width + 10, 18), label, fill="black", font=font)
     for row_index, case in enumerate(cases):
         paths = [
-            ROOT / case["product"], ROOT / case["sourceTarget"],
+            project_path(ROOT,case["product"]), project_path(ROOT,case["sourceTarget"]),
             INPUT_ROOT / case["id"] / "mask-overlay.png",
             OUTPUT / "idm-vton-dc" / case["id"] / "final.png",
             OUTPUT / "leffa-dc" / case["id"] / "final.png",

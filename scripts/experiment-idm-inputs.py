@@ -5,7 +5,8 @@ import time
 import traceback
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-sys.path.insert(0,str(ROOT))
+sys.path.insert(0, str(ROOT))
+from sample_catalog import resolve_sample
 
 def main():
     import torch
@@ -20,7 +21,7 @@ def main():
     for category,name,description in [
         ('upper_body','c002','a solid cobalt blue cotton Oxford button-front shirt with a pointed collar, white buttons, full-length long sleeves and buttoned cuffs'),
         ('overall','c003','a solid emerald green linen knee-length A-line dress with a round neckline, short sleeves, a fitted waist and a flared skirt')]:
-        source=Image.open(ROOT/f'samples/characters/{name}.png').convert('RGB')
+        source=Image.open(resolve_sample(ROOT, f'characters/{name}.png')).convert('RGB')
         reference=Image.open(ROOT/f'workspace/references/{category}/reference.png').convert('RGB')
         old=next(row for row in baseline['items'] if row['category']==category and Path(row['sampleId']).stem==name)
         panels=[('Source',source),('Reference',reference),('Baseline',Image.open(ROOT/old['output']).convert('RGB'))]

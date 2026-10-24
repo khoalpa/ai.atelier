@@ -60,7 +60,7 @@ with tempfile.TemporaryDirectory() as directory:
         scope = dict(ROOT=root, LOCAL_CONFIG={'depthEstimatorModel': 'depth-local'}, Image=Image,
                      safe_sample=lambda name:root/'source.png', decode_image=lambda value:Image.new('RGB', (10, 10)),
                      _load_sdxl_control_pipe=lambda:pipe, sdxl_control_mode=mode, torch=torch,
-                     traced_pipeline_call=call, OUTPUTS=root/'outputs', datetime=datetime, timezone=timezone,
+                     traced_pipeline_call=call, OUTPUTS=root/'outputs', datetime=SimpleNamespace(now=lambda _:datetime(2026,10,24,tzinfo=timezone.utc)), timezone=timezone,
                      json=json, prompt_history=lambda:[], encode_image=lambda image:'encoded')
         exec(compile(ast.Module(body=[function], type_ignores=[]), '<sdxl>', 'exec'), scope)
         with patch.object(depth, 'depth_image', return_value=generated_depth) as estimate:

@@ -14,6 +14,8 @@ import requests
 from PIL import Image,ImageOps,ImageDraw
 
 ROOT=Path(__file__).resolve().parents[1];OUT=ROOT/'workspace/diagnostics/character-upgrade/matrix';API='http://127.0.0.1:7860/api/'
+sys.path.insert(0, str(ROOT))
+from sample_catalog import resolve_sample, sample_ids
 
 
 def post(route,body):
@@ -25,9 +27,11 @@ def post(route,body):
 def main():
     OUT.mkdir(parents=True,exist_ok=True);sources=[]
     for folder,limit in [('characters',3),('portrait',6),('expand',6),('couple_tee',6),('synthetic-paired-vton-20261021/images/people',9)]:
-        files=sorted(p for p in (ROOT/'samples'/folder).iterdir() if p.suffix.lower() in ('.png','.jpg','.jpeg'))
-        if 'synthetic' in folder:files=[p for p in files if p.name.startswith('upper-body') and p.name.endswith('p1.png')]
-        for p in files[:limit]:sources.append(dict(source=p.relative_to(ROOT/'samples').as_posix(),collection=folder,sha256=__import__('hashlib').sha256(p.read_bytes()).hexdigest()))
+        ids=sample_ids(ROOT, (folder+'/',))
+        if 'synthetic' in folder:ids=[s for s in ids if Path(s).name.startswith('upper-body') and s.endswith('p1.png')]
+        for sample_id in ids[:limit]:
+            p=resolve_sample(ROOT,sample_id)
+            sources.append(dict(source=sample_id,collection=folder,sha256=__import__('hashlib').sha256(p.read_bytes()).hexdigest()))
     assert len(sources)==30
     (OUT/'manifest.json').write_text(json.dumps(sources,ensure_ascii=False,indent=2),encoding='utf8');records=[]
     for index,item in enumerate(sources):
@@ -52,7 +56,7 @@ def main():
     (OUT/'report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf8')
     sheet=Image.new('RGB',(1200,6*250),'#18212d');draw=ImageDraw.Draw(sheet)
     for index,r in enumerate(records):
-        image=Image.open(ROOT/r['file'] if r.get('file') else ROOT/'samples'/r['source']).convert('RGB');image=ImageOps.contain(image,(232,220));x=(index%5)*240;y=(index//5)*250;sheet.paste(image,(x+(240-image.width)//2,y));draw.text((x+8,y+225),f"{index+1:02d} {r['status']}",fill='white')
+        image=Image.open(ROOT/r['file'] if r.get('file') else resolve_sample(ROOT, r['source'])).convert('RGB');image=ImageOps.contain(image,(232,220));x=(index%5)*240;y=(index//5)*250;sheet.paste(image,(x+(240-image.width)//2,y));draw.text((x+8,y+225),f"{index+1:02d} {r['status']}",fill='white')
     sheet.save(OUT/'contact-sheet.jpg');print('REPORT',OUT/'report.json',flush=True)
 
 

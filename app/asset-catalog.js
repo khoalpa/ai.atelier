@@ -1,6 +1,6 @@
 'use strict';
 const fs=require('node:fs/promises'),path=require('node:path'),crypto=require('node:crypto');
-const testAsset=item=>/(^|[ /_-])(benchmark|fixture|verification|synthetic|diagnostic|smoke|test)([ /_.-]|$)/i.test(`${item.id} ${item.name} ${item.sourceId||""}`)||/\/(mask|protected_mask|target_pose|editable_mask|clean)\.png$/i.test(item.url||'');
+const testAsset=item=>item.sampleRole==='demo'?false:/(^|[ /_-])(benchmark|fixture|verification|synthetic|diagnostic|smoke|test)([ /_.-]|$)/i.test(`${item.id} ${item.name} ${item.sourceId||""}`)||/\/(mask|protected_mask|target_pose|editable_mask|clean)\.png$/i.test(item.url||'');
 const searchText=value=>String(value||'').toLocaleLowerCase('vi').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/[^a-z0-9]+/g,' ').trim();
 const canonical=id=>!id?'':id.startsWith('output:')?'/outputs/'+id.slice(7):id.startsWith('reference:')?'/references/'+id.slice(10):id.startsWith('/')?id:id.startsWith('uploads/')?'/'+id:'/samples/'+id;
 const metadata=require('../packages/storage/metadata');

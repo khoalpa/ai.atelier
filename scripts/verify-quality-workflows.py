@@ -10,6 +10,7 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+from sample_catalog import resolve_sample
 from quality_learning import QualityStore, digest, now, packed, compare
 
 
@@ -52,7 +53,7 @@ def main():
                     'originalHashUnchanged': True, 'sourcePixelsPreserved': None,
                     'protectedPixelsPreserved': None}
             if meta.get('source'):
-                source = ROOT / ('workspace' if meta['source'].startswith('uploads/') else 'samples') / meta['source']
+                source = ROOT/'workspace'/meta['source'] if meta['source'].startswith('uploads/') else resolve_sample(ROOT, meta['source'])
                 copy(source)
                 pixels = np.asarray(Image.open(source).convert('RGB'))
                 actual = np.asarray(image)

@@ -17,10 +17,11 @@ from PIL import Image
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from sample_catalog import resolve_sample
 LEFFA_ROOT = ROOT / "vendor" / "Leffa"
 MODEL_ROOT = ROOT / "models" / "tryon" / "Leffa-DC"
 EXPERIMENT_ROOT = ROOT / "workspace" / "diagnostics" / "leffa-gates"
-sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(LEFFA_ROOT))
 
 CASES = {
@@ -149,7 +150,7 @@ def main() -> int:
     seed = int(baseline["seed"])
     target = EXPERIMENT_ROOT / datetime.now(timezone.utc).strftime(f"{args.category}-{args.sample}-%Y%m%dT%H%M%SZ")
     target.mkdir(parents=True)
-    source = Image.open(ROOT / f"samples/characters/{args.sample}.png").convert("RGB")
+    source = Image.open(resolve_sample(ROOT, f"characters/{args.sample}.png")).convert("RGB")
     reference = Image.open(ROOT / case["reference"]).convert("RGB")
     mask = Image.open(ROOT / case["mask"]).convert("L")
     source_canvas, content_box = resize_and_center(source)

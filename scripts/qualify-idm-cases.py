@@ -8,7 +8,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
-sys.path.insert(0,str(ROOT))
+sys.path.insert(0, str(ROOT))
+from sample_catalog import resolve_sample
 
 def main():
     import torch
@@ -35,7 +36,7 @@ def main():
             name=Path(sample_id).stem
             folder=target/category/name
             folder.mkdir(parents=True)
-            source=Image.open(ROOT/'samples'/sample_id).convert('RGB')
+            source=Image.open(resolve_sample(ROOT, sample_id)).convert('RGB')
             record={'category':category,'sampleId':sample_id,'reference':qualification['reference']}
             report['items'].append(record)
             if sample_id in skipped:

@@ -15,6 +15,8 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 ROOT=Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from sample_catalog import resolve_sample
 BASE=sys.argv[1] if len(sys.argv)>1 else 'http://127.0.0.1:27866'
 OUT=ROOT/'workspace/diagnostics/makeup';OUT.mkdir(parents=True,exist_ok=True)
 sys.stdout.reconfigure(encoding='utf-8')
@@ -26,7 +28,7 @@ def api(endpoint,body=None):
 def encode(image):
     data=io.BytesIO();image.save(data,format='PNG');return 'data:image/png;base64,'+base64.b64encode(data.getvalue()).decode()
 
-sample='outpaint-benchmark/portrait-left/reference.png';source=ROOT/'samples'/sample
+sample='outpaint-benchmark/portrait-left/reference.png';source=resolve_sample(ROOT, sample)
 before=Image.open(source).convert('RGB');sha=hashlib.sha256(source.read_bytes()).hexdigest()
 config=api('makeup-config');assert config['landmarkReady'] and config['aiReady'],config
 analysis=api('makeup-analyze',{'sampleId':sample});assert analysis['ok'] and len(analysis['faces'])==1,analysis

@@ -12,6 +12,9 @@ import numpy as np
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
+import sys
+sys.path.insert(0, str(ROOT))
+from sample_catalog import resolve_sample
 WEB_PORT = int(os.environ.get('AI_IMAGE_PORT', '7860'))
 AI_PORT = int(os.environ.get('AI_SEGMENT_PORT', '7861'))
 
@@ -44,7 +47,7 @@ def main():
     assert detected['maskMethod'] == 'yolo-world+sam' and detected['count'] > 0
     contour = Image.open(io.BytesIO(base64.b64decode(detected['mask'].split(',')[-1]))).convert('L')
     assert contour.getpixel((480,320)) > 0 and contour.getpixel((0,0)) == 0
-    mask_path = ROOT/'samples/object-removal-benchmark/01-flat-1/mask.png'
+    mask_path = resolve_sample(ROOT, 'object-removal-benchmark/01-flat-1/mask.png')
     prompt = 'A continuous matte beige wall, with matching color and lighting.'
     body = dict(sampleId=sample, editableMask='data:image/png;base64,'+base64.b64encode(mask_path.read_bytes()).decode(),
                 modelId='sdxl-inpaint-base-0.1', fillMode='background', removalTarget='custom',
@@ -54,7 +57,7 @@ def main():
                 jobId='object-removal-live-smoke')
     result = post('inpaint', body)
     directory = ROOT/result['directory']
-    source = np.asarray(Image.open(ROOT/'samples'/sample).convert('RGB'))
+    source = np.asarray(Image.open(resolve_sample(ROOT, sample)).convert('RGB'))
     output = np.asarray(Image.open(directory/'result_seed_82000.png').convert('RGB'))
     allowed = np.asarray(Image.open(directory/'editable_mask.png').convert('L')) > 0
     assert output.shape == source.shape

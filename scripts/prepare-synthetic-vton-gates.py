@@ -12,9 +12,10 @@ from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DATASET = ROOT / "samples" / "synthetic-paired-vton-20261021"
-OUTPUT = ROOT / "workspace" / "diagnostics" / "synthetic-vton-reconstruction_20261021-final-inputs-v5"
 sys.path.insert(0, str(ROOT))
+from sample_catalog import collection_path
+DATASET = collection_path(ROOT, 'synthetic-paired-vton-20261021')
+OUTPUT = ROOT / "workspace" / "diagnostics" / "synthetic-vton-reconstruction_20261021-final-inputs-v5"
 
 PRODUCTS = {
     "upper_body": "upper-body-09",

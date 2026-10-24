@@ -7,10 +7,14 @@ const __dirname = require('node:path').join(deps.ROOT,'app');
 function resolveSamplePath(sampleId) {
   const normalized = String(sampleId || '').replace(/\\/g, '/');
   if (normalized.startsWith('uploads/')) return deps.safeJoin(deps.UPLOADS_DIR, normalized.slice('uploads/'.length));
-  return deps.safeJoin(deps.SAMPLES_DIR, normalized);
+  return require('../packages/samples/catalog').resolve(deps.ROOT, normalized);
 }
 
 function listImages(dir, prefix = '') {
+  if (!prefix && deps.path.resolve(dir) === deps.path.resolve(deps.SAMPLES_DIR)) {
+    const selected = require('../packages/samples/catalog').images(deps.ROOT);
+    if (selected) return selected;
+  }
   if (!deps.fs.existsSync(dir)) return [];
   return deps.fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const rel = deps.path.posix.join(prefix, entry.name);
@@ -36,7 +40,7 @@ async function listOutputAssets() {
 }
 
 async function allLibraryAssets(){
-  const sources=[...listUploadedImages(),...listImages(deps.SAMPLES_DIR)].map(item=>{const file=item.sourceType==='user'?deps.safeJoin(deps.UPLOADS_DIR,item.id.slice(8)):deps.safeJoin(deps.SAMPLES_DIR,item.id);const stat=deps.fs.statSync(file);return {...item,createdAt:stat.mtime.toISOString(),sizeBytes:stat.size,task:'source'};});
+  const sources=[...listUploadedImages(),...listImages(deps.SAMPLES_DIR)].map(item=>{const file=resolveSamplePath(item.id);const stat=deps.fs.statSync(file);return {...item,createdAt:stat.mtime.toISOString(),sizeBytes:stat.size,task:'source'};});
   const sessions=(await deps.manualStore.list()).map(p=>({id:'project:'+p.id,name:p.name,url:p.thumbnail,createdAt:p.updatedAt,projectId:p.id,revision:p.revision,sourceId:p.sourceId,sourceType:'project',task:'manual',group:'Phiên chỉnh sửa'}));
   const removed=new Set(deps.readRemoved(deps.path.join(deps.ROOT,'workspace','library-removed.json')));
   return {removedCount:removed.size,assets:[...await listOutputAssets(),...listReferenceAssets(),...sources,...sessions].filter(item=>!removed.has(item.id))};

@@ -15,6 +15,8 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 ROOT=Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from sample_catalog import resolve_sample
 BASE=sys.argv[1] if len(sys.argv)>1 else 'http://127.0.0.1:27866'
 OUT=ROOT/'workspace/diagnostics/makeup-comparison';OUT.mkdir(parents=True,exist_ok=True)
 sys.stdout.reconfigure(encoding='utf-8')
@@ -31,7 +33,7 @@ def encode(image):
 def decode(data):return Image.open(io.BytesIO(base64.b64decode(data.split(',',1)[1]))).convert('L')
 def job():return 'makeup-compare-verify-'+uuid.uuid4().hex[:12]
 
-sample='outpaint-benchmark/portrait-left/reference.png';source=ROOT/'samples'/sample
+sample='outpaint-benchmark/portrait-left/reference.png';source=resolve_sample(ROOT, sample)
 before=Image.open(source).convert('RGB');sha=hashlib.sha256(source.read_bytes()).hexdigest()
 analysis=api('makeup-analyze',{'sampleId':sample});assert analysis.get('ok'),analysis
 face=analysis['faces'][0]

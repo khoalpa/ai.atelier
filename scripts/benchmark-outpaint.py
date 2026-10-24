@@ -13,7 +13,8 @@ import numpy as np
 from PIL import Image, ImageOps
 
 ROOT=Path(__file__).resolve().parents[1]
-sys.path.insert(0,str(ROOT))
+sys.path.insert(0, str(ROOT))
+from sample_catalog import collection_path, project_path, resolve_sample
 from outpaint_quality import boundary_diagnostics
 
 CASES=[
@@ -25,9 +26,22 @@ CASES=[
 
 
 def prepare():
+    frozen = collection_path(ROOT, 'outpaint-benchmark')
+    if frozen.exists() and (ROOT/'samples/catalog.json').exists():
+        records=[]
+        prompts={group:prompt for group,_,prompt in CASES}
+        for folder in sorted(frozen.iterdir()):
+            if not folder.is_dir():continue
+            group,side=folder.name.rsplit('-',1)
+            with Image.open(folder/'reference.png') as image:w,h=image.size
+            with Image.open(folder/'source.png') as image:sw,sh=image.size
+            records.append(dict(id=folder.name,group=group,side=side,sampleId=f'outpaint-benchmark/{folder.name}/source.png',
+                                width=w,height=h,left=w-sw if side=='left' else 0,top=h-sh if side=='top' else 0,
+                                prompt=prompts[group],reference=(folder/'reference.png').relative_to(ROOT).as_posix()))
+        return records
     records=[]
     for group,filename,prompt in CASES:
-        source=ImageOps.exif_transpose(Image.open(ROOT/filename)).convert('RGB')
+        source=ImageOps.exif_transpose(Image.open(project_path(ROOT, filename))).convert('RGB')
         source.thumbnail((1024,1024),Image.Resampling.LANCZOS)
         w,h=source.size
         for side in ('left','right','top','bottom'):
@@ -121,7 +135,7 @@ def main():
                 final=post(args.port,{**body,'runMode':'refine','jobId':'benchmark-'+key+'-refine',
                                      'refineFrom':dict(directory=layout['directory'],seed=seed)})
                 metadata=json.loads((ROOT/final['directory']/'metadata.json').read_text(encoding='utf-8'))
-                source=Image.open(ROOT/'samples'/case['sampleId']).convert('RGB')
+                source=Image.open(resolve_sample(ROOT, case['sampleId'])).convert('RGB')
                 truth=Image.open(ROOT/case['reference']).convert('RGB')
                 overview=Image.open(ROOT/layout['results'][0]['file']).convert('RGB')
                 output=Image.open(ROOT/final['results'][0]['file']).convert('RGB')

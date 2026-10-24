@@ -7,6 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+from sample_catalog import resolve_sample
 
 
 def main():
@@ -65,7 +66,7 @@ def main():
     for index, record in enumerate(report['cases']):
         if record['status'] != 'completed':
             continue
-        files = [ROOT/'samples/characters'/f"{record['sample']}.png",
+        files = [resolve_sample(ROOT, f"characters/{record['sample']}.png"),
                  ROOT/'workspace/references'/record['category']/'reference.png', ROOT/record['selected']]
         for column, (label, file) in enumerate(zip(['Source','Reference',args.phase], files)):
             draw.text((column*320+8,index*460+8),record['category']+' / '+label,fill='black')

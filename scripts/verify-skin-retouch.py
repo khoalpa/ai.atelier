@@ -15,6 +15,8 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageOps
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from sample_catalog import resolve_sample
 BASE = sys.argv[1] if len(sys.argv) > 1 else 'http://127.0.0.1:27862'
 OUT = ROOT/'workspace/diagnostics/skin-retouch'
 OUT.mkdir(parents=True, exist_ok=True)
@@ -34,7 +36,7 @@ def encode(mask):
 
 
 source_id = 'outpaint-benchmark/portrait-left/reference.png'
-source_path = ROOT/'samples'/source_id
+source_path = resolve_sample(ROOT, source_id)
 original_hash = hashlib.sha256(source_path.read_bytes()).hexdigest()
 source = ImageOps.exif_transpose(Image.open(source_path)).convert('RGB')
 assert source.size == (745, 1024), source.size

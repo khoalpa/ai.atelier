@@ -285,7 +285,7 @@ def catvton_retry_matrix(body: dict) -> dict:
 def regression_audit(body: dict) -> dict:
     category = str(body.get("category", "upper_body"))
     weak_threshold = float(body.get("weakThreshold", 0.65 if body.get("usePose") else 0.75))
-    sample_ids = sorted(str(path.relative_to(SAMPLES)).replace("\\", "/") for path in SAMPLES.rglob("*") if path.suffix.lower() in (".png", ".jpg", ".jpeg"))
+    sample_ids = __import__('sample_catalog').sample_ids(ROOT, ('characters/', 'landscape/', 'portrait/'), fallback_prefixes=('demo/people/',))
     items = []
     for sample_id in sample_ids:
         source = Image.open(safe_sample(sample_id)).convert("RGB")
@@ -325,7 +325,7 @@ def regression_audit(body: dict) -> dict:
 def benchmark(body: dict) -> dict:
     if not body.get("garmentImage"):
         raise ValueError("Benchmark cần ảnh trang phục tham chiếu")
-    sample_ids = sorted(str(path.relative_to(SAMPLES)).replace("\\", "/") for path in SAMPLES.rglob("*") if path.suffix.lower() in (".png", ".jpg", ".jpeg"))
+    sample_ids = __import__('sample_catalog').sample_ids(ROOT, ('characters/', 'landscape/', 'portrait/'), fallback_prefixes=('demo/people/',))
     active_file = ROOT / "workspace" / "review" / "active-score-weights.json"
     proposed_file = ROOT / "workspace" / "review" / "score-weights.json"
     weights_file = active_file if active_file.exists() else proposed_file
@@ -385,11 +385,7 @@ def lora_ab_matrix(body: dict) -> dict:
     if requested_samples:
         sample_ids = [str(value) for value in requested_samples[:5]]
     else:
-        preferred = sorted(
-            str(path.relative_to(SAMPLES)).replace("\\", "/")
-            for path in SAMPLES.rglob("*")
-            if path.suffix.lower() in (".png", ".jpg", ".jpeg") and path.parent.name in ("characters", "portrait")
-        )
+        preferred = __import__('sample_catalog').sample_ids(ROOT, ('characters/', 'portrait/'), fallback_prefixes=('demo/people/',))
         sample_ids = preferred[:5]
     if not sample_ids:
         raise ValueError("Không có ảnh mẫu để chạy ma trận LoRA")

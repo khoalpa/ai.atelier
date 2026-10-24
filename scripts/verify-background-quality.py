@@ -5,6 +5,9 @@ from urllib.request import Request,urlopen
 import numpy as np
 from PIL import Image
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
+import sys
+sys.path.insert(0, str(ROOT))
+from sample_catalog import resolve_sample
 from object_removal import match_simple_background
 from outpaint_quality import final_seam_review
 OUT=ROOT/'workspace/diagnostics/background-quality-2.6';OUT.mkdir(parents=True,exist_ok=True)
@@ -21,7 +24,7 @@ def live():
         if case['task']=='inpaint':
             body=dict(sampleId=meta['source'],modelId=meta['modelId'],steps=meta['requestedSteps'],maxSide=meta.get('maxSide',1024 if index==4 else 512),strength=meta['strength'],guidance=meta['guidance'],seed=meta['seed'],count=1,
                 fillMode='background',removalTarget='custom',objectLabel='red object',expand=meta['expand'],edgeFeather=meta['edgeFeather'],blur=meta['blur'],autoRetry=False,semanticCheck=False,
-                confirmedPrompts=dict(prompt=meta['prompt'],negativePrompt=meta['negativePrompt']),editableMask='data:image/png;base64,'+base64.b64encode((ROOT/'samples'/meta['source']).with_name('mask.png').read_bytes()).decode())
+                confirmedPrompts=dict(prompt=meta['prompt'],negativePrompt=meta['negativePrompt']),editableMask='data:image/png;base64,'+base64.b64encode((resolve_sample(ROOT, meta['source'])).with_name('mask.png').read_bytes()).decode())
         else:
             body={**meta['request'], 'modelId':'flux-1-fill-dev','maxSide':640,'steps':24,'guidance':30,'overlap':64,'seamWidth':64,'seamSteps':24,'detailPass':False,'materialRefine':False,'sourceEnhance':False,'seamRepair':True,'runMode':'complete'}
         body.update(jobId='background26-'+uuid.uuid4().hex,livePreview=False)
@@ -41,7 +44,7 @@ def benchmark():
         try:record=json.loads(f.read_text(encoding='utf-8'))
         except ValueError:continue
         if not record.get('directory') or not record.get('case'):continue
-        folder=ROOT/record['directory'];case=record['case'];data=ROOT/'samples'/case['source'];old=folder/f"result_seed_{case['seed']}.png"
+        folder=ROOT/record['directory'];case=record['case'];data=resolve_sample(ROOT, case['source']);old=folder/f"result_seed_{case['seed']}.png"
         if not old.exists():continue
         source=Image.open(data).convert('RGB');before=Image.open(old).convert('RGB');mask=Image.open(folder/'editable_mask.png').convert('L')
         after,check=match_simple_background(source,before,mask)
@@ -59,7 +62,7 @@ def report():
         if not record.get('ok'):continue
         old=ROOT/record['baseline'];new=ROOT/record['response']['directory']/old.name
         meta=json.loads((new.parent/'metadata.json').read_text(encoding='utf-8'))
-        geometry=meta['geometry'];source=np.asarray(Image.open(ROOT/'samples'/meta['source']).convert('RGB'))
+        geometry=meta['geometry'];source=np.asarray(Image.open(resolve_sample(ROOT, meta['source'])).convert('RGB'))
         image=Image.open(new).convert('RGB');x,y=geometry['left'],geometry['top']
         before=Image.open(old).convert('RGB')
         rows.append(dict(case=index,output=str(new.relative_to(ROOT)),sourceExact=bool(np.array_equal(np.asarray(image)[y:y+source.shape[0],x:x+source.shape[1]],source)),

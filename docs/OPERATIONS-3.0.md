@@ -62,3 +62,56 @@ phân phối bộ runtime đó. Bản phát hành mã hiện tại tiếp tục 
 Báo cáo nằm trong `workspace/diagnostics/refactor`. Thư mục này, model, ảnh người
 dùng, môi trường Python và bản sao lưu không được đưa vào Git. Khi dọn các bản thử,
 chỉ xóa thư mục báo cáo đã chọn; không đi theo các liên kết model/runtime bên trong.
+
+## Thư viện ảnh mẫu v2
+
+Danh mục `samples/catalog.json` quyết định ảnh nào được hiển thị; tên thư mục
+không còn quyết định vai trò ảnh. Bộ demo có 64 ảnh: 32 ảnh mới tạo bằng ChatGPT,
+16 ảnh tải từ Wikimedia Commons và 16 ảnh tái sử dụng từ bộ VTON tổng hợp đã có
+hồ sơ nguồn. Nút **Nguồn ảnh** trong Thư viện mở thông tin tác giả, giấy phép và
+nguồn gốc. Ảnh từ Commons được giữ nguyên tệp gốc; giấy phép khác nhau theo ảnh.
+
+| Vị trí | Nội dung |
+| --- | --- |
+| `samples/demo/` | 48 ảnh mới, chia theo người, khuôn mặt, trang phục, bối cảnh và vật thể |
+| `samples/testing/regression-v1/` | Ảnh hồi quy cũ, storyboard và các bộ benchmark |
+| `samples/testing/cases/` | 24 ca kiểm thử có nguồn, mask, ảnh tham chiếu và tiêu chí |
+| `samples/datasets/synthetic-paired-vton/v1/` | Bộ tổng hợp 90 cặp, chia 72 train và 18 validation theo sản phẩm |
+| `samples/previews/demo/` | 64 ảnh thu nhỏ cho giao diện |
+| `samples/licenses/` | Hồ sơ nguồn, giấy phép và trang ghi công |
+| `workspace/sample-archive/v1/` | Ảnh cũ đã loại khỏi demo nhưng còn dùng để mở lịch sử |
+
+16 ảnh demo tái sử dụng trỏ tới tệp trong dataset để tránh nhân đôi dữ liệu.
+Các ảnh này nằm trong phần train; demo không phải tập đánh giá độc lập. Các ca
+kiểm thử ghi rõ `qualityReview: not-run` cho tới khi có đánh giá kết quả AI;
+kiểm tra tính hợp lệ đầu vào không thay thế nghiệm thu chất lượng.
+
+`samples/aliases.json` duy trì toàn bộ 417 mã ảnh cũ, gồm 12 tệp trang phục trùng
+nội dung đã gộp. Mã nguồn Node và Python đều phân giải qua danh mục, kể cả khi ảnh
+đã chuyển vào kho lưu trữ. Không sửa mã ảnh trong SQLite hoặc xóa kho lưu trữ khi
+lịch sử còn tham chiếu tới nó. Ảnh không rõ nguồn gốc không nằm trong gói demo.
+
+Chạy kiểm tra dữ liệu bằng:
+
+```powershell
+.venv-sam2/Scripts/python.exe scripts/validate-samples.py
+```
+
+Kết quả kiểm tra, nhật ký chuyển đổi và xử lý trực tiếp nằm trong
+`workspace/diagnostics/samples-v2/`. Bộ mô tả tạo ảnh được lưu tại
+`scripts/samples-v2-prompts.json`; danh sách tải và nguồn giấy phép tại
+`scripts/samples-v2-downloads.json`.
+
+Gói phát hành mặc định chỉ chứa 64 ảnh demo. Dùng
+`build-offline-release.ps1 -IncludeSampleTests` để kèm các bộ kiểm thử có hồ sơ
+cho phép phân phối. `scripts/install-samples.ps1` gộp danh mục khi cài/nâng cấp,
+giữ lại ảnh và mã tham chiếu hiện có; từ chối ghi đè nếu cùng mã có nội dung khác.
+
+Bản sao lưu trước chuyển đổi được chỉ ra trong
+`workspace/diagnostics/samples-v2/backup.json`, gồm 423 tệp gốc và bản chụp SQLite.
+Để khôi phục riêng bố cục cũ: dừng hai dịch vụ, giữ lại thư mục `samples` hiện tại
+và `workspace/sample-archive` trong một bản sao lưu mới, rồi chép thư mục `samples`
+từ bản sao lưu đã kiểm tra về dự án. Bố cục cũ không có `catalog.json`, nên bộ phân
+giải tự dùng đường dẫn cũ. Chỉ làm bước này nếu đã kiểm tra các công việc mới có
+tham chiếu tới ảnh v2; cần giữ các ảnh mới đó tại đúng đường dẫn để mở lại chúng.
+Không phục hồi SQLite cũ chỉ để đổi bố cục ảnh, vì sẽ mất các công việc phát sinh.

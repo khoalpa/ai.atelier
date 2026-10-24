@@ -7,6 +7,9 @@ from statistics import median
 from urllib.parse import quote
 
 ROOT=Path(__file__).resolve().parents[1]
+import sys
+sys.path.insert(0, str(ROOT))
+from sample_catalog import collection_path
 OUT=ROOT/'workspace/diagnostics/object-removal-benchmark'
 MODELS=['sdxl-inpaint-base-0.1','flux-1-fill-dev']
 
@@ -33,12 +36,12 @@ def main():
     (OUT/'summary.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2),encoding='utf-8')
     totals=''.join(f'<tr><td>{html.escape(model)}</td><td>{data["cases"]}</td><td>{data["medianMaskedMAE"]:.2f}</td><td>{data["medianSeconds"]:.1f} giây</td><td>{data["outsidePreserved"]}/{data["cases"]}</td></tr>' for model,data in summary['models'].items())
     cards=[]
-    manifest=json.loads((ROOT/'samples/object-removal-benchmark/manifest.json').read_text(encoding='utf-8'))
+    manifest=json.loads((collection_path(ROOT, 'object-removal-benchmark/manifest.json')).read_text(encoding='utf-8'))
     for case in manifest['cases']:
         key=case['id'];figures=[]
         def figure(label,src,caption=''):
             return f'<figure><figcaption>{html.escape(label)}</figcaption><a href="{html.escape(src)}"><img loading="lazy" src="{html.escape(src)}" alt="{html.escape(label)}"></a><small>{html.escape(caption)}</small></figure>'
-        base='../../../samples/object-removal-benchmark/'+quote(key)
+        base=quote(__import__('os').path.relpath(collection_path(ROOT, 'object-removal-benchmark')/key, OUT).replace('\\','/'))
         figures.append(figure('Ảnh đầu vào',base+'/source.png'))
         figures.append(figure('Vùng xóa',base+'/mask.png'))
         for model in MODELS:

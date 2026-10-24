@@ -29,6 +29,7 @@
     "prompt_limits.py",
     "quality_learning.py",
     "quality_report.py",
+    "sample_catalog.py",
     "sd35_depth_control.py",
     "service_lifecycle.py",
     "services/ai/application.py",

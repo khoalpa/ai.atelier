@@ -16,11 +16,14 @@ from PIL import Image, ImageDraw, ImageFilter
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-DATA = ROOT/'samples/object-removal-benchmark'
+from sample_catalog import collection_path
+DATA = collection_path(ROOT, 'object-removal-benchmark')
 OUT = ROOT/'workspace/diagnostics/object-removal-benchmark'
 
 
 def prepare():
+    if (DATA/'manifest.json').exists():
+        return json.loads((DATA/'manifest.json').read_text(encoding='utf-8'))['cases']
     DATA.mkdir(parents=True, exist_ok=True)
     cases = []
     names = ['flat', 'gradient', 'tiles', 'wood', 'lines']

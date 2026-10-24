@@ -3,7 +3,8 @@ import json
 import sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-sys.path.insert(0,str(ROOT))
+sys.path.insert(0, str(ROOT))
+from sample_catalog import resolve_sample
 
 def main():
     import cv2
@@ -18,7 +19,7 @@ def main():
     for category,name in [('upper_body','c002'),('overall','c003')]:
         folder=target/category
         folder.mkdir(exist_ok=True)
-        source=Image.open(ROOT/f'samples/characters/{name}.png').convert('RGB')
+        source=Image.open(resolve_sample(ROOT, f'characters/{name}.png')).convert('RGB')
         person=ai.detect_people(source,True)[0]
         points=person['keypoints']
         x0,y0,x1,y1=person['box']

@@ -17,6 +17,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+from sample_catalog import collection_path
 
 
 def digest(path):
@@ -66,7 +67,7 @@ def segment(predictor, image, box, positive, negative):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--source', type=Path, default=ROOT/'samples/couple_tee')
+    parser.add_argument('--source', type=Path, default=collection_path(ROOT, 'couple_tee'))
     parser.add_argument('--output', type=Path, default=ROOT/'workspace/training/couple-tee-pilot')
     parser.add_argument('--annotations', type=Path, default=ROOT/'workspace/training/couple-tee-intake/annotations.json')
     parser.add_argument('--height',type=int,choices=(512,768,1024),default=512)

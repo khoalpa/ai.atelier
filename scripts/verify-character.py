@@ -13,6 +13,9 @@ from PIL import Image
 import requests
 
 ROOT=Path(__file__).resolve().parents[1]
+import sys
+sys.path.insert(0, str(ROOT))
+from sample_catalog import resolve_sample
 API='http://127.0.0.1:7860/api/'
 
 def post(route,body,check=True):
@@ -64,7 +67,7 @@ def main():
         combined=ROOT/'workspace/uploads/character-verification-pair.png'
         combined.parent.mkdir(parents=True,exist_ok=True)
         sheet=Image.new('RGB',(1024,768))
-        for i,s in enumerate((sample,ref)):sheet.paste(Image.open(ROOT/'samples'/s).resize((512,768)),(i*512,0))
+        for i,s in enumerate((sample,ref)):sheet.paste(Image.open(resolve_sample(ROOT, s)).resize((512,768)),(i*512,0))
         sheet.save(combined);pair='uploads/'+combined.name
         for name,pose in [('handshake','handshake'),('look-each-other','look_each_other')]:
             body=request(pair);body.update(mode='interaction',pose=pose,expression='keep',personIds=[0,1],resolution=1024,steps=36);run(name,body)

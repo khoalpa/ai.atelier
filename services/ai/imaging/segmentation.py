@@ -15,8 +15,8 @@ def safe_sample(sample_id: str) -> Path:
         base = (ROOT / "workspace" / "uploads").resolve()
         relative = sample_id.removeprefix("uploads/")
     else:
-        base = SAMPLES.resolve()
-        relative = sample_id
+        from sample_catalog import resolve_sample
+        return resolve_sample(SAMPLES.parent, sample_id)
     target = (base / relative).resolve()
     if base not in target.parents or not target.is_file():
         raise ValueError("Ảnh nguồn không hợp lệ")

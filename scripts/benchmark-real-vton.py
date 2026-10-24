@@ -9,7 +9,8 @@ import time
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
-sys.path.insert(0,str(ROOT))
+sys.path.insert(0, str(ROOT))
+from sample_catalog import project_path, sample_id_for_path
 from vton_pilot import file_hash
 
 
@@ -66,8 +67,8 @@ def prepare(out):
     out.mkdir(parents=True,exist_ok=False)
     cases=[]
     for index,row in enumerate(validation):
-        source=ImageOps.exif_transpose(Image.open(row['sourcePersonImage'])).convert('RGB')
-        if file_hash(Path(row['sourcePersonImage']))!=row['sourceSha256']:
+        source=ImageOps.exif_transpose(Image.open(project_path(ROOT,row['sourcePersonImage']))).convert('RGB')
+        if file_hash(project_path(ROOT,row['sourcePersonImage']))!=row['sourceSha256']:
             raise ValueError('Original photo changed')
         pose=ai.detect_people_pose(source)[0]
         protected=ai.automatic_protected_detail_mask(source,pose['box'],pose['keypoints'])
@@ -99,7 +100,7 @@ def prepare(out):
             old=(np.array(raw)>0)&(np.array(protected)==0)
             missed=old&~auto_arr; Image.fromarray(missed.astype('uint8')*255).save(folder/'auto-missed-old-garment.png')
             case={'id':case_id,'mode':mode,'sourceId':row['id'],'targetProductId':target['productId'],
-                  'sampleId':str(Path(row['sourcePersonImage']).relative_to(ai.SAMPLES)).replace('\\','/'),
+                  'sampleId':sample_id_for_path(ROOT,row['sourcePersonImage']),
                   'sourceSha256':row['sourceSha256'],'targetAttributes':attrs,'pose':pose,
                   'autoScore':score,'autoVisibleGarmentCoverage':float((auto_arr&old).sum()/max(1,old.sum())),
                   'reviewedVisibleGarmentCoverage':float((reviewed_arr&old).sum()/max(1,old.sum())),

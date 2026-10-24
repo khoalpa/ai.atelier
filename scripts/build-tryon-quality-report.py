@@ -6,6 +6,9 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 ROOT=Path(__file__).resolve().parents[1]
+import sys
+sys.path.insert(0, str(ROOT))
+from sample_catalog import resolve_sample
 FOLDER=ROOT/'workspace/diagnostics/tryon-quality-20261022'
 
 
@@ -33,7 +36,7 @@ def main():
     for row,original in enumerate(runs['before']['cases']):
         category=original['category'];sample=original['sample']
         items=[next(item for item in runs[key]['cases'] if item['category']==category) for key in ('before','catvton','idm')]
-        paths=[ROOT/'samples/characters'/f'{sample}.png',ROOT/'workspace/references'/category/'reference.png',*[ROOT/item['selected'] for item in items]]
+        paths=[resolve_sample(ROOT, f'characters/{sample}.png'),ROOT/'workspace/references'/category/'reference.png',*[ROOT/item['selected'] for item in items]]
         figures=[]
         for column,(label,file) in enumerate(zip(labels,paths)):
             x=column*280;y=50+row*445

@@ -8,7 +8,7 @@ from PIL import Image
 
 out = a.ROOT / 'workspace/review/auto-mask-preview'
 out.mkdir(exist_ok=True)
-source = Image.open(a.ROOT / 'samples/characters/c001.png').convert('RGB')
+source = Image.open(__import__('sample_catalog').resolve_sample(a.ROOT, 'characters/c001.png')).convert('RGB')
 for category in ('upper_body', 'lower_body', 'overall'):
     points = [{'x': 560, 'y': 410, 'label': 1}, {'x': 550, 'y': 850, 'label': 1}, {'x': 400, 'y': 750, 'label': 0}] if category == 'overall' else []
     r = a.auto_mask({'sampleId': 'characters/c001.png', 'category': category, 'points': points})

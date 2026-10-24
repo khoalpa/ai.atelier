@@ -269,8 +269,17 @@ async function handleRequest(req, res) {
   if (req.method === 'POST' && pathname === '/api/benchmark') return deps.benchmarkWithPreflight(req, res);
   if (req.method === 'POST' && pathname === '/api/regression-audit') return deps.proxyToAi(req, res, '/regression-audit');
   if (req.method === 'POST' && pathname === '/api/select-result') return deps.selectResult(req, res);
+  if (req.method === 'GET' && pathname === '/sample-credits') {
+    return deps.serveFile(res, deps.path.join(deps.SAMPLES_DIR, 'licenses'), 'index.html');
+  }
+  if (req.method === 'GET' && /^\/sample-thumbnails\/[a-f0-9]{16}\.webp$/.test(pathname)) {
+    return deps.serveFile(res, deps.path.join(deps.SAMPLES_DIR, 'previews', 'demo'), deps.path.basename(pathname));
+  }
   if (req.method === 'GET' && pathname.startsWith('/samples/')) {
-    return deps.serveFile(res, deps.SAMPLES_DIR, pathname.slice('/samples/'.length));
+    const id = pathname.slice('/samples/'.length);
+    const file = deps.resolveSamplePath(id);
+    if (!file) return deps.send(res, 404, 'Sample not found');
+    return deps.serveFile(res, deps.path.dirname(file), deps.path.basename(file));
   }
   if (req.method === 'GET' && pathname.startsWith('/uploads/')) {
     return deps.serveFile(res, deps.UPLOADS_DIR, pathname.slice('/uploads/'.length));

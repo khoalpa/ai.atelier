@@ -8,6 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+from sample_catalog import resolve_sample
 
 def main():
     parser = argparse.ArgumentParser()
@@ -26,7 +27,7 @@ def main():
     target = ROOT/'workspace/diagnostics'/datetime.now(timezone.utc).strftime('catvton_%Y%m%dT%H%M%SZ')
     target.mkdir(parents=True)
     torch.manual_seed(52001)
-    source = Image.open(ROOT/'samples/characters/c001.png').convert('RGB')
+    source = Image.open(resolve_sample(ROOT, 'characters/c001.png')).convert('RGB')
     reference = Image.open(ROOT/'workspace/references/upper_body/reference.png').convert('RGB')
     people = ai.detect_people(source, True)
     person = people[0]

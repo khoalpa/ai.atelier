@@ -8,6 +8,8 @@ import sys
 import time
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from sample_catalog import resolve_sample
 OUTPUT = ROOT / 'workspace/diagnostics/outpaint-quality/memory'
 
 
@@ -21,7 +23,7 @@ def worker(mode):
     from outpainting import prepare_canvas, prepare_inference, composite_canvas
     from outpaint_quality import PromptEmbeddingCache
     from prompt_limits import split_flux_prompts
-    source = Image.open(ROOT/'samples/outpaint-benchmark/studio-left/source.png').convert('RGB')
+    source = Image.open(resolve_sample(ROOT, 'outpaint-benchmark/studio-left/source.png')).convert('RGB')
     source.thumbnail((320, 384))
     canvas, mask, geometry = prepare_canvas(source, dict(width=source.width+64, height=source.height, left=64))
     model_image, model_mask, crop = prepare_inference(canvas, mask, 512)

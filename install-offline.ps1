@@ -12,8 +12,9 @@ if ([IO.Path]::GetFullPath($InstallPath) -eq [IO.Path]::GetPathRoot([IO.Path]::G
 & (Join-Path $source 'verify-offline-release.ps1') -ReleasePath $source | Out-Null
 $target = [IO.Path]::GetFullPath($InstallPath)
 New-Item -ItemType Directory -Path $target -Force | Out-Null
-$preserved = @('workspace','models','weights','runtime','node_modules','.git','.venv-ai','.venv-sam2')
+$preserved = @('samples','workspace','models','weights','runtime','node_modules','.git','.venv-ai','.venv-sam2')
 Get-ChildItem -LiteralPath $source -Force | Where-Object { $_.Name -notin $preserved } | Copy-Item -Destination $target -Recurse -Force
+& (Join-Path $source 'scripts\install-samples.ps1') -SourceRoot $source -TargetRoot $target | Out-Null
 foreach ($name in @('workspace','models')) {
   $sourceItem = Join-Path $source $name; $targetItem = Join-Path $target $name
   if ((Test-Path -LiteralPath $sourceItem) -and -not (Test-Path -LiteralPath $targetItem)) { Copy-Item -LiteralPath $sourceItem -Destination $targetItem -Recurse -Force }

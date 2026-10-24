@@ -7,7 +7,10 @@ from urllib.request import Request, urlopen
 from PIL import Image, ImageChops
 
 ROOT=Path(__file__).resolve().parents[1]
-source=Image.open(ROOT/'samples/characters/c001.png').convert('RGB')
+import sys
+sys.path.insert(0, str(ROOT))
+from sample_catalog import resolve_sample
+source=Image.open(resolve_sample(ROOT, 'characters/c001.png')).convert('RGB')
 mask=Image.new('L',source.size,0)
 mask.paste(255,(int(source.width*.3),int(source.height*.25),int(source.width*.7),int(source.height*.55)))
 garment=source.crop(mask.getbbox())

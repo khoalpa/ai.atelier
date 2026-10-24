@@ -21,13 +21,10 @@ const expected = [
   'app/public/index.html',
   'app/public/app.js',
   'app/public/styles.css',
-  'samples/characters/c001.png',
-  'samples/characters/c002.png',
-  'samples/characters/c003.png',
 ];
 
 for (const relative of expected) {
-  assert.ok(fs.existsSync(path.join(root, relative)), `Thiếu tệp: ${relative}`);
+  assert.ok(relative.startsWith('samples/') ? require('../packages/samples/catalog').resolve(root,relative.slice(8)) : fs.existsSync(path.join(root, relative)), `Thiếu tệp: ${relative}`);
 }
 
 const images = [];

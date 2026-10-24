@@ -18,7 +18,7 @@ class MakeupTests(unittest.TestCase):
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory();self.root=Path(self.temp.name)
         (self.root/'app').mkdir();(self.root/'app/makeup-styles.json').write_bytes((ROOT/'app/makeup-styles.json').read_bytes())
-        self.image=Image.open(ROOT/'samples/outpaint-benchmark/portrait-left/reference.png').convert('RGB')
+        self.image=Image.open(__import__('sample_catalog').resolve_sample(ROOT, 'outpaint-benchmark/portrait-left/reference.png')).convert('RGB')
         self.path=self.root/'source.png';self.image.save(self.path)
         self.points=np.array(json.loads((ROOT/'tests/fixtures/makeup-landmarks.json').read_text()),np.float32)
         self.events=[]

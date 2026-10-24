@@ -9,6 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+from sample_catalog import resolve_sample
 
 CASES = {
     'overall:c003': 'a solid emerald green linen knee-length A-line dress with a round neckline, short sleeves, a fitted waist and a flared skirt',
@@ -54,7 +55,7 @@ def main():
     baseline = next(row for row in prior['cases'] if row['category']==args.category and row['sample']==args.sample and row['variant']=='description-and-mask')
     target = prior_root/datetime.now(timezone.utc).strftime(f'conditioning-fixed-{args.category}-{args.sample}-%Y%m%dT%H%M%SZ')
     target.mkdir()
-    source = Image.open(ROOT/f'samples/characters/{args.sample}.png').convert('RGB')
+    source = Image.open(resolve_sample(ROOT, f'characters/{args.sample}.png')).convert('RGB')
     reference = Image.open(ROOT/f'workspace/references/{args.category}/reference.png').convert('RGB')
     mask_path = Path(args.mask_file) if args.mask_file else prior_root/args.category/'candidate-mask.png'
     if not mask_path.is_absolute():

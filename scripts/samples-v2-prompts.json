@@ -1,0 +1,326 @@
+{
+  "schemaVersion": 1,
+  "generator": "ChatGPT built-in ImageGen",
+  "assets": [
+    {
+      "id": "people-01",
+      "label": "Người mẫu đứng thẳng",
+      "group": "people",
+      "tasks": [
+        "tryon"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Portrait 1024x1536. Full head-to-toe Vietnamese woman aged about 35, medium build, gray cotton T-shirt and navy trousers, simple shoes. Arms slightly away from torso, hands visible. Light gray studio and contact shadow. Leave margin above head and below shoes.",
+      "transparent_background": false
+    },
+    {
+      "id": "people-02",
+      "label": "Người mẫu nam áo sáng",
+      "group": "people",
+      "tasks": [
+        "tryon"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Portrait 1024x1536. Full head-to-toe Vietnamese man aged about 45, average build, short hair, cream plain T-shirt and olive trousers. Front view, both hands visible separated from clothing. Neutral studio, natural window light, margin around feet.",
+      "transparent_background": false
+    },
+    {
+      "id": "people-03",
+      "label": "Người mẫu vóc dáng đầy đặn",
+      "group": "people",
+      "tasks": [
+        "tryon"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Portrait 1024x1536. Full head-to-toe adult woman aged 40 with a plus-size build and deep brown skin, short curly hair, burgundy plain T-shirt and beige trousers. Relaxed front pose, arms away from torso, neutral studio.",
+      "transparent_background": false
+    },
+    {
+      "id": "people-04",
+      "label": "Người mẫu lớn tuổi",
+      "group": "people",
+      "tasks": [
+        "tryon"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Portrait 1024x1536. Full head-to-toe East Asian man aged 68, gray hair, glasses, light blue plain shirt and charcoal trousers. Relaxed standing pose, visible shoes and hands, neutral studio, natural wrinkles.",
+      "transparent_background": false
+    },
+    {
+      "id": "people-05",
+      "label": "Tư thế ngồi",
+      "group": "people",
+      "tasks": [
+        "tryon"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Portrait 1024x1536. Full-body adult East Asian woman seated on a simple wooden stool, pale blue blouse and dark trousers, both hands resting on knees, legs and shoes fully visible. Bright clean studio. Natural clothing folds at waist and knees.",
+      "transparent_background": false
+    },
+    {
+      "id": "people-06",
+      "label": "Tay khoanh trước áo",
+      "group": "people",
+      "tasks": [
+        "tryon"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Portrait 1024x1536. Full-body adult man with medium brown skin wearing a plain gray T-shirt and jeans, arms crossed across chest naturally, unobscured face and full shoes. Neutral studio.",
+      "transparent_background": false
+    },
+    {
+      "id": "people-07",
+      "label": "Túi đeo che trang phục",
+      "group": "people",
+      "tasks": [
+        "tryon"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Portrait 1024x1536. Full-body adult East Asian woman in a plain green cotton shirt and cream trousers, small unbranded tan shoulder bag crossing one side of torso, one hand holding strap. Simple outdoor plaster wall, soft daylight.",
+      "transparent_background": false
+    },
+    {
+      "id": "people-08",
+      "label": "Góc đứng ba phần tư",
+      "group": "people",
+      "tasks": [
+        "tryon"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Portrait 1024x1536. Head-to-toe adult woman with medium brown skin wearing a plain cream blouse and navy knee-length skirt, three-quarter standing view. Both hands visible, shoes included. Neutral studio, generous framing.",
+      "transparent_background": false
+    },
+    {
+      "id": "face-01",
+      "label": "Chân dung ánh sáng đều",
+      "group": "faces",
+      "tasks": [
+        "makeup"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Square 1024x1024. Head-and-shoulders adult Vietnamese woman aged 32, front-facing, neutral gentle expression, minimal makeup, hair tucked behind ears, diffuse even daylight, light gray background, realistic skin pores.",
+      "transparent_background": false
+    },
+    {
+      "id": "face-02",
+      "label": "Chân dung đeo kính",
+      "group": "faces",
+      "tasks": [
+        "makeup"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Square 1024x1024. Head-and-shoulders adult East Asian woman aged 40 with simple thin metal glasses, front-facing, soft even light, eyes clearly visible through lenses, minimal makeup and skin texture, neutral background.",
+      "transparent_background": false
+    },
+    {
+      "id": "face-03",
+      "label": "Tóc che một phần mặt",
+      "group": "faces",
+      "tasks": [
+        "makeup"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Square 1024x1024. Close portrait adult woman aged 30 with brown skin, a few loose curly hair strands overlapping one cheek but both eyes visible. Minimal makeup, soft daylight, natural skin, neutral background.",
+      "transparent_background": false
+    },
+    {
+      "id": "face-04",
+      "label": "Chân dung nghiêng",
+      "group": "faces",
+      "tasks": [
+        "makeup"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Square 1024x1024. Head-and-shoulders adult East Asian woman aged 35 turned 45 degrees, gaze slightly off camera, defined nose and lips in three-quarter view, tied-back hair, minimal makeup, soft studio daylight.",
+      "transparent_background": false
+    },
+    {
+      "id": "face-05",
+      "label": "Da sáng có tàn nhang",
+      "group": "faces",
+      "tasks": [
+        "makeup"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Square 1024x1024. Close front-facing portrait fictional adult woman aged 29 with fair freckled skin and auburn hair, no heavy makeup, natural pores and subtle asymmetry, even daylight, gray backdrop.",
+      "transparent_background": false
+    },
+    {
+      "id": "face-06",
+      "label": "Da tối và ánh sáng mềm",
+      "group": "faces",
+      "tasks": [
+        "makeup"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Square 1024x1024. Close portrait adult woman aged 38 with dark brown skin, short natural hair, front view, minimal makeup, soft light preserving highlights and shadow detail, neutral background.",
+      "transparent_background": false
+    },
+    {
+      "id": "face-07",
+      "label": "Chân dung tuổi trung niên",
+      "group": "faces",
+      "tasks": [
+        "makeup"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Square 1024x1024. Front-facing head-and-shoulders adult Vietnamese woman aged 58, natural smile lines and skin texture, shoulder-length dark hair with some gray, minimal makeup, even studio lighting.",
+      "transparent_background": false
+    },
+    {
+      "id": "face-08",
+      "label": "Chân dung nam có râu",
+      "group": "faces",
+      "tasks": [
+        "character"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Square 1024x1024. Front-facing head-and-shoulders adult man aged 42 with medium olive skin, neatly trimmed beard and short hair, relaxed neutral expression, realistic skin texture, soft gray studio.",
+      "transparent_background": false
+    },
+    {
+      "id": "garment-01",
+      "label": "Sơ mi kẻ sọc",
+      "group": "garments",
+      "tasks": [
+        "tryon"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Portrait 1024x1536. Isolated front view of a blue and white vertically striped cotton long-sleeve button-up shirt, neatly flat-laid on a pure white background. Entire garment visible, collar, placket, cuffs and hem accurate. No mannequin, hanger, person or text.",
+      "transparent_background": false
+    },
+    {
+      "id": "garment-02",
+      "label": "Váy caro",
+      "group": "garments",
+      "tasks": [
+        "tryon"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Portrait 1024x1536. Isolated front view of an adult women's green and cream gingham knee-length dress with short sleeves, defined waist and button placket, on pure white. Accurate check pattern and seams. No person, mannequin, hanger or branding.",
+      "transparent_background": false
+    },
+    {
+      "id": "garment-03",
+      "label": "Quần vải có túi",
+      "group": "garments",
+      "tasks": [
+        "tryon"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Portrait 1024x1536. Isolated front view of unbranded tan adult cargo trousers, flat-laid on pure white, clear belt loops, seams, side pockets, full waistband and hems. No person, hanger or text.",
+      "transparent_background": false
+    },
+    {
+      "id": "garment-04",
+      "label": "Áo len dệt nổi",
+      "group": "garments",
+      "tasks": [
+        "tryon"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Portrait 1024x1536. Isolated front view of an ivory adult cable-knit sweater, long sleeves, ribbed crewneck and cuffs, neatly flat-laid on pure white, clear regular knit texture. No person, mannequin, hanger or text.",
+      "transparent_background": false
+    },
+    {
+      "id": "scene-people-01",
+      "label": "Hai người đứng tách biệt",
+      "group": "people",
+      "tasks": [
+        "character"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Landscape 1536x1024. Two fictional Vietnamese adults, a woman and man around 35, standing full-body side by side with a clear gap between them, plain distinct blue and ochre casual outfits, hands visible. Neutral bright studio, shoes fully shown.",
+      "transparent_background": false
+    },
+    {
+      "id": "scene-people-02",
+      "label": "Hai người có che khuất",
+      "group": "people",
+      "tasks": [
+        "character"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Landscape 1536x1024. Two fictional adult friends, a woman in a green shirt in foreground and a man in a navy shirt standing slightly behind her to one side, slight overlap of shoulders, both faces and complete bodies visible. Soft daylight courtyard.",
+      "transparent_background": false
+    },
+    {
+      "id": "scene-people-03",
+      "label": "Ba người ở bàn làm việc",
+      "group": "scenes",
+      "tasks": [
+        "character"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Landscape 1536x1024. Three fictional adult coworkers aged 30 to 55 at a wooden workshop table, woman seated left, man standing center, woman seated right. Distinct plain clothing, all faces and hands visible naturally, believable tools and warm daylight interior.",
+      "transparent_background": false
+    },
+    {
+      "id": "scene-people-04",
+      "label": "Đôi bạn đang đi bộ",
+      "group": "scenes",
+      "tasks": [
+        "character"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Landscape 1536x1024. Two fictional adult friends walking on a quiet leafy path, one East Asian woman in an ochre top and one brown-skinned man in a blue shirt. Whole bodies, natural different walking poses, clear separation, realistic hands, daylight.",
+      "transparent_background": false
+    },
+    {
+      "id": "scene-people-05",
+      "label": "Hai người ngồi trên ghế",
+      "group": "scenes",
+      "tasks": [
+        "character"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Landscape 1536x1024. Two fictional adults aged 60 seated with space between them on a wooden park bench, one woman and one man in plain contrasting outfits. Full figures and feet visible, soft afternoon light, trees behind.",
+      "transparent_background": false
+    },
+    {
+      "id": "scene-people-06",
+      "label": "Nhóm ba người trong studio",
+      "group": "people",
+      "tasks": [
+        "character"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Landscape 1536x1024. Three fictional adult models with different body builds, two women and one man, standing full-body with gaps between them against a neutral studio wall. Plain red, blue and cream shirts with trousers, all faces, hands and shoes visible.",
+      "transparent_background": false
+    },
+    {
+      "id": "object-01",
+      "label": "Bình kính và bóng đổ",
+      "group": "objects",
+      "tasks": [
+        "background"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Square 1024x1024. A transparent clear glass carafe partly filled with water on a pale wooden table, gentle window light, realistic refraction, subtle contact shadow, plain softly colored wall background. Entire carafe visible.",
+      "transparent_background": false
+    },
+    {
+      "id": "object-02",
+      "label": "Cây lá mảnh",
+      "group": "objects",
+      "tasks": [
+        "background"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Portrait 1024x1536. A small potted fern with many fine separated fronds, terracotta pot on a simple table against a light blue wall, soft daylight, detailed leaf edges and realistic contact shadow. Entire plant visible.",
+      "transparent_background": false
+    },
+    {
+      "id": "object-03",
+      "label": "Tóc xoăn và nền cây",
+      "group": "objects",
+      "tasks": [
+        "background"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Portrait 1024x1536. Head-and-shoulders fictional adult woman with voluminous natural curly dark hair and fine flyaway strands, plain beige top, softly blurred leafy garden behind, backlit hair edge but natural facial light.",
+      "transparent_background": false
+    },
+    {
+      "id": "object-04",
+      "label": "Dây cáp trên mặt bàn",
+      "group": "objects",
+      "tasks": [
+        "inpaint"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Landscape 1536x1024. A thin black charging cable curving across a pale oak desk beside an unbranded ceramic mug. Natural window lighting, distinct fine cable edges and its shadow, realistic wood grain, no text or electronics labels.",
+      "transparent_background": false
+    },
+    {
+      "id": "object-05",
+      "label": "Chai gốm nền trong suốt",
+      "group": "objects",
+      "tasks": [
+        "manual"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Square 1024x1024. A single unbranded matte terracotta ceramic vase, full object isolated as a clean photographic cutout. Genuine transparent background, no fake checkerboard, no text, realistic surface and clean edges. No floor or scene.",
+      "transparent_background": true
+    },
+    {
+      "id": "object-06",
+      "label": "Vật thể sát mép ảnh",
+      "group": "objects",
+      "tasks": [
+        "inpaint"
+      ],
+      "prompt": "Create one photorealistic standalone source image for an offline photo-editing demo. All people are fictional adults, natural anatomy and skin texture. No text, logo, watermark, collage or border. Sharp usable details and realistic lighting. Landscape 1536x1024. A pale stone patio with repeating square grout lines and a single red ceramic flowerpot partly cut by the left image edge, a visible soft pot shadow, natural afternoon sunlight. No other objects or people.",
+      "transparent_background": false
+    }
+  ]
+}

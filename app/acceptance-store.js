@@ -18,8 +18,10 @@ function createAcceptanceStore(root){
     const match=/^\/(samples|uploads|outputs|manual-assets)\/(.+)$/.exec(url||'');
     if(!match||!(/\.(png|jpe?g|webp)$/i.test(url)))throw Error('Chọn ảnh trong thư viện của ứng dụng.');
     const base=path.join(root,match[1]==='samples'?'samples':match[1]==='manual-assets'?'workspace/manual/assets':'workspace/'+match[1]);
-    const target=path.resolve(base,match[2]);if(!target.startsWith(path.resolve(base)+path.sep))throw Error('Đường dẫn ảnh không hợp lệ.');
-    const real=await fs.realpath(target),realBase=await fs.realpath(base);if(!real.startsWith(realBase+path.sep))throw Error('Ảnh nằm ngoài thư viện.');
+    const target=match[1]==='samples'?require('../packages/samples/catalog').resolve(root,decodeURIComponent(match[2])):path.resolve(base,decodeURIComponent(match[2]));
+    if(!target)throw Error('Đường dẫn ảnh không hợp lệ.');
+    const real=await fs.realpath(target),realBase=await fs.realpath(base);
+    if(match[1]!=='samples'&&!real.startsWith(realBase+path.sep))throw Error('Ảnh nằm ngoài thư viện.');
     const stat=await fs.stat(real);if(!stat.isFile()||stat.size>80*1024*1024)throw Error('Ảnh vượt giới hạn kiểm tra.');
     const key=real+':'+stat.size+':'+stat.mtimeMs+':'+stat.ctimeMs;
     if(cache.has(key))return cache.get(key);
