@@ -1,4 +1,8 @@
 {
+  "prompt_text": "prompt_catalog",
+  "prompt_template": "prompt_catalog",
+  "read_catalog": "prompt_catalog",
+  "task_prompt": "prompt_catalog",
   "ROOT": "services.ai.runtime.configuration",
   "APP_VERSION": "services.ai.runtime.configuration",
   "service_lifecycle": "services.ai.runtime.configuration",

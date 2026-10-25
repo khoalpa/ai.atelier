@@ -20,6 +20,12 @@ from services.ai.runtime.factory import task_context
 import services.ai.http as http
 
 class RuntimeTests(unittest.TestCase):
+    def test_legacy_entry_point_exports_prompt_catalog_helpers(self):
+        import ai_service
+        import prompt_catalog
+        for name in ('prompt_text','prompt_template','read_catalog','task_prompt'):
+            self.assertIs(getattr(ai_service,name),getattr(prompt_catalog,name))
+
     def test_legacy_diagnostics_override_the_actual_domain_dependencies(self):
         import ai_service
         from services.ai.tasks import tryon
