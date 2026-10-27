@@ -3,6 +3,16 @@
 .enhance-panel p, .enhance-panel small { line-height: 1.55; }
 .enhance-panel [hidden] { display: none !important; }
 .enhance-panel .skin-texture-toggle { display: flex; align-items: center; gap: 8px; }
+.enhance-choice-main{display:grid;gap:10px;margin:0 0 12px;padding:12px;border:1px solid var(--line);border-radius:11px;background:var(--palette-0e151c)}
+.enhance-choice-main legend{padding:0 5px;color:var(--text);font-weight:750}
+.enhance-method-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.enhance-method-buttons button{min-width:0;padding-inline:8px}
+.enhance-choice-main .button-row{grid-template-columns:repeat(3,minmax(0,1fr))}
+#enhanceScopeMain .button-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+.enhance-choice-main small{color:var(--muted);font-weight:400}
+.enhance-advanced{margin-block:10px;padding:10px;border:1px solid var(--line);border-radius:10px}
+.enhance-advanced summary{cursor:pointer;font-weight:650}
+.enhance-panel>.button-row:has(#enhanceRun){grid-template-columns:1fr}
 .skin-texture-toggle input { width: auto; }
 #skinRetouchControls { padding: 4px 12px; border: 1px solid #8885; border-radius: 10px; }
 #skinSmoothValue { font-variant-numeric: tabular-nums; }

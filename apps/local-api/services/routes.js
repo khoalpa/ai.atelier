@@ -4,16 +4,37 @@ const requireFromApp = require('node:module').createRequire(require('node:path')
 module.exports = function createRoutes(deps) {
 const require = requireFromApp;
 const __dirname = require('node:path').join(deps.ROOT,'app');
+let anatomyParts;
+const getAnatomyParts=()=>anatomyParts||(anatomyParts=require('./anatomy-parts-store').create(deps.ROOT));
+const catalogTransfer=require('./catalog-transfer-store').createStore(process.env.ATELIER_JSON_CONFIG_ROOT||deps.ROOT,deps.PROMPTS_FILE);
 async function handleRequest(req, res) {
   const url = new URL(req.url, `http://${deps.HOST}:${deps.PORT}`);
   const pathname = decodeURIComponent(url.pathname);
+  if(pathname==='/api/catalog-package'){
+    try{
+      if(req.method==='GET'){const bundle=catalogTransfer.exported(url.searchParams.get('scope')||'all');res.setHeader('Content-Disposition','attachment; filename="ai-atelier-catalog-package.json"');return deps.send(res,200,JSON.stringify(bundle,null,2));}
+      if(req.method!=='POST')return deps.send(res,405,JSON.stringify({ok:false,error:'Phương thức không được hỗ trợ.'}));
+      if((req.headers.origin&&req.headers.origin!==`http://${req.headers.host}`)||req.headers['sec-fetch-site']==='cross-site')return deps.send(res,403,JSON.stringify({ok:false,error:'Yêu cầu phải đến từ ứng dụng này.'}));
+      const body=await deps.parseJson(req,5*1024*1024);
+      const result=body.action==='preview'?catalogTransfer.preview(body.bundle):body.action==='import'?catalogTransfer.apply(body.bundle,body.revisions):null;
+      if(!result)throw Error('Thao tác gói cấu hình không hợp lệ.');return deps.send(res,200,JSON.stringify({ok:true,...result}));
+    }catch(error){return deps.send(res,400,JSON.stringify({ok:false,error:error.message}));}
+  }
+  if(pathname==='/api/catalog-preview'&&req.method==='POST'){
+    try{
+      if((req.headers.origin&&req.headers.origin!==`http://${req.headers.host}`)||req.headers['sec-fetch-site']==='cross-site')return deps.send(res,403,JSON.stringify({ok:false,error:'Yêu cầu phải đến từ ứng dụng này.'}));
+      const body=await deps.parseJson(req,3*1024*1024),result=require('./catalog-inspector').preview(body.catalog||deps.readCatalog(),body.taskId,body.variables||{},body.modelId||null);
+      if(body.modelId&&!result.missingVariables.length){try{result.tokenCheck=await deps.callAiJson('/catalog-token-preview',{modelId:body.modelId,prompt:result.prompt,negativePrompt:result.negativePrompt});}catch(error){result.tokenError=error.message;}}
+      return deps.send(res,200,JSON.stringify({ok:true,...result}));
+    }catch(error){return deps.send(res,400,JSON.stringify({ok:false,error:error.message}));}
+  }
   if(deps.taskRoutes&&await deps.taskRoutes(req,res,url))return;
   if(pathname==='/api/services'&&req.method==='GET')return deps.send(res,200,JSON.stringify(await deps.serviceManager.state()));
   if(pathname==='/api/services/restart-ai'&&req.method==='POST'){try{if((await deps.parseJson(req,1024)).confirm!==true)throw Error('Thiếu xác nhận khởi động lại.');return deps.send(res,202,JSON.stringify({ok:true,operation:await deps.serviceManager.restart()}));}catch(e){return deps.send(res,409,JSON.stringify({ok:false,error:e.message}));}}
   if(pathname==='/api/background-render'){try{if(req.method==='GET')return deps.send(res,200,JSON.stringify({work:deps.backgroundRenderer.work(url.searchParams.get('token'))}));if(req.method==='POST'){deps.backgroundRenderer.complete(await deps.parseJson(req,110*1024*1024));return deps.send(res,200,JSON.stringify({ok:true}));}}catch(e){return deps.send(res,403,JSON.stringify({ok:false,error:e.message}));}}
   if(pathname==='/api/acceptance'&&['GET','POST'].includes(req.method)){try{return deps.send(res,200,JSON.stringify(req.method==='GET'?{ok:true,...await deps.acceptanceStore.state()}:{ok:true,item:await deps.acceptanceStore.action(await deps.parseJson(req,16384))}));}catch(e){return deps.send(res,400,JSON.stringify({ok:false,error:e.message}));}}
   if(pathname==='/api/work-queue'&&['GET','POST'].includes(req.method)){try{let result;if(req.method==='GET')result=url.searchParams.has('id')?{queue:{...await deps.workQueue.get(url.searchParams.get('id')),owner:undefined}}:{items:await deps.workQueue.list()};else {const body=await deps.parseJson(req,33*1024*1024);if(!['create','start','stop'].includes(body.action))throw Error('Hàng đợi đã chuyển sang dịch vụ nền. Tải lại giao diện để tiếp tục.');if(body.action==='start'&&(deps.webRestartPending||deps.serviceManager.busy()))throw Error('Dịch vụ đang khởi động lại. Thử lại sau ít giây.');result={queue:{...await deps.workQueue.action(body),owner:undefined}};}return deps.send(res,200,JSON.stringify({ok:true,...result}));}catch(e){return deps.send(res,400,JSON.stringify({ok:false,error:e.message}));}}
-  if(req.method==='POST'&&(deps.webRestartPending||deps.serviceManager.busy())&&['/api/manual-cutout','/api/character-render','/api/character-regenerate','/api/makeup','/api/enhance','/api/outpaint','/api/inpaint','/api/tryon','/api/batch-tryon','/api/resume-job','/api/chroma-generate','/api/sd35-conditioned-generate','/api/sdxl-conditioned-generate'].includes(pathname))return deps.send(res,503,JSON.stringify({ok:false,error:'Dịch vụ đang khởi động lại. Thử lại sau ít giây.'}));
+  if(req.method==='POST'&&(deps.webRestartPending||deps.serviceManager.busy())&&['/api/manual-cutout','/api/character-render','/api/character-regenerate','/api/anatomy-preview','/api/anatomy-inpaint','/api/makeup','/api/enhance','/api/outpaint','/api/inpaint','/api/tryon','/api/batch-tryon','/api/resume-job','/api/chroma-generate','/api/sd35-conditioned-generate','/api/sdxl-conditioned-generate'].includes(pathname))return deps.send(res,503,JSON.stringify({ok:false,error:'Dịch vụ đang khởi động lại. Thử lại sau ít giây.'}));
   if(pathname==='/api/export-presets'&&['GET','POST'].includes(req.method)){try{return deps.send(res,200,JSON.stringify(req.method==='GET'?{ok:true,items:await deps.exportPresets.list()}:{ok:true,item:await deps.exportPresets.save(await deps.parseJson(req,16384))}));}catch(e){return deps.send(res,400,JSON.stringify({ok:false,error:e.message}));}}
   if(pathname==='/api/regions'&&['GET','POST'].includes(req.method)){try{return deps.send(res,200,JSON.stringify(req.method==='GET'?{ok:true,items:await deps.regionStore.list(url.searchParams.get('source'))}:{ok:true,item:await deps.regionStore.save(await deps.parseJson(req,16384))}));}catch(e){return deps.send(res,400,JSON.stringify({ok:false,error:e.message}));}}
   if(req.method==='POST'&&pathname==='/api/manual-cutout'){try{return deps.send(res,200,JSON.stringify(await deps.callAiJson('/manual-cutout',await deps.parseJson(req,16384))));}catch(e){return deps.send(res,400,JSON.stringify({ok:false,error:e.message.includes('endpoint')?'Khởi động lại dịch vụ AI để nạp công cụ tách chủ thể mới. Vẫn có thể dùng vùng chọn thủ công.':e.message}));}}
@@ -133,6 +154,7 @@ async function handleRequest(req, res) {
     return deps.send(res,200,JSON.stringify({ok:true,removedCount,...await deps.assetCatalog.query(assets,Object.fromEntries(url.searchParams))}));
   }
   if(req.method==='GET'&&pathname==='/api/image-projects'){const {assets}=await deps.allLibraryAssets();return deps.send(res,200,JSON.stringify({ok:true,items:await deps.assetCatalog.projects(await deps.assetCatalog.decorate(assets.filter(a=>a.sourceType!=='project')),await deps.manualStore.list())}));}
+  if(pathname==='/api/anatomy-parts'&&['GET','POST'].includes(req.method)){try{const store=getAnatomyParts();if(req.method==='GET')return deps.send(res,200,JSON.stringify({ok:true,...store.read()}));const body=await deps.parseJson(req,128*1024);const result=body.action==='reset'?store.reset():body.action==='save'?store.write({items:body.items}):null;if(!result)throw Error('Thao tác danh sách bộ phận không hợp lệ.');return deps.send(res,200,JSON.stringify({ok:true,...result}));}catch(error){return deps.send(res,400,JSON.stringify({ok:false,error:error.message}));}}
   if(req.method==='GET'&&pathname==='/api/asset-catalog-state')return deps.send(res,200,JSON.stringify({ok:true,catalog:await deps.assetCatalog.state()}));
   if(req.method==='POST'&&pathname==='/api/review-creative'){try{const body=await deps.parseJson(req,16384),assets=(await deps.allLibraryAssets()).assets,item=assets.find(i=>i.id===body.id&&i.url===body.url&&i.sourceType==='result');if(!item)throw Error('Ảnh kết quả không còn trong thư viện.');await deps.assetCatalog.update({ids:[item.id],review:{status:body.status,defects:body.defects}});let feedbackWarning='';try{const state=await deps.qualityService.call('state',{url:item.url}),result=(state.results||[]).find(i=>i.original===item.url||i.improved===item.url);if(result)await deps.qualityService.call('feedback',{resultId:result.id,target:result.improved===item.url?'improved':'original',rating:body.status==='approved'?'good':body.status==='pending'?'clear':'needs-work',defects:body.defects});}catch(e){feedbackWarning='Đã lưu quyết định; phản hồi hoàn thiện chi tiết chưa đồng bộ: '+e.message;}return deps.send(res,200,JSON.stringify({ok:true,feedbackWarning}));}catch(e){return deps.send(res,400,JSON.stringify({ok:false,error:e.message}));}}
   if(req.method==='POST'&&pathname==='/api/asset-catalog'){try{return deps.send(res,200,JSON.stringify({ok:true,catalog:await deps.assetCatalog.update(await deps.parseJson(req,128*1024))}));}catch(e){return deps.send(res,400,JSON.stringify({ok:false,error:e.message}));}}
@@ -193,17 +215,10 @@ async function handleRequest(req, res) {
   if (req.method === 'POST' && pathname === '/api/detect-regions') return deps.proxyToAi(req,res,'/detect-regions',30*1024*1024);
   if (req.method === 'POST' && pathname === '/api/adetailer-refine') return deps.proxyToAi(req,res,'/adetailer-refine',30*1024*1024);
   if (req.method === 'POST' && pathname === '/api/sd35-conditioned-generate') {
-    const state=deps.sd35DepthOperationalState();
-    if(!state.operationalReady)return deps.send(res,409,JSON.stringify({ok:false,error:state.runtimeReason}));
-    return deps.proxyToAi(req,res,'/sd35-conditioned-generate',30*1024*1024);
+    return deps.send(res,410,JSON.stringify({ok:false,error:'ControlNet SD3.5 dùng token CLIP đã bị loại vĩnh viễn.'}));
   }
   if (req.method === 'POST' && pathname === '/api/sdxl-conditioned-generate') {
-    const state=deps.modelOperationalState({id:'ip-adapter-sdxl'},{ready:true});
-    if(!state.operationalReady)return deps.send(res,409,JSON.stringify({ok:false,error:'Không thể dùng ControlNet/IP-Adapter: '+state.runtimeReason}));
-    const config=deps.readLocalConfig();
-    const depthRoot=deps.path.resolve(deps.ROOT,config.depthEstimatorModel||'models/depth/depth-anything-v2-large');
-    if(['config.json','preprocessor_config.json','model.safetensors'].some(name=>!deps.fs.existsSync(deps.path.join(depthRoot,name))))return deps.send(res,409,JSON.stringify({ok:false,error:'Thiếu model ước lượng chiều sâu Depth Anything V2. Cài model trước khi tạo ảnh SDXL.'}));
-    return deps.proxyToAi(req,res,'/sdxl-conditioned-generate',30*1024*1024);
+    return deps.send(res,410,JSON.stringify({ok:false,error:'ControlNet SDXL dùng token CLIP đã bị loại vĩnh viễn.'}));
   }
   if (req.method === 'POST' && pathname === '/api/preprocess-garment') return deps.proxyToAi(req, res, '/preprocess-garment', 30 * 1024 * 1024);
   if (req.method === 'GET' && pathname === '/api/character-config') {const [health,ollama]=await Promise.all([deps.readAiGet('/health'),deps.readOllamaModels()]);return deps.send(res,200,JSON.stringify({ok:true,...(health.character||{}),serviceReady:health.characterVersion===1,plannerReady:ollama.models.some(m=>m.name===deps.MAKEUP_LLM_MODEL||m.model===deps.MAKEUP_LLM_MODEL)}));}
@@ -227,10 +242,13 @@ async function handleRequest(req, res) {
   if (req.method === 'POST' && pathname === '/api/makeup-plan') {try{const body=await deps.parseJson(req,8192);return deps.send(res,200,JSON.stringify(await require('./makeup-plan').planMakeup(body,deps.requestLocalLlm,deps.MAKEUP_LLM_MODEL)));}catch(error){return deps.send(res,400,JSON.stringify({ok:false,error:'Không đọc được mô tả: '+error.message}));}}
   if (req.method === 'POST' && pathname === '/api/enhance') return deps.proxyToAi(req,res,'/enhance',30*1024*1024);
   if (req.method === 'GET' && pathname === '/api/enhance-config') {const health=await deps.readAiGet('/health');return deps.send(res,200,JSON.stringify({ok:true,...(health.enhancement||{}),serviceReady:health.enhanceVersion===1}));}
-  if (req.method === 'POST' && pathname === '/api/outpaint') return deps.proxyToAi(req, res, '/outpaint');
+  if (req.method === 'POST' && pathname === '/api/outpaint') return deps.proxyToAi(req,res,'/outpaint',30*1024*1024);
   if (req.method === 'GET' && pathname === '/api/outpaint-config') {const health=await deps.readAiGet('/health');return deps.send(res,200,JSON.stringify({ok:true,version:2,serviceReady:health.outpaintVersion===2,maxPixels:Number(process.env.ATELIER_OUTPAINT_MAX_PIXELS||16777216),timing:require('./outpaint-timing').outpaintTiming(deps.listJobs(),deps.JOBS_DIR)}));}
-  if (req.method === 'POST' && pathname === '/api/inpaint') return deps.proxyToAi(req, res, '/inpaint', 30 * 1024 * 1024);
-  if (req.method === 'POST' && pathname === '/api/inpaint-prompts') return deps.proxyToAi(req, res, '/inpaint-prompts', 30 * 1024 * 1024);
+  if (req.method === 'POST' && pathname === '/api/inpaint') return deps.proxyToAi(req,res,'/inpaint',30*1024*1024);
+  if (req.method === 'POST' && pathname === '/api/anatomy-preview') return deps.proxyToAi(req,res,'/anatomy-preview',30*1024*1024);
+  if (req.method === 'POST' && pathname === '/api/anatomy-inpaint') return deps.proxyToAi(req,res,'/anatomy-inpaint',30*1024*1024);
+  if (req.method === 'POST' && pathname === '/api/inpaint-prompts') return deps.proxyToAi(req,res,'/inpaint-prompts',30*1024*1024);
+  if (req.method === 'POST' && pathname === '/api/qwen-depth-generate') return deps.proxyToAi(req,res,'/qwen-depth-generate',30*1024*1024);
   if (req.method === 'POST' && pathname === '/api/lora-configure') return deps.proxyToAi(req,res,'/lora-configure');
   if (req.method === 'POST' && pathname === '/api/lora-ab-test') return deps.proxyToAi(req,res,'/lora-ab-test',30*1024*1024);
   if (req.method === 'POST' && pathname === '/api/lora-ab-matrix') return deps.proxyToAi(req,res,'/lora-ab-matrix',30*1024*1024);

@@ -121,6 +121,8 @@ def text_to_image_model_path(model_id: str) -> Path:
 
 
 def load_text_to_image_pipe(model_id: str):
+    if model_id in ('sd35-medium', 'sdxl-base-1.0'):
+        raise RuntimeError('Model mã hóa prompt bằng CLIP đã bị loại vĩnh viễn. Hãy dùng flux-chroma1-hd (T5).')
     if model_id == "flux-chroma1-hd":
         return load_chroma_pipe()
     if model_state.text_to_image_pipe is not None and model_state.text_to_image_model_id == model_id:
@@ -260,8 +262,12 @@ def inpaint_model_entry(model_id: str | None = None):
     model_path = model_path if model_path.is_absolute() else ROOT / model_path
     if not model_path.resolve().is_relative_to((ROOT / "models").resolve()):
         raise ValueError("Đường dẫn model Inpainting phải nằm trong thư mục models")
-    if not model_path.is_dir() or not (model_path / "model_index.json").is_file():
+    required = [model_path / str(item) for item in entry.get("requiredFiles", ["model_index.json"])]
+    if not model_path.is_dir() or any(not item.is_file() for item in required):
         raise RuntimeError(f"Model Inpainting chưa sẵn sàng: {display_model_path(model_path)}")
+    encoder = str(entry.get("textEncoder") or "").lower()
+    if encoder not in ("t5", "qwen", "none"):
+        raise RuntimeError(f"Model Inpainting bị chặn bởi chính sách text encoder: {entry.get('id')}")
     return entry
 
 
@@ -283,7 +289,54 @@ def detect_inpaint_architecture(model_path: Path, architecture: str | None = Non
         return "sd35"
     if "fluxfill" in model_class:
         return "flux"
+    if "qwenimagecontrolnetinpaint" in model_class or "qwen-image-controlnet-inpaint" in requested_architecture:
+        return "qwen-image-controlnet-inpaint"
     return "sd35"
+
+
+def _registry_model(model_id: str) -> dict:
+    registry = json.loads((ROOT / "models" / "registry.json").read_text(encoding="utf-8"))
+    entry = next((item for item in registry.get("models", []) if item.get("id") == model_id), None)
+    if not entry:
+        raise RuntimeError(f"Model chưa đăng ký: {model_id}")
+    return entry
+
+
+def _model_path(entry: dict, field: str = "path") -> Path:
+    path = Path(str(entry.get(field) or ""))
+    resolved = path if path.is_absolute() else ROOT / path
+    if not resolved.resolve().is_relative_to((ROOT / "models").resolve()):
+        raise RuntimeError("Đường dẫn model phải nằm trong thư mục models")
+    return resolved
+
+
+def _require_model_files(entry: dict, path: Path):
+    missing = [display_model_path(path / str(item)) for item in entry.get("requiredFiles", []) if not (path / str(item)).is_file()]
+    if missing:
+        raise RuntimeError("Model chưa được tải đầy đủ: " + ", ".join(missing))
+
+
+def _configure_qwen_memory(pipe):
+    if device == "cuda":
+        # Accelerate sequential offload leaves Qwen2.5-VL's tied input
+        # embedding on a meta tensor on Windows. Block-level group offload
+        # preserves the tied weights and fits the Qwen transformer on 16 GB.
+        if torch.cuda.get_device_properties(0).total_memory < 24 * 1024 ** 3:
+            from diffusers.hooks import apply_group_offloading
+            for module in (getattr(pipe, "transformer", None), getattr(pipe, "controlnet", None)):
+                enable = getattr(module, "enable_group_offload", None)
+                if callable(enable):
+                    enable(onload_device=torch.device("cuda"), offload_device=torch.device("cpu"), offload_type="block_level", num_blocks_per_group=1)
+            apply_group_offloading(pipe.text_encoder, onload_device=torch.device("cuda"), offload_device=torch.device("cpu"), offload_type="leaf_level")
+            pipe.vae.to("cuda")
+            pipe._atelier_offload = "group"
+        else:
+            pipe.enable_model_cpu_offload()
+            pipe._atelier_offload = "model"
+    else:
+        pipe.to("cpu")
+        pipe._atelier_offload = "cpu"
+    configure_vae_memory(pipe)
 
 
 def configure_vae_memory(pipe):
@@ -309,7 +362,33 @@ def load_inpaint_pipe(progress=None, model_path: Path | None = None, architectur
         progress("release", "Đang giải phóng model khác để chuẩn bị bộ nhớ")
     release_tryon()
     release_text_to_image()
+    model_state.qwen_control_pipe = None
+    model_state.qwen_control_mode = ""
     from diffusers import FluxFillPipeline, StableDiffusion3InpaintPipeline, StableDiffusionInpaintPipeline, StableDiffusionXLInpaintPipeline
+
+    if architecture == "qwen-image-controlnet-inpaint":
+        from diffusers import QwenImageControlNetInpaintPipeline, QwenImageControlNetModel
+        entry = next((item for item in json.loads((ROOT / "models" / "registry.json").read_text(encoding="utf-8")).get("models", []) if _model_path(item) == model_path.resolve()), None)
+        if not entry:
+            raise RuntimeError("Không tìm thấy cấu hình Qwen Inpainting trong registry")
+        base_path = _model_path(entry, "baseModelPath")
+        base_entry = _registry_model("qwen-image-base")
+        _require_model_files(entry, model_path)
+        _require_model_files(base_entry, base_path)
+        if progress:
+            progress("disk", "Đang đọc Qwen-Image và ControlNet Inpainting từ ổ đĩa")
+        dtype = torch.bfloat16 if device == "cuda" else torch.float32
+        controlnet = QwenImageControlNetModel.from_pretrained(str(model_path), torch_dtype=dtype, local_files_only=True)
+        loaded_pipe = QwenImageControlNetInpaintPipeline.from_pretrained(
+            str(base_path), controlnet=controlnet, torch_dtype=dtype, local_files_only=True
+        )
+        _configure_qwen_memory(loaded_pipe)
+        loaded_pipe._atelier_model_path = str(model_path.resolve())
+        loaded_pipe._atelier_architecture = architecture
+        model_state.inpaint_pipe = loaded_pipe
+        if progress:
+            progress("ready", "Qwen Inpainting đã sẵn sàng")
+        return loaded_pipe
 
     pipeline_classes = {
         "sd3": StableDiffusion3InpaintPipeline,
@@ -325,7 +404,7 @@ def load_inpaint_pipe(progress=None, model_path: Path | None = None, architectur
 
     if progress:
         progress("disk", f"Đang đọc model {architecture.upper()} từ ổ đĩa")
-    dtype = torch.bfloat16 if architecture in ("sd3", "sd35", "flux") else torch.float16
+    dtype = (torch.bfloat16 if architecture in ("sd3", "sd35", "flux") else torch.float16) if device == "cuda" else torch.float32
     loaded_pipe = pipeline_class.from_pretrained(
         str(model_path), torch_dtype=dtype, local_files_only=True
     )
@@ -358,6 +437,34 @@ def load_inpaint_pipe(progress=None, model_path: Path | None = None, architectur
     if progress:
         progress("ready", "Model đã sẵn sàng")
     return model_state.inpaint_pipe
+
+
+def load_qwen_depth_pipe():
+    if model_state.qwen_control_pipe is not None and model_state.qwen_control_mode == "depth":
+        return model_state.qwen_control_pipe
+    entry = _registry_model("qwen-image-controlnet-union")
+    base_entry = _registry_model("qwen-image-base")
+    control_path, base_path = _model_path(entry), _model_path(entry, "baseModelPath")
+    _require_model_files(entry, control_path)
+    _require_model_files(base_entry, base_path)
+    release_inpaint()
+    release_tryon()
+    release_text_to_image()
+    model_state.sdxl_control_pipe = None
+    model_state.qwen_control_pipe = None
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+    from diffusers import QwenImageControlNetModel, QwenImageControlNetPipeline
+    dtype = torch.bfloat16 if device == "cuda" else torch.float32
+    controlnet = QwenImageControlNetModel.from_pretrained(str(control_path), torch_dtype=dtype, local_files_only=True)
+    pipe = QwenImageControlNetPipeline.from_pretrained(
+        str(base_path), controlnet=controlnet, torch_dtype=dtype, local_files_only=True
+    )
+    _configure_qwen_memory(pipe)
+    model_state.qwen_control_pipe = pipe
+    model_state.qwen_control_mode = "depth"
+    return pipe
 
 
 def read_lora_registry() -> dict:
@@ -486,6 +593,14 @@ def release_inpaint():
             torch.cuda.empty_cache()
 
 
+def release_qwen_control():
+    model_state.qwen_control_pipe = None
+    model_state.qwen_control_mode = ""
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
+
 def release_tryon():
     model_state.tryon_pipe_model_id = ""
     if model_state.tryon_pipe is not None:
@@ -500,6 +615,8 @@ def release_text_to_image():
     model_state.text_to_image_pipe = None
     model_state.text_to_image_model_id = ""
     model_state.chroma_pipe = None
+    model_state.qwen_control_pipe = None
+    model_state.qwen_control_mode = ""
     gc.collect()
     if torch.cuda.is_available():
         torch.cuda.empty_cache()

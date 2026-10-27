@@ -2,6 +2,8 @@ const fs=require('fs'),vm=require('vm'),assert=require('assert'),os=require('os'
 const fields={};
 for(const [id,value] of Object.entries({outpaintWidth:1280,outpaintHeight:1536,outpaintLeft:128,outpaintTop:0,outpaintRatio:'custom'}))fields[id]={value:String(value)};
 const context={sourceImage:{naturalWidth:1024,naturalHeight:1536},$:id=>fields[id],console};
+context.window={ATELIER_PROMPTS:require('../app/prompt-store').readCatalog()};
+context.ATELIER_PROMPTS=context.window.ATELIER_PROMPTS;
 vm.createContext(context);vm.runInContext(require('./helpers/source').read('app/public/outpaint.js','utf8'),context);
 for(const id of ['outpaintSteps','outpaintGuidance','outpaintResolution','outpaintOverlap'])fields[id]={value:'',dataset:{}};
 fields.outpaintModel={value:'flux-1-fill-dev'};fields.outpaintQualityHint={};
@@ -15,6 +17,8 @@ context.syncOutpaintQualityOptions('outpaintSourceEnhance');assert(!fields.outpa
 fields.outpaintPreserve.checked=true;context.syncOutpaintQualityOptions('outpaintPreserve');assert(!fields.outpaintSourceEnhance.checked);
 fields.outpaintDetail.checked=false;context.syncOutpaintQualityOptions();assert(fields.outpaintMaterialRefine.disabled);
 assert.equal(fields.outpaintSteps.value,'30');assert.equal(fields.outpaintGuidance.value,'5');
+fields.outpaintModel.value='qwen-image-controlnet-inpainting';context.applyOutpaintModelProfile(true);
+assert.equal(fields.outpaintSteps.value,'30');assert.equal(fields.outpaintGuidance.value,'4');assert.equal(fields.outpaintResolution.value,'768');
 assert.equal(context.outpaintGeometry().right,128);
 for(const ratio of ['1:1','4:5','3:2','16:9']){
   fields.outpaintRatio.value=ratio;context.applyOutpaintRatio();

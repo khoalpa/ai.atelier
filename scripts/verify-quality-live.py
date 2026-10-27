@@ -9,6 +9,7 @@ from urllib.error import HTTPError
 import uuid
 
 ROOT = Path(__file__).resolve().parents[1]
+BENCHMARK=json.loads((ROOT / 'tests/fixtures/prompt-benchmarks.json').read_text(encoding='utf-8'))
 
 
 def post(base, route, body, timeout=15):
@@ -38,9 +39,7 @@ def main():
         if job.get('status') in ('running', 'queued', 'cancelling'):
             raise RuntimeError('An active job already exists: ' + str(job.get('jobId')))
     body = json.loads(args.request.read_text(encoding='utf-8-sig')) if args.request else dict(
-        modelId='sd35-medium', prompt='A white ceramic cup on a gray table in soft daylight.',
-        negativePrompt='', seed=528, size=256, aspectRatio='1:1', steps=4,
-        guidance=4.5, count=1, quality='custom', livePreview=False)
+        **BENCHMARK['qualitySmokeSettings'], prompt=BENCHMARK['qualitySmoke'])
     body['jobId'] = 'quality-live-' + uuid.uuid4().hex
     output = ROOT / 'workspace/diagnostics/quality-report'
     output.mkdir(parents=True, exist_ok=True)

@@ -26,6 +26,28 @@ function applyOutpaintRatio(){
   globalThis.AtelierApp.$('outpaintWidth').value=width;globalThis.AtelierApp.$('outpaintHeight').value=height;
   globalThis.AtelierApp.$('outpaintLeft').value=Math.floor((width-sw)/2);globalThis.AtelierApp.$('outpaintTop').value=Math.floor((height-sh)/2);
 }
+function applyOutpaintDirection(direction){
+  if(!globalThis.AtelierApp.sourceImage)return;
+  const sw=globalThis.AtelierApp.sourceImage.naturalWidth,sh=globalThis.AtelierApp.sourceImage.naturalHeight;
+  const extraX=Math.max(64,Math.round(sw*.25)),extraY=Math.max(64,Math.round(sh*.25));
+  let width=sw,height=sh,left=0,top=0;
+  if(direction==='even'){width=Math.min(8192,sw+extraX);height=Math.min(8192,sh+extraY);left=Math.floor((width-sw)/2);top=Math.floor((height-sh)/2);}
+  if(direction==='left'){width=Math.min(8192,sw+extraX);left=width-sw;}
+  if(direction==='right')width=Math.min(8192,sw+extraX);
+  if(direction==='top'){height=Math.min(8192,sh+extraY);top=height-sh;}
+  if(direction==='bottom')height=Math.min(8192,sh+extraY);
+  Object.entries({outpaintWidth:width,outpaintHeight:height,outpaintLeft:left,outpaintTop:top}).forEach(([id,value])=>{globalThis.AtelierApp.$(id).value=value;});
+  globalThis.AtelierApp.$('outpaintRatio').value='custom';refreshOutpaintPreview();globalThis.AtelierApp.refreshStudioReadiness();
+}
+function alignOutpaintSource(position){
+  if(!globalThis.AtelierApp.sourceImage)return;
+  const width=Number(globalThis.AtelierApp.$('outpaintWidth').value),height=Number(globalThis.AtelierApp.$('outpaintHeight').value),sw=globalThis.AtelierApp.sourceImage.naturalWidth,sh=globalThis.AtelierApp.sourceImage.naturalHeight;
+  if(position==='reset')return resetOutpaintFrame(),refreshOutpaintPreview(),globalThis.AtelierApp.refreshStudioReadiness();
+  let left=Number(globalThis.AtelierApp.$('outpaintLeft').value),top=Number(globalThis.AtelierApp.$('outpaintTop').value);
+  if(position==='center'){left=Math.floor((width-sw)/2);top=Math.floor((height-sh)/2);}
+  if(position==='left')left=0;if(position==='right')left=width-sw;if(position==='top')top=0;if(position==='bottom')top=height-sh;
+  globalThis.AtelierApp.$('outpaintLeft').value=Math.max(0,left);globalThis.AtelierApp.$('outpaintTop').value=Math.max(0,top);refreshOutpaintPreview();globalThis.AtelierApp.refreshStudioReadiness();
+}
 function refreshOutpaintPreview(){
   const stage=globalThis.AtelierApp.$('outpaintStage');if(!stage)return;
   stage.hidden=globalThis.AtelierApp.studioMode!=='outpaint'||!globalThis.AtelierApp.sourceImage;
@@ -51,13 +73,14 @@ function refreshOutpaintPreview(){
 let outpaintProfileModel='';
 let outpaintTiming=[],outpaintResultContext=null;
 function outpaintPresetValues(name,flux){
-  const profiles={fast:{steps:flux?24:20,resolution:640,detail:false,fabric:false,seam:true},balanced:{steps:flux?36:28,resolution:768,detail:true,fabric:false,seam:true},detail:{steps:flux?50:30,resolution:1024,detail:true,fabric:true,seam:true}};
+  const profiles=window.ATELIER_PROMPTS.runtimePresets.outpaintQuality[flux?'flux':'standard'];
   return profiles[name]||profiles.detail;
 }
 function applyOutpaintPreset(name){
   if(name==='custom')return;
   const p=outpaintPresetValues(name,/flux.*fill/i.test(globalThis.AtelierApp.$('outpaintModel').value));
-  for(const [id,value] of Object.entries({outpaintSteps:p.steps,outpaintResolution:p.resolution,outpaintGuidance:/flux.*fill/i.test(globalThis.AtelierApp.$('outpaintModel').value)?30:5,outpaintOverlap:16})){
+  const model=globalThis.AtelierApp.$('outpaintModel').value,profile=globalThis.ATELIER_PROMPTS?.runtimePresets?.modelInpaintProfiles?.[model]||{};
+  for(const [id,value] of Object.entries({outpaintSteps:name==='detail'&&profile.steps?profile.steps:p.steps,outpaintResolution:Math.min(p.resolution,profile.nativeResolution||p.resolution),outpaintGuidance:profile.guidance??(/flux.*fill/i.test(model)?30:5),outpaintOverlap:16})){
     globalThis.AtelierApp.$(id).value=String(value);delete globalThis.AtelierApp.$(id).dataset.userEdited;
   }
   globalThis.AtelierApp.$('outpaintDetail').checked=p.detail;globalThis.AtelierApp.$('outpaintMaterialRefine').checked=p.fabric;globalThis.AtelierApp.$('outpaintSeamRepair').checked=p.seam;
@@ -86,7 +109,8 @@ function applyOutpaintModelProfile(force=false){
   outpaintProfileModel=model;
   const flux=/flux.*fill/i.test(model);
   const p=outpaintPresetValues(globalThis.AtelierApp.$('outpaintPreset')?.value||'detail',flux);
-  for(const [id,value] of Object.entries({outpaintSteps:p.steps,outpaintGuidance:flux?30:5,outpaintResolution:p.resolution,outpaintOverlap:16})){
+  const profile=globalThis.ATELIER_PROMPTS?.runtimePresets?.modelInpaintProfiles?.[model]||{};
+  for(const [id,value] of Object.entries({outpaintSteps:profile.steps??p.steps,outpaintGuidance:profile.guidance??(flux?30:5),outpaintResolution:profile.nativeResolution??p.resolution,outpaintOverlap:16})){
     const field=globalThis.AtelierApp.$(id);if(field&&(force||!field.dataset?.userEdited))field.value=String(value);
   }
   if(globalThis.AtelierApp.$('outpaintQualityHint'))globalThis.AtelierApp.$('outpaintQualityHint').textContent='Thiết lập theo model. Số phương án và chế độ giữ ảnh gốc được chọn riêng.';
@@ -158,6 +182,20 @@ async function inspectOutpaintResult(seed){
   }catch(error){globalThis.AtelierApp.setMessage(error.message,'error');}
 }
 function setupOutpainting(){
+  const panel=globalThis.AtelierApp.$('studioOutpaintPanel');
+  const ratioLabel=globalThis.AtelierApp.$('outpaintRatio').closest('label');ratioLabel.hidden=true;
+  const frame=document.createElement('section');frame.className='outpaint-main-section';frame.innerHTML='<strong>Khung mới</strong><div class="outpaint-ratio-buttons" role="group" aria-label="Tỷ lệ khung mới"><button type="button" data-outpaint-ratio="1:1">1:1</button><button type="button" data-outpaint-ratio="4:5">4:5</button><button type="button" data-outpaint-ratio="3:2">3:2</button><button type="button" data-outpaint-ratio="16:9">16:9</button><button type="button" data-outpaint-ratio="9:16">9:16</button><button type="button" data-outpaint-ratio="custom">Tùy chỉnh</button></div><small>Mở rộng theo tỷ lệ</small><div class="outpaint-direction-buttons" role="group" aria-label="Hướng mở rộng"><button type="button" data-outpaint-direction="even">Mở rộng đều</button><button type="button" data-outpaint-direction="left">Sang trái</button><button type="button" data-outpaint-direction="right">Sang phải</button><button type="button" data-outpaint-direction="top">Lên trên</button><button type="button" data-outpaint-direction="bottom">Xuống dưới</button></div><small>Đặt ảnh trong khung</small><div class="outpaint-align-buttons" role="group" aria-label="Căn ảnh trong khung"><button type="button" data-outpaint-align="center">Căn giữa</button><button type="button" data-outpaint-align="left">Căn trái</button><button type="button" data-outpaint-align="right">Căn phải</button><button type="button" data-outpaint-align="top">Căn trên</button><button type="button" data-outpaint-align="bottom">Căn dưới</button><button type="button" data-outpaint-align="reset">Đặt lại</button></div>';
+  const custom=document.createElement('details');custom.className='outpaint-custom-size';custom.innerHTML='<summary>Kích thước tùy chỉnh</summary>';custom.append(ratioLabel,panel.querySelector('.outpaint-fields'));
+  const quality=document.createElement('fieldset');quality.className='outpaint-quality-main';quality.innerHTML='<legend>Chất lượng</legend><div class="button-row" role="group" aria-label="Chất lượng mở rộng ảnh"><button type="button" data-outpaint-quality="fast">Nhanh</button><button id="outpaintBalancedQualityButton" type="button" data-outpaint-quality="balanced" class="active" aria-pressed="true">Cân bằng</button><button type="button" data-outpaint-quality="detail">Chi tiết</button></div>';
+  const mode=document.createElement('fieldset');mode.className='outpaint-run-mode';mode.innerHTML='<legend>Cách tạo</legend><label><input type="radio" name="outpaintRunMode" value="layout" checked> Chọn bố cục trước <small>Khuyến nghị</small></label><label><input type="radio" name="outpaintRunMode" value="complete"> Tạo ảnh hoàn chỉnh ngay</label>';
+  panel.querySelector('summary').after(frame,custom);globalThis.AtelierApp.$('outpaintPrompt').closest('label').after(quality);quality.append(globalThis.AtelierApp.$('outpaintCount').closest('label'));globalThis.AtelierApp.$('outpaintEstimate').before(mode);
+  globalThis.AtelierApp.$('outpaintPreset').closest('label').hidden=true;globalThis.AtelierApp.$('outpaintChooseLayout').closest('label').hidden=true;globalThis.AtelierApp.$('outpaintCenter').hidden=true;globalThis.AtelierApp.$('outpaintQuality').hidden=true;globalThis.AtelierApp.$('outpaintRun').hidden=true;
+  for(const button of frame.querySelectorAll('[data-outpaint-ratio]'))button.onclick=()=>{globalThis.AtelierApp.$('outpaintRatio').value=button.dataset.outpaintRatio;globalThis.AtelierApp.$('outpaintRatio').dispatchEvent(new Event('change'));};
+  for(const button of frame.querySelectorAll('[data-outpaint-direction]'))button.onclick=()=>applyOutpaintDirection(button.dataset.outpaintDirection);
+  for(const button of frame.querySelectorAll('[data-outpaint-align]'))button.onclick=()=>alignOutpaintSource(button.dataset.outpaintAlign);
+  for(const button of quality.querySelectorAll('[data-outpaint-quality]'))button.onclick=()=>{const value=button.dataset.outpaintQuality;globalThis.AtelierApp.$('outpaintPreset').value=value;applyOutpaintPreset(value);for(const item of quality.querySelectorAll('[data-outpaint-quality]')){const active=item===button;item.classList.toggle('active',active);item.setAttribute('aria-pressed',String(active));}globalThis.AtelierApp.refreshStudioReadiness();};
+  for(const radio of mode.querySelectorAll('input'))radio.onchange=()=>{globalThis.AtelierApp.$('outpaintChooseLayout').checked=radio.value==='layout';refreshOutpaintEstimate();globalThis.AtelierApp.refreshStudioReadiness();};
+  quality.querySelector('[data-outpaint-quality="balanced"]').click();
   syncOutpaintModels();
   new MutationObserver(()=>{syncOutpaintModels();globalThis.AtelierApp.refreshStudioReadiness();}).observe(globalThis.AtelierApp.$('inpaintModelSelect'),{childList:true,subtree:true,attributes:true});
   for(const id of ['outpaintWidth','outpaintHeight','outpaintLeft','outpaintTop'])globalThis.AtelierApp.$(id).addEventListener('input',()=>{if(id==='outpaintWidth'||id==='outpaintHeight')globalThis.AtelierApp.$('outpaintRatio').value='custom';refreshOutpaintPreview();globalThis.AtelierApp.refreshStudioReadiness();});

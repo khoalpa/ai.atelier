@@ -1,6 +1,6 @@
 const fs=require('fs'),path=require('path'),crypto=require('crypto');
 const {validatePlan}=require('./makeup-plan');
-const styles=require('./makeup-styles.json');
+const styles=require('./catalog-values').live('featurePresets','makeup.styles');
 
 // Only reusable cosmetic settings cross this boundary. No source, reference,
 // face index, coordinates or masks are saved with a personal style.
@@ -18,8 +18,7 @@ function settings(input){
   return out;
 }
 function read(file){
-  if(!fs.existsSync(file))return [];
-  const items=JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
+  const items=require('./catalog-library').read(file,[]);
   if(!Array.isArray(items)||items.length>100)throw Error('Thư viện phong cách không hợp lệ.');
   return items.map(item=>{
     if(!item||typeof item.id!=='string'||typeof item.name!=='string')throw Error('Phong cách đã lưu không hợp lệ.');
@@ -34,6 +33,7 @@ function save(file,body){
   const now=new Date().toISOString();
   const item={id:existing<0?crypto.randomUUID():items[existing].id,name:body.name.trim(),settings:value,createdAt:existing<0?now:items[existing].createdAt,updatedAt:now};
   if(existing<0)items.push(item);else items[existing]=item;
+  if(require('./catalog-library').write(file,items))return item;
   fs.mkdirSync(path.dirname(file),{recursive:true});
   const temp=file+'.'+crypto.randomUUID()+'.tmp';
   try{fs.writeFileSync(temp,JSON.stringify(items,null,2),'utf8');fs.renameSync(temp,file);}finally{if(fs.existsSync(temp))fs.unlinkSync(temp);}

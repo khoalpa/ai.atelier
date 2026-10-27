@@ -5,17 +5,32 @@ module.exports = function createPrompts(deps) {
 const require = requireFromApp;
 const __dirname = require('node:path').join(deps.ROOT,'app');
 const PROMPT_ASSIST_TASKS = new Proxy({}, {get:(_,key)=>deps.readCatalog().promptAssist.tasks[key]});
+const compiler=require('../packages/prompting/compiler');
+function checkedText(value,label,maximum=16000){if(typeof value!=='string'||value.length>maximum)throw Error(label+' không hợp lệ hoặc vượt '+maximum+' ký tự.');return value;}
 
 function parseAssistResult(raw, fallback) {
   const cleaned = String(raw || '').trim().replace(/^```(?:json)?\s*|\s*```$/g, '');
   const candidate = cleaned.match(/\{[\s\S]*\}/)?.[0];
   if (candidate) try {
     const parsed = JSON.parse(candidate);
+    const componentKeys = ['subject','environment','action','composition','style','lighting','color','materials','constraints'];
+    const components = parsed.components && typeof parsed.components === 'object' && !Array.isArray(parsed.components)
+      ? Object.fromEntries(componentKeys.map((key) => [key, String(parsed.components[key] || '').trim()])) : null;
+    const assessment = parsed.assessment && typeof parsed.assessment === 'object' && !Array.isArray(parsed.assessment) ? {
+      overallScore: Number.isFinite(Number(parsed.assessment.overallScore)) ? Math.max(0, Math.min(100, Math.round(Number(parsed.assessment.overallScore)))) : null,
+      components: Object.fromEntries(componentKeys.map((key) => {
+        const item = parsed.assessment.components?.[key] || {};
+        return [key,{status:['met','partial','missing'].includes(item.status)?item.status:'missing',note:String(item.note||'').trim().slice(0,500),suggestion:String(item.suggestion||'').trim()}];
+      })),
+      summary: String(parsed.assessment.summary || '').trim().slice(0, 1000),
+    } : null;
     return {
       suggestion: String(parsed.suggestion || fallback || '').trim(),
       changes: Array.isArray(parsed.changes) ? parsed.changes.map(String).slice(0, 5) : [],
       warnings: Array.isArray(parsed.warnings) ? parsed.warnings.map(String).slice(0, 5) : [],
       qualityScore: Number.isFinite(Number(parsed.qualityScore)) ? Math.max(0, Math.min(100, Math.round(Number(parsed.qualityScore)))) : null,
+      components,
+      assessment,
     };
   } catch {}
   return { suggestion: cleaned || fallback, changes: [], warnings: [], qualityScore: null };
@@ -89,11 +104,32 @@ async function promptAssist(req, res) {
   try {
     const body = await deps.parseJson(req, 32 * 1024 * 1024);
     const task = String(body.task || '');
+    if (task === 'shortenPrompt') throw new Error('Tác vụ rút gọn cho CLIP đã bị loại vĩnh viễn');
     if (!PROMPT_ASSIST_TASKS[task]) throw new Error('Loại gợi ý không được hỗ trợ');
-    const currentText = String(body.currentText || '').trim().slice(0, 4000);
-    let context = String(body.context || '').trim().slice(0, 2000);
-    if(body.imageModelId){const id=String(body.imageModelId),family=id==='sd35-medium'?'sd35':id==='flux-chroma1-hd'?'chroma':id==='flux-2-klein-4b'?'klein':'sdxl';const limits={sd35:'CLIP 77 tokens; T5 256 tokens. A separate short CLIP description is supported.',sdxl:'Both CLIP encoders allow 77 tokens.',chroma:'T5 allows 512 tokens.',klein:'Qwen allows 512 tokens including its chat wrapper. Negative prompts are not supported.'};context += '\nModel: '+id+'. '+limits[family]+(body.shortClip?' Produce a short description well below 77 tokens. Preserve the main subject, action and constraints.':'');}
+    const currentText = checkedText(body.currentText ?? '', 'Prompt').trim();
+    let context = checkedText(body.context ?? '', 'Ngữ cảnh',160000).trim();
+    let policy=null;
+    if(body.imageModelId){policy=compiler.model(deps.readCatalog(),String(body.imageModelId));context+='\nModel policy: '+JSON.stringify(policy);}
+    const quality=deps.readCatalog().promptQuality;
+    if(quality&&body.structured===true)context+='\nComponent roles: '+JSON.stringify(quality.componentRules);
+    if(quality&&['negativePrompt','optimizeNegativePrompt'].includes(task))context+='\nNegative prompt rules: '+JSON.stringify(quality.negativeRules);
+    if(body.lockedComponents!==undefined){
+      if(!body.imageModelId||body.structured!==true)throw Error('Khối khóa cần model và chế độ prompt có cấu trúc.');
+      compiler.compile(deps.readCatalog(),{modelId:String(body.imageModelId),locked:body.lockedComponents});
+    }
     const images = [];
+    if (body.imageData) {
+      const sources = Array.isArray(body.imageData) ? body.imageData.slice(0,4) : [body.imageData];
+      let total = 0;
+      for (const source of sources) {
+        const match = String(source).match(/^data:image\/(?:png|jpeg|webp);base64,([A-Za-z0-9+/=]+)$/);
+        if (!match) throw new Error('Ảnh tham khảo phải là PNG, JPEG hoặc WebP');
+        const bytes = Buffer.from(match[1], 'base64');total += bytes.length;
+        if (!bytes.length || bytes.length > 20 * 1024 * 1024) throw new Error('Mỗi ảnh tham khảo phải nhỏ hơn 20 MB');
+        images.push(bytes.toString('base64'));
+      }
+      if (total > 24 * 1024 * 1024) throw new Error('Tổng dung lượng ảnh tham khảo vượt quá 24 MB');
+    }
     if (body.sampleId) {
       const source = deps.resolveSamplePath(body.sampleId);
       if (!source || !deps.fs.existsSync(source) || !deps.fs.statSync(source).isFile()) throw new Error('Không tìm thấy ảnh nguồn');
@@ -102,12 +138,28 @@ async function promptAssist(req, res) {
       images.push(bytes.toString('base64'));
     }
     if (body.mask) images.push(deps.decodePngDataUrl(body.mask).toString('base64'));
-    const instruction = deps.renderTemplate(deps.readCatalog().promptAssist.instruction,{task:PROMPT_ASSIST_TASKS[task],currentText:currentText||'(empty)',context:context||'(none)'});
+    let instruction = deps.renderTemplate(deps.readCatalog().promptAssist.instruction,{task:PROMPT_ASSIST_TASKS[task],currentText:currentText||'(empty)',context:context||'(none)'});
+    if (body.structured === true && ['imagePrompt','optimizePrompt','expandPrompt'].includes(task)) {
+      instruction = instruction.replace(
+        /Return JSON only with this exact shape: \{[^\n]+\}\./,
+        deps.readCatalog().components['promptBuilder.structured']
+      );
+    }
+    if (body.evaluation === true && images.length) {
+      instruction = instruction.replace(
+        /Return JSON only with this exact shape: \{[^\n]+\}\./,
+        deps.readCatalog().components['promptBuilder.assessment']
+      );
+    }
     const message = {role:'user',content:instruction};
     if (images.length) message.images = images;
-    const result = await requestLocalLlm({model:deps.LLM_MODEL,stream:false,messages:[{role:'system',content:deps.readCatalog().promptAssist.system},message],options:{temperature:0.2,num_predict:320}});
+    const assistant=quality.assistant;
+    const result = await requestLocalLlm({model:deps.LLM_MODEL,stream:false,messages:[{role:'system',content:deps.readCatalog().promptAssist.system},message],options:{temperature:assistant.temperature,num_ctx:assistant.contextWindow,num_predict:body.evaluation===true?assistant.outputTokens.evaluation:body.structured===true?assistant.outputTokens.structured:assistant.outputTokens.standard}});
+    if(result.done_reason==='length'||result.done===false)throw Error('AI đã chạm giới hạn trả lời; chưa áp dụng nội dung có thể bị cắt. Nội dung hiện tại được giữ nguyên.');
     const assisted = parseAssistResult(result.message?.content || result.response, task === 'analyzePrompt' ? currentText : '');
-    if (['imagePrompt','optimizePrompt','shortenPrompt','expandPrompt'].includes(task)) assisted.suggestion = normalizeImagePrompt(assisted.suggestion);
+    if(body.structured===true&&!assisted.components)throw Error('AI chưa trả về các khối prompt có cấu trúc; nội dung hiện tại được giữ nguyên.');
+    if (body.evaluation === true && !assisted.assessment) throw Error('AI chưa trả về đánh giá ảnh có cấu trúc; chưa có điểm chất lượng để sử dụng.');
+    if (['imagePrompt','optimizePrompt','expandPrompt'].includes(task)) assisted.suggestion = normalizeImagePrompt(assisted.suggestion);
     if (['negativePrompt','optimizeNegativePrompt'].includes(task)) assisted.suggestion = normalizeNegativePrompt(assisted.suggestion);
     assisted.changes = assisted.changes.filter((item) => !/^(?:short change|none|n\/a)$/i.test(String(item).trim()));
     assisted.warnings = assisted.warnings.filter((item) => {
@@ -120,9 +172,22 @@ async function promptAssist(req, res) {
       assisted.qualityScore = null;
       assisted.warnings = ['AI không trả về nội dung hợp lệ; hệ thống giữ lại nội dung hiện có.'];
     }
-    assisted.suggestion = assisted.suggestion.slice(0, 4000);
+    checkedText(assisted.suggestion,'Kết quả AI');
+    if(assisted.components)for(const value of Object.values(assisted.components))checkedText(value,'Khối prompt AI');
+    if(assisted.assessment)for(const value of Object.values(assisted.assessment.components))checkedText(value.suggestion,'Gợi ý sửa prompt');
+    if(body.structured===true&&assisted.components&&body.imageModelId){
+      const compiled=compiler.compile(deps.readCatalog(),{modelId:String(body.imageModelId),components:assisted.components,locked:body.lockedComponents||{}});
+      assisted.components=compiled.components;assisted.suggestion=compiled.prompt;assisted.warnings.push(...compiled.warnings);
+    }
+    if(body.structured===true&&body.lockedComponents&&Object.keys(body.lockedComponents).length&&!assisted.components)throw Error('AI chưa trả về các khối có cấu trúc; nội dung hiện tại và các khối khóa được giữ nguyên.');
+    if(policy&&!policy.supportsNegative&&['negativePrompt','optimizeNegativePrompt'].includes(task))assisted.warnings.push('Model đã chọn không áp dụng negative prompt.');
+    let tokenCheck=null,tokenError=null;
+    if(policy&&typeof deps.callAiJson==='function'&&task!=='analyzePrompt'){
+      try{const negativeTask=['negativePrompt','optimizeNegativePrompt'].includes(task);tokenCheck=await deps.callAiJson('/catalog-token-preview',{modelId:String(body.imageModelId),prompt:negativeTask?'':assisted.suggestion,negativePrompt:negativeTask?assisted.suggestion:''});if(!tokenCheck.withinLimits)assisted.warnings.push('Kết quả vượt giới hạn tokenizer; hãy chỉnh sửa trước khi tạo ảnh. Nội dung được giữ nguyên.');}
+      catch(error){tokenError=error.message;assisted.warnings.push('Chưa kiểm tra được tokenizer: '+error.message);}
+    }
     if (!assisted.suggestion && task !== 'analyzePrompt') throw new Error('LLM không tạo được nội dung gợi ý');
-    return deps.send(res, 200, JSON.stringify({ok:true,...assisted,model:deps.LLM_MODEL,usedImage:images.length > 0}));
+    return deps.send(res, 200, JSON.stringify({ok:true,...assisted,tokenCheck,tokenError,model:deps.LLM_MODEL,usedImage:images.length > 0}));
   } catch (error) {
     const unavailable = /ECONNREFUSED|ENOTFOUND|socket|LLM phản hồi quá thời gian/i.test(String(error.message));
     return deps.send(res, unavailable ? 503 : 400, JSON.stringify({ok:false,error:unavailable?'Trợ lý AI cục bộ chưa sẵn sàng. Hãy chạy Ollama và kiểm tra model cấu hình.':error.message}));

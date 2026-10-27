@@ -127,7 +127,7 @@ class SkinTests(unittest.TestCase):
             inference_mode=contextlib.nullcontext, Generator=lambda _:SimpleNamespace(manual_seed=lambda seed:seed))
         def generate(pipe, **kwargs):
             kwargs['callback_on_step_end'](pipe, 0, 0, {})
-            return SimpleNamespace(images=[kwargs['image']])
+            return SimpleNamespace(images=[kwargs['control_image']])
         self.env['traced_pipeline_call'] = Mock(side_effect=generate)
     def test_ai_contract_uses_local_model_and_isolates_adapters(self):
         self.fake_ai()
@@ -137,7 +137,9 @@ class SkinTests(unittest.TestCase):
         self.assertEqual(report['model'], skin.MODEL)
         self.assertEqual(self.env['load_inpaint_pipe'].call_args.args[1], self.root/skin.MODEL_DIR)
         self.pipe.unload_lora_weights.assert_called_once()
-        self.assertGreaterEqual(int(kwargs['strength'] * kwargs['num_inference_steps']), 16)
+        self.assertEqual(kwargs['controlnet_conditioning_scale'], 1.0)
+        self.assertEqual(kwargs['true_cfg_scale'], 4.0)
+        self.assertIn('control_mask', kwargs)
         self.assertIn('skin', kwargs['prompt'])
         self.assertEqual(self.env['release_inpaint'].call_count, 2)
     def test_cancel_inside_ai_step_releases_model(self):

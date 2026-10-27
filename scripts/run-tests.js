@@ -9,6 +9,9 @@ const label = option('--label', 'verification').replace(/[^a-zA-Z0-9_-]/g,'');
 const group = option('--group', 'all');
 const report = path.join(root, 'workspace', 'diagnostics', 'refactor', label);
 const stage = path.join(report, 'project');
+// The stage is a disposable snapshot. Clearing it prevents deleted or renamed
+// source files from leaking in from an earlier verification run.
+if(fs.existsSync(stage))fs.rmSync(stage,{recursive:true,force:true});
 fs.mkdirSync(stage, {recursive:true});
 const tracked = execFileSync('git',['ls-files','--cached','--others','--exclude-standard','-z'],{cwd:root,encoding:'utf8'}).split('\0').filter(Boolean);
 for(const name of new Set(tracked)) {

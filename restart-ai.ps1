@@ -1,6 +1,8 @@
 ﻿[CmdletBinding(SupportsShouldProcess=$true, ConfirmImpact='Medium')]
 param(
   [switch]$CheckOnly,
+  [switch]$RecoverReservedService,
+  [string]$ReservationToken,
   [ValidateRange(1,65535)][int]$AiPort = 7861,
   [ValidateRange(1,65535)][int]$WebPort = 7860,
   [ValidateRange(10,300)][int]$TimeoutSeconds = 90
@@ -30,7 +32,19 @@ function Assert-AtelierIdle {
 }
 
 function Get-AtelierAiProcess {
-  $health = Invoke-RestMethod "$aiUrl/health" -TimeoutSec 5
+  try { $health = Invoke-RestMethod "$aiUrl/health" -TimeoutSec 5 }
+  catch {
+    if (-not $RecoverReservedService -or $ReservationToken -notmatch '^[a-f0-9]{32}$') { throw }
+    $owners = @(Get-NetTCPConnection -State Listen -LocalPort $AiPort -ErrorAction Stop | Select-Object -ExpandProperty OwningProcess -Unique)
+    if ($owners.Count -ne 1) { throw 'Không xác nhận được chủ sở hữu cổng AI.' }
+    $owner = Get-CimInstance Win32_Process -Filter "ProcessId=$([int]$owners[0])"
+    if (-not $owner) { throw 'Không tìm thấy tiến trình AI.' }
+    $ownerLauncher = Get-CimInstance Win32_Process -Filter "ProcessId=$($owner.ParentProcessId)"
+    $absoluteEntry = $owner.CommandLine -match [regex]::Escape($entry)
+    $legacyRelativeEntry = $owner.CommandLine -match '(?i)\sai_service\.py\s*$' -and $ownerLauncher.ExecutablePath -eq $python
+    if (-not $absoluteEntry -and -not $legacyRelativeEntry) { throw 'Tiến trình không thuộc dự án này.' }
+    $health = [pscustomobject]@{ ok=$true; pid=[int]$owners[0]; variant='tiny'; activeRequests=0 }
+  }
   if (-not $health.ok -or [int]$health.pid -le 0) { throw 'Dịch vụ AI không trả về trạng thái hợp lệ.' }
   $service = Get-CimInstance Win32_Process -Filter "ProcessId=$([int]$health.pid)"
   if (-not $service -or $service.CommandLine -notmatch '(?i)(^|[\\/\s"''])ai_service\.py(["'']|\s|$)') {
@@ -76,7 +90,7 @@ $previousVariant = $env:SAM2_VARIANT
 try {
   $env:AI_SEGMENT_PORT = [string]$AiPort
   $env:SAM2_VARIANT = if ($before.Health.variant) { [string]$before.Health.variant } else { 'tiny' }
-  $started = Start-Process -FilePath $python -ArgumentList @('-X','utf8','ai_service.py') -WorkingDirectory $projectRoot -WindowStyle Hidden -RedirectStandardOutput $stdout -RedirectStandardError $stderr -PassThru
+  $started = Start-Process -FilePath $python -ArgumentList @('-X','utf8',('"' + $entry + '"')) -WorkingDirectory $projectRoot -WindowStyle Hidden -RedirectStandardOutput $stdout -RedirectStandardError $stderr -PassThru
 } finally {
   $env:AI_SEGMENT_PORT = $previousPort
   $env:SAM2_VARIANT = $previousVariant

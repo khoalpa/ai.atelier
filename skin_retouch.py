@@ -1,3 +1,4 @@
+from prompt_catalog import prompt_text, prompt_template, catalog_value, CatalogMap, read_catalog
 """Selected skin retouching, with local texture donors and optional offline SDXL.
 
 All candidates are composited by image_enhancement; context is never permission
@@ -11,23 +12,16 @@ import numpy as np
 from PIL import Image
 
 METHODS = ('skin-smooth', 'skin-heal', 'skin-ai')
-MODEL = 'sdxl-inpaint-base-0.1'
-MODEL_DIR = 'models/inpainting/stable-diffusion-xl-1.0-inpainting-0.1'
-PROMPT = ('Natural healthy skin surface matching the surrounding skin tone, '
-          'fine pores, continuous skin texture, same lighting and anatomy, photographic detail')
-NEGATIVE = ('scar, wound, mole, dirt, bruise, blemish, plastic skin, waxy skin, '
-            'blur, changed anatomy, extra features, text')
+MODEL = 'qwen-image-controlnet-inpainting'
+MODEL_DIR = 'models/controlnet/qwen-image-inpainting'
 
 
 def configuration(root):
     folder = Path(root) / MODEL_DIR
-    required = ['model_index.json', 'scheduler/scheduler_config.json',
-                'tokenizer/vocab.json', 'tokenizer/merges.txt',
-                'tokenizer_2/vocab.json', 'tokenizer_2/merges.txt']
-    for part in ('unet', 'vae', 'text_encoder', 'text_encoder_2'):
-        required.append(part + '/config.json')
-        required.append(part + ('/model.safetensors' if part.startswith('text') else '/diffusion_pytorch_model.safetensors'))
-    return dict(version=1, model=MODEL, modelReady=all((folder / name).is_file() for name in required))
+    base = Path(root) / 'models/qwen/qwen-image'
+    required = ['config.json', 'diffusion_pytorch_model.safetensors']
+    base_required = ['model_index.json', 'transformer/config.json', 'text_encoder/config.json', 'tokenizer/tokenizer_config.json', 'vae/config.json']
+    return dict(version=2, model=MODEL, modelReady=all((folder / name).is_file() for name in required) and all((base / name).is_file() for name in base_required))
 
 
 def options(body, method):
@@ -158,8 +152,8 @@ def ai(source, mask, settings, env, active, progress, preview=None):
     generated = source.copy()
     seeds = []
     try:
-        pipe = env['load_inpaint_pipe'](lambda *_: active(), path, 'sdxl')
-        pipe.unload_lora_weights()
+        pipe = env['load_inpaint_pipe'](lambda *_: active(), path, 'qwen-image-controlnet-inpaint')
+        if callable(getattr(pipe, 'unload_lora_weights', None)):pipe.unload_lora_weights()
         if not torch.cuda.is_available():
             pipe.to(dtype=torch.float32)
         for index, box in enumerate(boxes):
@@ -170,14 +164,14 @@ def ai(source, mask, settings, env, active, progress, preview=None):
                 active()
                 progress(index * effective + step_index + 1, len(boxes) * effective)
                 return kwargs
-            prompt = PROMPT if settings['preserveTexture'] else PROMPT.replace('fine pores, ', '')
+            prompt = prompt_text('skin.positive') if settings['preserveTexture'] else prompt_text('skin.positive').replace('fine pores, ', '')
             # Box-based seed is stable between full runs and cropped previews.
             seed = (42 + box[0] * 73856093 + box[1] * 19349663) % 2147483647
             seeds.append(seed)
             with torch.inference_mode():
-                output = env['traced_pipeline_call'](pipe, prompt=prompt, negative_prompt=NEGATIVE,
-                    image=region, mask_image=selection, width=region.width, height=region.height,
-                    strength=strength, num_inference_steps=steps, guidance_scale=4.5,
+                output = env['traced_pipeline_call'](pipe, prompt=prompt, negative_prompt=prompt_text('skin.negative'),
+                    control_image=region, control_mask=selection, width=region.width, height=region.height,
+                    num_inference_steps=steps, true_cfg_scale=4.0, controlnet_conditioning_scale=1.0,
                     generator=torch.Generator('cpu').manual_seed(seed),
                     callback_on_step_end=on_step, callback_on_step_end_tensor_inputs=['latents']).images[0]
             active()
@@ -194,7 +188,7 @@ def ai(source, mask, settings, env, active, progress, preview=None):
         del pipe
         env['release_inpaint']()
     return generated, dict(aiRegions=len(boxes), regionBoxes=boxes, regionSeeds=seeds, model=MODEL, strength=strength,
-                           inferenceSteps=steps, prompt=PROMPT, negativePrompt=NEGATIVE)
+                           inferenceSteps=steps, prompt=prompt_text('skin.positive'), negativePrompt=prompt_text('skin.negative'))
 
 
 def process(source, mask, settings, env, active, progress, preview=None):

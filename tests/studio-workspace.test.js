@@ -27,13 +27,13 @@ context.togglePanel('results');
 assert.equal(context.panels.results.hidden,false);assert.equal(resultControls.studioCompareStage.hidden,false,'Reopening results also restores the comparison');
 context.panels.results.hidden=true;resultControls.studioResultsFilmstrip.children=[];
 context.togglePanel('results');assert.equal(context.panels.results.hidden,true,'Do not open an empty result tray');
-// Resetting a lower-quality session reapplies the supported task defaults, including balanced new-image drafts.
+// Resetting a session reapplies the balanced default used by the main creation workflows.
 const controls={qualityPreset:{value:'fast'},inpaintQualityPreset:{value:'fast'},outpaintQuality:{click(){this.clicked=true;}}};
 for(const field of [controls.qualityPreset,controls.inpaintQualityPreset])field.dispatchEvent=event=>{assert.equal(event.type,'change');field.applied=field.value;};
 context.byId=id=>controls[id];context.Event=class{constructor(type){this.type=type;}};
 context.applyTextToImagePreset=value=>{context.textQuality=value;};context.syncJourney=()=>{};
 vm.runInContext(source.slice(source.indexOf('  function applyQualityDefaults('),source.indexOf('  global.StudioWorkspace=')),context);
 context.applyQualityDefaults();
-assert.equal(controls.qualityPreset.applied,'quality');assert.equal(controls.inpaintQualityPreset.applied,'detail');
+assert.equal(controls.qualityPreset.applied,'balanced');assert.equal(controls.inpaintQualityPreset.applied,'balanced');
 assert(controls.outpaintQuality.clicked);assert.equal(context.textQuality,'balanced');
 console.log('OK: panels collapse, persist and reopen for navigation; ARIA stays synchronized; reset restores task defaults and balanced new-image drafts.');

@@ -19,7 +19,7 @@ import makeup_reference as reference
 class ReferenceTests(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.root=Path(self.tmp.name)
-        (self.root/'app').mkdir();(self.root/'app/makeup-styles.json').write_bytes((ROOT/'app/makeup-styles.json').read_bytes())
+        (self.root/'app').mkdir();(self.root/'workspace').mkdir(exist_ok=True);(self.root/'workspace/prompts.json').write_bytes((ROOT/'workspace/prompts.json').read_bytes())
         self.source=Image.open(__import__('sample_catalog').resolve_sample(ROOT, 'outpaint-benchmark/portrait-left/reference.png')).convert('RGB')
         self.points=np.array(json.loads((ROOT/'tests/fixtures/makeup-landmarks.json').read_text()),np.float32)
         self.path=self.root/'reference.png';self.source.save(self.path)

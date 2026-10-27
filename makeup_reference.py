@@ -1,3 +1,4 @@
+from prompt_catalog import prompt_text, prompt_template, catalog_value, CatalogMap, read_catalog
 """Estimate visible cosmetic colors from one explicitly selected reference face.
 
 This is a color suggestion, not pigment recovery: illumination and complexion
@@ -60,7 +61,7 @@ def extract(source, points, root):
     ratio = float(np.mean(liner < np.median(lids[:, 0]) - 13)) if len(liner) and lids is not None else 0
     plan['eyeliner'] = 'defined' if ratio > .5 else 'thin' if ratio > .2 else 'none'
     plan['finish'] = 'satin'
-    plan['prompt'] = 'subtle coordinated lipstick, eyeshadow, blush and neat eyebrows, natural skin texture'
+    plan['prompt'] = prompt_text('makeup.reference')
     plan['summary'] = 'Đã gợi ý màu từ khuôn mặt tham chiếu. Kiểm tra màu, kẻ mắt và độ đậm trước khi xem thử.'
     warnings.append('Kẻ mắt được ước lượng theo độ tương phản. Chất son mặc định Mịn nhẹ; bạn có thể đổi bên dưới.')
     return plan, measurements, warnings, box

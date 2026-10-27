@@ -14,6 +14,10 @@ assert.deepEqual(events.map(event=>event[0]),['clear','collapse','scroll','focus
 assert.equal(events[1][1],false);
 assert.equal(events[3][1].preventScroll,true);
 assert(source.includes('if(ready){revealStudioCreateAction();}'));
+assert(source.includes('data-studio-mode="outpaint">Mở rộng ảnh</button>'));
+assert(source.includes("['tryon','inpaint','outpaint','chroma','enhance','makeup','character','body'].includes(mode)"));
+assert(source.includes('data-studio-mode="body"'));
+assert(source.includes("['character','body'].includes(studioMode)?()=>window.Character.run()"));
 events.length=0;context.revealStudioCreateAction();
 assert.equal(events[0][0],'collapse');
 console.log('OK: navigation expands the action bar, cancels auto-collapse and focuses without a second scroll.');

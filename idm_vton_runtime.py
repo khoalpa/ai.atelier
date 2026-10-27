@@ -1,3 +1,4 @@
+from prompt_catalog import prompt_text, prompt_template, catalog_value, CatalogMap, read_catalog
 """Local IDM-VTON adapter. DensePose TorchScript avoids Detectron2 on Windows."""
 import sys
 
@@ -11,14 +12,9 @@ def canvas_size(max_side):
 
 
 def description_for(category, requested=None):
-    defaults = {
-        "upper_body": "an upper body garment",
-        "lower_body": "a lower body garment",
-        "overall": "a complete outfit",
-        "full_body": "a complete outfit",
-    }
+    defaults = CatalogMap("featurePresets", 'idm.descriptions')
     if requested is None:
-        return defaults.get(category, "clothing")
+        return defaults.get(category, prompt_text('idm.genericGarment'))
     if not isinstance(requested, str) or not requested.strip() or len(requested) > 400:
         raise ValueError("Mô tả trang phục phải là văn bản từ 1 đến 400 ký tự.")
     return requested.strip()
@@ -144,17 +140,17 @@ def generate(pipe, source, garment, mask, pose, category, call, garment_descript
         array = np.asarray(image.convert("RGB").resize((width, height))).copy()
         return (torch.from_numpy(array).permute(2, 0, 1).float()/127.5-1).unsqueeze(0).to(device=device, dtype=dtype)
     description = description_for(category, garment_description)
-    negative = "monochrome, lowres, bad anatomy, worst quality, low quality"
+    negative = prompt_text('idm.negative')
     requested_negative = negative_description_for(garment_negative_description)
     if requested_negative:
         negative += ", " + requested_negative
     with torch.inference_mode():
         embeds, neg, pooled, neg_pooled = pipe.encode_prompt(
-            "model is wearing " + description, negative_prompt=negative,
+            prompt_template('idm.person', description=description), negative_prompt=negative,
             do_classifier_free_guidance=True, device=device,
         )
         cloth_embeds, _, _, _ = pipe.encode_prompt(
-            "a photo of " + description, do_classifier_free_guidance=False, device=device,
+            prompt_template('idm.garment', description=description), do_classifier_free_guidance=False, device=device,
         )
         # Upstream calls this projection before unet.forward, outside the
         # Accelerate hook that normally moves UNet weights onto the GPU.

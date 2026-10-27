@@ -106,7 +106,7 @@ inference_lock = threading.RLock()
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 
-INPAINT_MODEL = configured_path("INPAINT_MODEL", "inpaintModel", ROOT / "models" / "text-to-image" / "stable-diffusion-3.5-large")
+INPAINT_MODEL = configured_path("INPAINT_MODEL", "inpaintModel", ROOT / "models" / "controlnet" / "qwen-image-inpainting")
 
 
 INPAINT_ARCHITECTURE = str(os.environ.get("INPAINT_ARCHITECTURE") or LOCAL_CONFIG.get("inpaintArchitecture") or "auto").lower()
@@ -134,6 +134,9 @@ CATVTON_VAE = configured_path("CATVTON_VAE", "catvtonVae", ROOT / "models" / "tr
 
 
 POSE_MODEL = configured_path("POSE_MODEL", "poseModel", ROOT / "models" / "pose" / "yolo11n-pose.pt")
+
+
+DWPOSE_ROOT = configured_path("DWPOSE_MODEL", "dwposeModel", ROOT / "models" / "pose" / "dwpose")
 
 
 ADETAILER_ROOT = configured_path("ADETAILER_MODEL", "adetailerModel", ROOT / "models" / "detection" / "adetailer")

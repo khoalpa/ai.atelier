@@ -1,3 +1,4 @@
+from prompt_catalog import prompt_text, prompt_template, catalog_value, CatalogMap, read_catalog
 """Local LivePortrait and SDXL OpenPose inference; no downloads during editing."""
 import gc
 import importlib
@@ -19,12 +20,7 @@ def configuration(root):
     common_ready=(root/'models/makeup/face_landmarker.task').is_file()
     face_dependencies=all(importlib.util.find_spec(name) is not None for name in ('timm','einops','yaml','rich','mediapipe'))
     face_ready=installed and common_ready and face_dependencies and all((base/'liveportrait'/p).is_file() for p in face_files) and (root/'vendor/LivePortrait/src/live_portrait_wrapper.py').is_file()
-    body_files=['sdxl-base/unet/diffusion_pytorch_model.fp16.safetensors','sdxl-base/unet/config.json','sdxl-base/scheduler/scheduler_config.json','openpose-sdxl/config.json','openpose-sdxl/diffusion_pytorch_model.safetensors','ip-adapter/models/image_encoder/model.safetensors','ip-adapter/sdxl_models/ip-adapter-plus_sdxl_vit-h.safetensors','ip-adapter/sdxl_models/ip-adapter-plus-face_sdxl_vit-h.safetensors']
-    shared_files=['model_index.json','vae/config.json','vae/diffusion_pytorch_model.fp16.safetensors']
-    for part in ('text_encoder','text_encoder_2'):shared_files.extend([part+'/config.json',part+'/model.fp16.safetensors'])
-    for part in ('tokenizer','tokenizer_2'):shared_files.extend([part+'/vocab.json',part+'/merges.txt',part+'/tokenizer_config.json',part+'/special_tokens_map.json'])
-    body_ready=installed and common_ready and all((base/p).is_file() for p in body_files+['ip-adapter/models/image_encoder/config.json']) and all((root/BASE/p).is_file() for p in shared_files)
-    return dict(version=1,faceReady=face_ready,bodyReady=body_ready,interactionReady=body_ready,maxPeople=4,maxPixels=16777216,offline=True)
+    return dict(version=1,faceReady=face_ready,bodyReady=False,hybridReady=False,interactionReady=False,maxPeople=4,maxPixels=16777216,offline=True,bodyDisabledReason='clip-text-policy')
 
 def release(env):
     for name in ('release_inpaint','release_tryon','release_text_to_image'):
@@ -90,7 +86,7 @@ def face_candidates(source,points,settings,env,active,progress,reference=None):
         del wrapper;gc.collect()
         if torch.cuda.is_available():torch.cuda.empty_cache()
 
-def body_candidates(source,control,mask,people,targets,settings,env,active,progress):
+def _sdxl_body_candidates(source,control,mask,people,targets,settings,env,active,progress):
     from diffusers import ControlNetModel, UNet2DConditionModel, StableDiffusionXLControlNetInpaintPipeline, EulerDiscreteScheduler
     from transformers import CLIPVisionModelWithProjection
     from diffusers.image_processor import IPAdapterMaskProcessor
@@ -133,31 +129,112 @@ def body_candidates(source,control,mask,people,targets,settings,env,active,progr
             individual=controls.person(settings,index)
             action=ACTION_PROMPTS[individual['pose']]
             hand_details=controls.hand_prompt(individual)
-            if hand_details and individual['pose'] in ('wave','point','peace','thumbs_up'):action='arm positioned as target skeleton'
-            if individual['pose'] in ('wave','point','peace','thumbs_up','touch_hair','hand_chest'):action+=' with '+individual['handSide']+' hand'
+            if hand_details and individual['pose'] in ('wave','point','peace','thumbs_up'):action=prompt_text('character.targetArm')
+            if individual['pose'] in ('wave','point','peace','thumbs_up','touch_hair','hand_chest'):action=prompt_template('character.handSide', action=action, side=individual['handSide'])
             if hand_details:action+='; '+', '.join(hand_details)
-            actions.append(('' if len(targets)==1 else ('left: ' if n==0 else 'right: ' if len(targets)==2 else f'person {n+1}: '))+action)
+            actions.append(('' if len(targets)==1 else (prompt_text('character.left') if n==0 else prompt_text('character.right') if len(targets)==2 else prompt_template('character.personIndex', index=n+1)))+action)
         if settings['pose'] in ('handshake','handover','look_each_other'):actions=[ACTION_PROMPTS[settings['pose']]]
-        prompt=('One person, ' if len(targets)==1 else f'{len(targets)} people, ')+'; '.join(actions)+'. Natural anatomy. '+settings['prompt']
+        prompt=prompt_template('character.scene', subjects=prompt_text('character.onePerson') if len(targets)==1 else prompt_template('character.people', count=len(targets)), actions='; '.join(actions), details=settings['prompt'])
+        if any(np.linalg.norm(np.asarray(people[i]['keypoints'])[9:11,:2]-q[9:11,:2],axis=1).max()>.02 for i,q in targets.items()):
+            prompt+=' Exactly two arms; old arm area is clean background.'
+        # Reserve the CLIP budget for non-negotiable anatomy before optional
+        # appearance text. Keep this compact: SDXL has a hard 77-token limit.
+        prompt+=' Natural skin, hidden skeleton, five clear fingers per hand, five clear toes per foot.'
         appearance=settings.get('appearancePrompt','')
         # User instructions are never truncated. Automatic clothing descriptions
         # fit the remaining CLIP budget and are preserved in the saved settings.
         if len(pipe.tokenizer(prompt).input_ids)>77:raise ValueError('Mô tả hành động quá dài cho model. Rút gọn mô tả và đọc lại.')
         words=appearance.split()
-        while words and len(pipe.tokenizer(prompt+' Wearing '+ ' '.join(words)).input_ids)>77:words.pop()
-        if words:prompt+=' Wearing '+' '.join(words)
-        negative='extra person, duplicate body, extra arms, extra legs, malformed hands, distorted face, wrong clothes, blurry, text, watermark'
+        while words and len(pipe.tokenizer(prompt+prompt_template('character.wearing', description=' '.join(words))).input_ids)>77:words.pop()
+        if words:prompt+=prompt_template('character.wearing', description=' '.join(words))
+        negative='extra fingers, missing fingers, fused fingers, extra toes, missing toes, fused toes, malformed hands, malformed feet, extra limbs, ghost arm, visible bones, skeleton, ribs, spine, mannequin, '+prompt_text('character.negative')
         # Never silently truncate a user's confirmed instruction.
         if len(pipe.tokenizer(prompt).input_ids)>77:raise ValueError('Mô tả hành động quá dài cho model. Rút gọn mô tả và đọc lại.')
+        # Full denoising discards useful source anatomy and was the main cause
+        # of fused arms and oversized faces for small/manual pose edits. Scale
+        # denoising with the largest requested joint displacement: subtle arm
+        # changes retain more source structure, while large poses still have
+        # enough freedom to replace the old silhouette.
+        movement=0.
+        for index,q in targets.items():
+            original=np.asarray(people[index]['keypoints'],dtype=np.float32)
+            valid=(q[:,2]>.25)&(original[:,2]>.25)
+            if valid.any():movement=max(movement,float(np.linalg.norm(q[valid,:2]-original[valid,:2],axis=1).max()))
+        denoise_strength=min(.88,.70+movement*.65)
         for variant in range(settings['count']):
             active()
             def callback(pipeline,step,timestep,kwargs):active();progress(variant*settings['steps']+step+1,settings['count']*settings['steps']);return kwargs
             with torch.inference_mode():
                 result=pipe(prompt=prompt,negative_prompt=negative,image=image,mask_image=selection,control_image=pose,
                     ip_adapter_image=[refs,faces],cross_attention_kwargs={'ip_adapter_masks':masks},height=sh,width=sw,
-                    strength=1.,controlnet_conditioning_scale=1.,control_guidance_end=.9,num_inference_steps=settings['steps'],guidance_scale=5.,
+                    strength=denoise_strength,controlnet_conditioning_scale=.7,control_guidance_end=.85,num_inference_steps=settings['steps'],guidance_scale=5.,
                     generator=torch.Generator('cpu').manual_seed(settings['seed']+variant),callback_on_step_end=callback).images[0]
             active();yield result.resize(source.size,Image.Resampling.LANCZOS)
+    finally:
+        del pipe;gc.collect()
+        if torch.cuda.is_available():torch.cuda.empty_cache()
+
+
+def _sd35_refine_candidates(source, candidates, mask, settings, env, active, progress):
+    """Refine an OpenPose result with SD3.5 inpainting and T5-XXL."""
+    from diffusers import StableDiffusion3InpaintPipeline
+    torch=env['torch'];root=Path(env['ROOT']);path=root/'models/text-to-image/stable-diffusion-3.5-large';pipe=None
+    try:
+        dtype=torch.bfloat16 if torch.cuda.is_available() else torch.float32
+        pipe=StableDiffusion3InpaintPipeline.from_pretrained(str(path),torch_dtype=dtype,local_files_only=True)
+        if torch.cuda.is_available():pipe.enable_sequential_cpu_offload()
+        else:pipe.to('cpu')
+        pipe.vae.enable_tiling();pipe.set_progress_bar_config(disable=True)
+        factor=settings['resolution']/max(source.size);sw=max(64,round(source.width*factor/64)*64);sh=max(64,round(source.height*factor/64)*64)
+        selection=mask.resize((sw,sh),Image.Resampling.NEAREST)
+        prompt=('Photorealistic human, '+ACTION_PROMPTS[settings['pose']]+'. Preserve identity, proportions, skin, lighting and background. '
+                'Exactly two arms and two legs. Every visible hand has exactly five distinct fingers including one thumb. '
+                'Every visible foot has exactly five distinct toes. Natural anatomy, continuous skin, no visible skeleton. '+settings.get('prompt',''))
+        negative=('extra limbs, duplicate body, deformed anatomy, extra fingers, missing fingers, fused fingers, '
+                  'extra toes, missing toes, fused toes, malformed hands, malformed feet, skeleton, ribs, spine, mannequin')
+        for index,candidate in enumerate(candidates):
+            active();image=candidate.resize((sw,sh),Image.Resampling.LANCZOS)
+            def callback(pipeline,step,timestep,kwargs):active();return kwargs
+            with torch.inference_mode():
+                result=pipe(prompt=prompt,prompt_2=prompt,prompt_3=prompt,negative_prompt=negative,negative_prompt_2=negative,
+                    negative_prompt_3=negative,image=image,mask_image=selection,height=sh,width=sw,strength=.28,
+                    num_inference_steps=max(24,settings['steps']),guidance_scale=4.5,max_sequence_length=256,
+                    generator=torch.Generator('cpu').manual_seed(settings['seed']+index),callback_on_step_end=callback).images[0]
+            progress(index+1,len(candidates));yield result.resize(source.size,Image.Resampling.LANCZOS)
+    finally:
+        del pipe;gc.collect()
+        if torch.cuda.is_available():torch.cuda.empty_cache()
+
+
+def body_candidates(source,control,mask,people,targets,settings,env,active,progress):
+    raise RuntimeError('Chỉnh tư thế bằng pipeline CLIP đã bị loại vĩnh viễn; LivePortrait khuôn mặt vẫn khả dụng.')
+    yield
+
+
+def repair_extremities(image, repair_mask, settings, env, active, seed):
+    """Run a bounded SD3.5/T5 inpaint pass over failed hands or feet only."""
+    raise RuntimeError('Sửa tay/chân bằng SD3.5 dùng CLIP đã bị loại vĩnh viễn.')
+    from diffusers import StableDiffusion3InpaintPipeline
+    torch=env['torch'];root=Path(env['ROOT']);path=root/'models/text-to-image/stable-diffusion-3.5-large';pipe=None
+    try:
+        release(env);active();dtype=torch.bfloat16 if torch.cuda.is_available() else torch.float32
+        pipe=StableDiffusion3InpaintPipeline.from_pretrained(str(path),torch_dtype=dtype,local_files_only=True)
+        if torch.cuda.is_available():pipe.enable_sequential_cpu_offload()
+        else:pipe.to('cpu')
+        pipe.vae.enable_tiling();pipe.set_progress_bar_config(disable=True)
+        factor=max(768,settings['resolution'])/max(image.size);sw=max(64,round(image.width*factor/64)*64);sh=max(64,round(image.height*factor/64)*64)
+        source=image.resize((sw,sh),Image.Resampling.LANCZOS);mask=repair_mask.resize((sw,sh),Image.Resampling.NEAREST)
+        prompt=('Photorealistic anatomically correct adult human extremities. Preserve the exact pose, identity, clothing, lighting and background. '
+                'Each visible hand has exactly five separate natural fingers with one thumb; each visible foot has exactly five separate natural toes. '
+                'Continuous skin, correct joints, realistic nails, no added objects.')
+        negative=('extra fingers, missing fingers, fused fingers, duplicated fingers, webbed fingers, malformed hand, extra hand, '
+                  'extra toes, missing toes, fused toes, malformed foot, extra foot, extra limb, amputation, skeleton, bones')
+        with torch.inference_mode():
+            result=pipe(prompt=prompt,prompt_2=prompt,prompt_3=prompt,negative_prompt=negative,negative_prompt_2=negative,
+                negative_prompt_3=negative,image=source,mask_image=mask,height=sh,width=sw,strength=.38,
+                num_inference_steps=max(24,settings['steps']),guidance_scale=4.5,max_sequence_length=256,
+                generator=torch.Generator('cpu').manual_seed(seed),callback_on_step_end=lambda pipeline,step,timestep,kwargs:(active() or kwargs)).images[0]
+        return result.resize(image.size,Image.Resampling.LANCZOS)
     finally:
         del pipe;gc.collect()
         if torch.cuda.is_available():torch.cuda.empty_cache()

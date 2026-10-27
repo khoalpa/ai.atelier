@@ -5,8 +5,8 @@ const metadata=require('../packages/storage/metadata');
 const execute=require('node:util').promisify(require('node:child_process').execFile);
 const digest=buffer=>crypto.createHash('sha256').update(buffer).digest('hex');
 function createBackupStore(root,options={}){
-  const home=path.join(root,'workspace','backups'),config=options.config||path.join(root,'workspace','config.json'),prompts=options.prompts||path.join(root,'workflows','prompts.json');
-  const groups={settings:['config.json','asset-catalog.json','export-presets.json','character-presets.json','makeup-styles.json','manual/presets.json'],working:['config.json','asset-catalog.json','edit-history.json','library-removed.json','regions','export-presets.json','work-queue','character-presets.json','makeup-styles.json','manual/presets.json','review','masks','jobs','quality-learning','acceptance','manual']};
+  const home=path.join(root,'workspace','backups'),config=options.config||path.join(root,'workspace','config.json'),prompts=options.prompts||path.join(root,'workspace','prompts.json');
+  const groups={settings:['prompts.json','config.json','asset-catalog.json','export-presets.json','character-presets.json','makeup-styles.json','manual/presets.json'],working:['prompts.json','config.json','asset-catalog.json','edit-history.json','library-removed.json','regions','export-presets.json','work-queue','character-presets.json','makeup-styles.json','manual/presets.json','review','masks','jobs','quality-learning','acceptance','manual']};
   let running=false;
   const python=options.python||require('../packages/runtime/paths').python(root),sqliteScript=path.join(__dirname,'../scripts/backup-sqlite.py');
   const isSqlite=bytes=>bytes.subarray(0,16).toString()==='SQLite format 3\0';

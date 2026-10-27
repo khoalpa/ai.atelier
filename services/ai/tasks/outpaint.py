@@ -18,6 +18,25 @@ from services.ai.runtime.tracing import prompt_history, traced_pipeline_call
 from services.ai.tasks.inpaint import resolved_inpaint_profile
 
 
+def outpaint_pipeline_kwargs(architecture, *, prompt, negative, image, mask, width, height,
+                             steps, guidance, generator, callback, prompt_cache=None,
+                             control_scale=1.0, strength=1.0):
+    """Translate the shared outpaint request to the selected pipeline API."""
+    if architecture == "qwen-image-controlnet-inpaint":
+        return dict(prompt=prompt, negative_prompt=negative, control_image=image, control_mask=mask,
+                    width=width, height=height, num_inference_steps=steps, true_cfg_scale=guidance,
+                    controlnet_conditioning_scale=max(0.0, min(1.5, float(control_scale))),
+                    generator=generator, callback_on_step_end=callback,
+                    callback_on_step_end_tensor_inputs=["latents"])
+    result = dict(prompt=prompt, image=image, mask_image=mask, width=width, height=height,
+                  strength=strength, num_inference_steps=steps, guidance_scale=guidance,
+                  generator=generator, callback_on_step_end=callback,
+                  callback_on_step_end_tensor_inputs=["latents"])
+    if prompt_cache is not None:
+        result['_prompt_cache'] = prompt_cache
+    return result
+
+
 def outpaint_semantics(source, manual=None):
     """Conservative labels: separate SAM clothing, BiRefNet background and identity."""
     foreground = None
@@ -135,17 +154,17 @@ def outpaint(body: dict) -> dict:
     if not model_path.is_absolute():
         model_path = ROOT / model_path
     architecture = detect_inpaint_architecture(model_path, entry.get("architecture") if entry else None)
-    if architecture not in ("sd3", "sd35", "sdxl", "sd15", "sd2", "flux"):
+    if architecture not in ("sd3", "sd35", "sdxl", "sd15", "sd2", "flux", "qwen-image-controlnet-inpaint"):
         raise ValueError("Model chưa hỗ trợ Outpainting")
     if architecture=='flux':
         from prompt_limits import split_flux_prompts
     profile = resolved_inpaint_profile(entry, architecture)
     if "steps" not in body:
-        steps = 50 if architecture == "flux" else 30
+        steps = int(profile.get("steps", 50 if architecture == "flux" else 30))
     if "guidance" not in body:
-        guidance = 30.0 if architecture == "flux" else 5.0
-    if "maxSide" not in body and architecture == "flux":
-        max_side = 1024
+        guidance = float(profile.get("guidance", 30.0 if architecture == "flux" else 5.0))
+    if "maxSide" not in body:
+        max_side = int(profile.get("nativeResolution", 1024 if architecture == "flux" else max_side))
     max_side = min(max_side, int(profile.get("nativeResolution", 1024)))
     detail = body.get("detailPass", False)
     if not isinstance(detail, bool):
@@ -309,12 +328,13 @@ def outpaint(body: dict) -> dict:
                 done = pass_offset + min(pass_steps, int(step_index) + 1)
                 update_job(job_id, currentStep=done, completedSteps=completed_work + done)
                 return callback_kwargs
-            kwargs = dict(prompt=prompt, image=model_image, mask_image=model_mask, width=width, height=height,
-                          strength=1.0, num_inference_steps=steps, guidance_scale=guidance,
-                          generator=torch.Generator(device="cpu").manual_seed(run_seed),
-                          callback_on_step_end=on_step, callback_on_step_end_tensor_inputs=["latents"],
-                          _prompt_cache=embedding_cache)
-            if supports_negative:
+            kwargs = outpaint_pipeline_kwargs(architecture,prompt=prompt,negative=negative,image=model_image,
+                          mask=model_mask,width=width,height=height,steps=steps,guidance=guidance,
+                          generator=torch.Generator(device="cpu").manual_seed(run_seed),callback=on_step,
+                          prompt_cache=embedding_cache,control_scale=body.get('controlScale',1.0))
+            if architecture == "qwen-image-controlnet-inpaint":
+                pass
+            elif supports_negative:
                 kwargs.update(negative_prompt=negative, padding_mask_crop=None)
             else:
                 kwargs["prompt_2"] = prompt
@@ -359,9 +379,13 @@ def outpaint(body: dict) -> dict:
                     prompt_key=('outpaint.seam.'+kind if phase=='outpaint-seam-repair' else
                                 'outpaint.material' if phase=='outpaint-material-refine' else 'outpaint.detail')
                     tile_prompt=stage_prompts[prompt_key]
-                    tile_kwargs=dict(kwargs,image=tile_image,mask_image=inference_mask,width=tile_image.width,height=tile_image.height,
-                                     strength=strength,prompt=tile_prompt,num_inference_steps=schedule_steps,
+                    tile_kwargs=outpaint_pipeline_kwargs(architecture,prompt=tile_prompt,negative=negative,
+                                     image=tile_image,mask=inference_mask,width=tile_image.width,height=tile_image.height,
+                                     steps=schedule_steps,guidance=guidance,strength=strength,callback=on_step,
+                                     prompt_cache=embedding_cache,control_scale=body.get('controlScale',1.0),
                                      generator=torch.Generator(device='cpu').manual_seed(run_seed+offset*100+region_index))
+                    if supports_negative and architecture != "qwen-image-controlnet-inpaint":
+                        tile_kwargs.update(negative_prompt=negative,padding_mask_crop=None)
                     if architecture=='flux': tile_kwargs.update(split_flux_prompts(pipe,tile_prompt)[0])
                     elif not supports_negative: tile_kwargs['prompt_2']=tile_prompt
                     with torch.inference_mode(): patch=traced_pipeline_call(pipe,**tile_kwargs).images[0]

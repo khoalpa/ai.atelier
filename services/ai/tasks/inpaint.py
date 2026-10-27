@@ -171,8 +171,9 @@ def inpaint(body: dict) -> dict:
                                 blend_removal, assess_removal, boundary_metric, removal_rank)
     started_at = time.perf_counter()
     job_id = str(body.get("jobId", ""))[:80]
-    request_file = persist_job_request(job_id, "inpaint", body)
-    update_job(job_id, status="running", stage="inpaint-validating", taskType="inpaint", device=device,
+    task_type = "anatomy-inpaint" if body.get("taskType") == "anatomy-inpaint" else "inpaint"
+    request_file = persist_job_request(job_id, task_type, body)
+    update_job(job_id, status="running", stage="inpaint-validating", taskType=task_type, device=device,
                gpuMemoryMb=round(torch.cuda.get_device_properties(0).total_memory / (1024 * 1024)) if torch.cuda.is_available() else 0,
                resumable=bool(request_file), requestFile=str(request_file.relative_to(ROOT)) if request_file else None,
                _event={"type":"inpaint.started", "message":"Đang kiểm tra ảnh và mask"})
@@ -229,7 +230,7 @@ def inpaint(body: dict) -> dict:
     if selected_entry is not None and not selected_model_path.is_absolute():
         selected_model_path = ROOT / selected_model_path
     selected_architecture = detect_inpaint_architecture(selected_model_path, selected_entry.get("architecture") if selected_entry else None)
-    if selected_architecture not in ("sd3", "sd35", "sdxl", "sd15", "sd2", "flux"):
+    if selected_architecture not in ("sd3", "sd35", "sdxl", "sd15", "sd2", "flux", "qwen-image-controlnet-inpaint"):
         raise ValueError(f"Kiến trúc inpainting chưa được hỗ trợ: {selected_architecture}")
     if model_state.inpaint_pipe is not None and (getattr(model_state.inpaint_pipe, "_atelier_model_path", None) != str(selected_model_path.resolve()) or getattr(model_state.inpaint_pipe, "_atelier_architecture", None) != selected_architecture):
         release_inpaint()
@@ -329,7 +330,22 @@ def inpaint(body: dict) -> dict:
                 "strength": attempt_strength, "num_inference_steps": steps, "guidance_scale": guidance, "generator": generator,
                 "callback_on_step_end": on_step_end, "callback_on_step_end_tensor_inputs": ["latents"],
             }
-            if not bool(profile.get("supportsNegativePrompt", architecture != "flux")):
+            if architecture == "qwen-image-controlnet-inpaint":
+                call_kwargs = {
+                    "prompt": attempt_prompt,
+                    "negative_prompt": attempt_negative,
+                    "control_image": region_image,
+                    "control_mask": region_mask,
+                    "height": region_image.height,
+                    "width": region_image.width,
+                    "num_inference_steps": steps,
+                    "true_cfg_scale": guidance,
+                    "controlnet_conditioning_scale": max(0.0, min(1.5, float(body.get("controlScale", 1.0)))),
+                    "generator": generator,
+                    "callback_on_step_end": on_step_end,
+                    "callback_on_step_end_tensor_inputs": ["latents"],
+                }
+            elif not bool(profile.get("supportsNegativePrompt", architecture != "flux")):
                 call_kwargs["prompt_2"] = attempt_prompt
                 if architecture == "flux" and fill_mode in ("base_layer", "reconstruct_body", "background"):
                     from prompt_limits import split_flux_prompts

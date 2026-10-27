@@ -1,0 +1,15 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path');
+const {create}=require('../app/anatomy-parts-store');
+const root=fs.mkdtempSync(path.join(os.tmpdir(),'atelier-anatomy-'));
+fs.mkdirSync(path.join(root,'workspace'),{recursive:true});
+fs.copyFileSync(path.join(__dirname,'..','workspace','prompts.json'),path.join(root,'workspace','prompts.json'));
+const store=create(root),initial=store.read();
+assert.equal(initial.customized,false);assert.equal(initial.items.length,8);
+const custom={...initial.items[0],id:'center_detail',label:'Vùng giữa',side:'center',kind:'region',joints:[0],segments:[]};
+const saved=store.write({items:[custom]});assert.equal(saved.customized,true);assert.equal(store.read().items[0].id,'center_detail');
+assert.throws(()=>store.write({items:[custom,{...custom}]}),/trùng/);
+assert.throws(()=>store.write({items:[{...custom,joints:[17]}]}),/0 đến 16/);
+assert.equal(store.reset().items.length,8);assert.equal(store.read().customized,false);
+fs.rmSync(root,{recursive:true,force:true});
+console.log('OK: catalog phạm vi bộ phận hỗ trợ đọc, lưu, kiểm tra và khôi phục.');

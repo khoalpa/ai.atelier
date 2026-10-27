@@ -4,7 +4,25 @@ AI Atelier là studio chỉnh sửa và tạo ảnh chạy hoàn toàn trên má
 
 Phiên bản hiện tại: **3.0.0 — Kiến trúc mô-đun và tác vụ bền vững**.
 
+## Cấu hình prompt và thư viện
+
+Nhân vật, bàn tay, trang điểm, phục hồi da, IDM-VTON và bố cục ảnh mới đọc chung `workspace/prompts.json`. `featurePresets` chứa preset tích hợp và bảng mô tả; `runtimePresets` chứa các mức chất lượng và tham số dự phòng. Tệp `app/makeup-styles.json` cũ đã được chuyển vào catalog. Thư viện cá nhân cũng nằm trong `personalLibraries` của `workspace/prompts.json` (makeup, character, export, color). Các màn lưu mẫu hiện có ghi vào nhóm tương ứng; cấu hình bộ phận nằm ở `featurePresets["anatomy.parts"]`, preset và hướng dẫn trình ghép prompt nằm trong cùng catalog. Tệp cũ đã được sao lưu khi chuyển đổi. Prompt, seed và đầu vào benchmark nằm trong `tests/fixtures/prompt-benchmarks.json`.
+
+Trong trình chỉnh sửa JSON, chọn nhóm dữ liệu để lọc theo loại, chọn tính năng và xem **Nơi dùng** cạnh thành phần/template. **Xem trước prompt theo tác vụ và kiểm tra token** ghép từ bản nháp, báo biến còn thiếu và kiểm tra tokenizer của model cục bộ đã đăng ký khi có ID model. Việc này không nạp model sinh ảnh. Kiến trúc chưa hỗ trợ hoặc dịch vụ AI chưa sẵn sàng được báo rõ; ứng dụng không đưa ra số token ước lượng.
+
+Màn Prompt có ba phạm vi xuất: **Cấu hình prompt hệ thống**, **Thư viện cá nhân**, **Gói đầy đủ**. Có thể nhập tệp cấu hình đơn hoặc gói sau bước xem trước. Gói chỉ chứa cấu hình/thư viện, không kèm ảnh, logo hoặc model; tài nguyên được tham chiếu vẫn cần tồn tại ở máy nhận. Nhập hệ thống không sửa thư viện cá nhân. Các phạm vi nhập đều được kiểm tra toàn bộ rồi ghi nguyên tử vào một catalog, có bản sao lưu tại `workspace/backups/prompts/`. Tệp JSON đầy đủ bao gồm thư viện cá nhân; gói chỉ hệ thống không thay đổi thư viện cá nhân. Lịch sử chuyển dữ liệu trình duyệt được giữ theo máy hiện tại.
+
 ## Bắt đầu nhanh
+
+### Biên soạn và kiểm chứng prompt
+
+`promptQuality` trong catalog chứa cấu hình encoder/model, thứ tự các khối, vai trò và độ ưu tiên, quy tắc xung đột, bản nội dung cũ và bộ đối chiếu A/B. Chroma dùng T5; Klein và Qwen-Image dùng Qwen. Giới hạn chuỗi hiện được cấu hình ở 512 token và được kiểm tra cùng tokenizer thực tế; số này không có nghĩa là độ dài không giới hạn. Kiểm tra Qwen tính cả wrapper và phần token mà pipeline loại bỏ trước khi tạo embedding. Các API không cắt âm thầm nội dung prompt theo số ký tự; giới hạn vận chuyển dữ liệu được kiểm tra và báo lỗi riêng.
+
+Trình ghép dùng chung bộ biên soạn với trợ lý phía server, giữ các khối khóa, bỏ khối trùng hoàn toàn và báo yêu cầu mâu thuẫn. Negative prompt chỉ được gửi khi model hỗ trợ. Nội dung thư viện cá nhân không bị viết lại. Các bản prompt trước khi nâng cấp được giữ trong `promptQuality.baseline` cùng bản sao lưu; trạng thái kiểm chứng hình ảnh được ghi riêng, không suy ra từ việc kiểm tra mã nguồn đạt.
+
+Trong Prompt Builder, mục **Nội dung preset** cho phép chuyển giữa **Bản mở rộng · đang kiểm chứng** và **Bản gốc**. Chuyển phiên bản chỉ cập nhật các khối chưa khóa. Negative prompt tự nhập được giữ nguyên; các nội dung tự điền có thể thay theo preset và khả năng của model.
+
+Chạy `node scripts/benchmark-prompt-quality.js` để đối chiếu các bản prompt với cùng model, seed, kích thước, bước và guidance. Báo cáo tại `workspace/diagnostics/prompt-quality-ab/` có trang xem ẩn nhãn phiên bản và tệp khóa nhãn riêng. Chỉ ghi nhận một bản tốt hơn sau khi xem ảnh; đánh giá AI thiếu cấu trúc không được thay bằng điểm suy từ việc trùng từ khóa.
 
 ### Yêu cầu
 
@@ -45,6 +63,7 @@ Nhật ký vận hành được ghi trong `workspace/logs`. Sau khi cập nhật
 
 - **Chỉnh sửa thủ công:** cắt và bố cục ảnh, chỉnh màu, cọ và vùng chọn, ghép ảnh/logo/chữ, hoàn tác/làm lại, lưu phiên và xuất PNG/JPEG/WebP.
 - **Tư thế & biểu cảm:** thay đổi nét mặt, hướng nhìn, góc đầu, tư thế, cử chỉ tay và tương tác giữa nhiều nhân vật.
+- **Sửa chi tiết cơ thể:** chọn riêng từng phạm vi, tạo mask theo khớp xương, bảo vệ người khác và lọc phương án bằng kiểm tra giải phẫu; danh sách bộ phận, hình học mask và ngưỡng chất lượng có thể được thêm, sửa, xóa hoặc khôi phục mặc định trên giao diện.
 - **Trang điểm AI:** áp dụng phong cách có sẵn hoặc tùy chỉnh, lấy màu từ ảnh tham chiếu, lưu phong cách cá nhân và so sánh nhiều phương án.
 - **Cải thiện ảnh:** phóng lớn, khôi phục chi tiết, làm rõ khuôn mặt và xử lý ảnh chất lượng thấp.
 - **Tạo ảnh mới:** sinh ảnh từ mô tả bằng model cục bộ và quản lý các phương án kết quả.

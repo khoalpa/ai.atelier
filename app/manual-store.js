@@ -15,8 +15,8 @@ function stroke(s,mask=false){
   if(['clone','heal'].includes(s.tool))out.anchor=point(s.anchor);return out;
 }
 const metadata=require('../packages/storage/metadata');
-async function atomic(file,value){return metadata.write(file,value);}
-async function read(file,fallback){return metadata.read(file,fallback);}
+async function atomic(file,value){if(require('./catalog-library').write(file,value))return;return metadata.write(file,value);}
+async function read(file,fallback){if(require('./catalog-library').locate(file))return require('./catalog-library').read(file,fallback);return metadata.read(file,fallback);}
 function createStore(root,options={}){
   const home=path.join(root,'workspace','manual'),assets=path.join(home,'assets'),projects=path.join(home,'projects');
   const python=options.python||require('../packages/runtime/paths').python(root),script=options.script||path.join(root,'scripts','manual-image-io.py');

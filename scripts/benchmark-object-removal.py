@@ -15,6 +15,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 
 ROOT = Path(__file__).resolve().parents[1]
+BENCHMARK=json.loads((ROOT / 'tests/fixtures/prompt-benchmarks.json').read_text(encoding='utf-8'))
 sys.path.insert(0, str(ROOT))
 from sample_catalog import collection_path
 DATA = collection_path(ROOT, 'object-removal-benchmark')
@@ -27,10 +28,7 @@ def prepare():
     DATA.mkdir(parents=True, exist_ok=True)
     cases = []
     names = ['flat', 'gradient', 'tiles', 'wood', 'lines']
-    prompts = ['A continuous matte beige wall.', 'A continuous softly lit gray wall.',
-               'Continuous pale square floor tiles with straight gray grout lines.',
-               'A continuous light wooden tabletop with horizontal grain.',
-               'A continuous pale blue wall with evenly spaced thin horizontal lines.']
+    prompts = BENCHMARK['objectRemovalPrompts']
     for texture in range(5):
         for variant in range(8):
             number = texture*8+variant
@@ -67,7 +65,7 @@ def prepare():
             folder = DATA/case_id; folder.mkdir(exist_ok=True)
             for name, image in [('source', source), ('mask', mask), ('clean', clean)]: image.save(folder/f'{name}.png')
             cases.append({'id':case_id, 'source':str((folder/'source.png').relative_to(ROOT/'samples')).replace('\\','/'),
-                          'prompt':prompts[texture], 'seed':82000+number, 'category':names[texture], 'variant':variant})
+                          'prompt':prompts[texture], 'seed':BENCHMARK['objectRemovalSeedBase']+number, 'category':names[texture], 'variant':variant})
     (DATA/'manifest.json').write_text(json.dumps({'synthetic':True,'cases':cases},indent=2),encoding='utf-8')
     return cases
 
@@ -91,7 +89,7 @@ def run(args):
     if args.prepare_only:
         print(json.dumps({'cases':len(cases),'manifest':str(DATA/'manifest.json')})); return
     import ai_service as service
-    configs = [('sdxl-inpaint-base-0.1', 6.0, .9), ('flux-1-fill-dev', 30.0, 1.0)]
+    configs = [('qwen-image-controlnet-inpainting', 4.0, 1.0)]
     if args.model: configs = [item for item in configs if item[0] == args.model]
     for model_id, guidance, strength in configs:
         if args.guidance is not None:
@@ -141,7 +139,7 @@ def run(args):
 if __name__ == '__main__':
     parser=argparse.ArgumentParser()
     parser.add_argument('--prepare-only',action='store_true')
-    parser.add_argument('--model',choices=['sdxl-inpaint-base-0.1','flux-1-fill-dev'])
+    parser.add_argument('--model',choices=['qwen-image-controlnet-inpainting'])
     parser.add_argument('--limit',type=int,default=40)
     parser.add_argument('--steps',type=int,default=24)
     parser.add_argument('--resolution',type=int,default=512)

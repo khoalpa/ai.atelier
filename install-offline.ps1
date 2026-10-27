@@ -23,7 +23,7 @@ $configDirectory = Join-Path $target 'workspace'; New-Item -ItemType Directory -
 $configPath = Join-Path $configDirectory 'config.json'
 $existing = @{}
 if (Test-Path -LiteralPath $configPath) { $saved=Get-Content -LiteralPath $configPath -Raw | ConvertFrom-Json; foreach($property in $saved.PSObject.Properties){$existing[$property.Name]=$property.Value} }
-if (-not $InpaintModelPath) { $InpaintModelPath = if ($existing['inpaintModel']) { $existing['inpaintModel'] } else { Join-Path $target 'models\text-to-image\stable-diffusion-3.5-large' } }
+if (-not $InpaintModelPath) { $InpaintModelPath = if ($existing['inpaintModel']) { $existing['inpaintModel'] } else { Join-Path $target 'models\controlnet\qwen-image-inpainting' } }
 if (-not $ChromaModelPath) { $ChromaModelPath = if ($existing['chromaModel']) { $existing['chromaModel'] } else { Join-Path $target 'models\flux\chroma1-hd' } }
 $existing['inpaintModel'] = [IO.Path]::GetFullPath($InpaintModelPath)
 $existing['chromaModel'] = [IO.Path]::GetFullPath($ChromaModelPath)

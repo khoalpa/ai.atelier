@@ -4,6 +4,15 @@
 .makeup-panel p { line-height: 1.5; }
 .makeup-panel .makeup-parts { display: flex; flex-wrap: wrap; gap: 6px 14px; }
 .makeup-panel .makeup-check { display: flex; align-items: center; gap: 8px; }
+.makeup-main-section,.makeup-source-panel{display:grid;gap:10px;margin:0 0 12px;padding:12px;border:1px solid var(--line);border-radius:11px;background:var(--palette-0e151c)}
+.makeup-main-section>strong{color:var(--text)}.makeup-main-section>small{color:var(--muted)}
+.makeup-source-buttons,.makeup-style-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.makeup-style-buttons{grid-template-columns:repeat(3,minmax(0,1fr))}
+.makeup-source-buttons button,.makeup-style-buttons button{min-width:0;padding-inline:7px}
+.makeup-source-panel>label,.makeup-source-panel>textarea,.makeup-source-panel>button,.makeup-source-panel>small,.makeup-source-panel>p{margin:0}
+.makeup-intensity-buttons{grid-template-columns:repeat(3,minmax(0,1fr))}
+.makeup-advanced{margin-block:10px;padding:10px;border:1px solid var(--line);border-radius:10px}.makeup-advanced summary{cursor:pointer;font-weight:650}
+.makeup-panel>.button-row:has(#makeupRun){grid-template-columns:1fr}
 .makeup-panel input[type="checkbox"] { width: 18px; height: 18px; margin: 0; }
 .makeup-colors { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
 .makeup-reference,.makeup-library,.makeup-strengths { border: 1px solid var(--border, #394454); border-radius: 10px; margin: 16px 0; padding: 12px; }
@@ -25,7 +34,7 @@
 .makeup-preview { max-width: 90vw; width: 900px; max-height: 90vh; overflow: auto; padding: 24px; }
 .makeup-preview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 20px; }
 .makeup-preview-grid img { width: 100%; max-height: 60vh; object-fit: contain; }
-.makeup-preview-grid button { width: 100%; }
+.makeup-preview-grid button { width: 100%; margin-top:8px; }
 .studio-mode-switch { flex-wrap: wrap; }
 body[data-studio-task="makeup"] #scopePreviewButton { display: none; }
 .makeup-multi { border: 1px solid #536075; border-radius: 10px; padding: 14px; margin-top: 20px; }

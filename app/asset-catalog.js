@@ -4,8 +4,8 @@ const testAsset=item=>item.sampleRole==='demo'?false:/(^|[ /_-])(benchmark|fixtu
 const searchText=value=>String(value||'').toLocaleLowerCase('vi').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/[^a-z0-9]+/g,' ').trim();
 const canonical=id=>!id?'':id.startsWith('output:')?'/outputs/'+id.slice(7):id.startsWith('reference:')?'/references/'+id.slice(10):id.startsWith('/')?id:id.startsWith('uploads/')?'/'+id:'/samples/'+id;
 const metadata=require('../packages/storage/metadata');
-async function read(file,fallback){return metadata.read(file,fallback);}
-async function atomic(file,value){return metadata.write(file,value);}
+async function read(file,fallback){if(require('./catalog-library').locate(file))return require('./catalog-library').read(file,fallback);return metadata.read(file,fallback);}
+async function atomic(file,value){if(require('./catalog-library').write(file,value))return;return metadata.write(file,value);}
 function createCatalog(root){
   const file=path.join(root,'workspace','asset-catalog.json');let tail=Promise.resolve();
   const serial=fn=>{const work=tail.then(()=>require('./process-lock').locked(file+'.lock',fn));tail=work.catch(()=>{});return work;};

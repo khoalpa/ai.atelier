@@ -1,3 +1,4 @@
+from prompt_catalog import prompt_text, prompt_template, catalog_value, CatalogMap, read_catalog
 """Text-to-image planning, exact prompt preflight and source-based finishing.
 
 Planning loads tokenizers only. GPU operations use the service's serialized worker.
@@ -13,21 +14,17 @@ from pathlib import Path
 
 from prompt_catalog import read_catalog
 from prompt_limits import preview_tokenizer
+from encoder_policy import model_policy, sequence_limit, token_count
 
 VERSION = 2
 MAX_PIXELS = 1200000
 MAX_SEED = 2147483647
-FRAMING = {
-    'as-described': '',
-    'full-body-hands': ('Wide full-length photograph, head to toe, with space around every person. '
-                        'Each person stands with both arms slightly away from the body, '
-                        'open hands fully visible beside the thighs. '
-                        'Include every face, both hands of each person, and shoes inside the frame. '),
-}
+FRAMING = CatalogMap("featurePresets", 'newImage.framing')
 FAMILIES = {
     'ChromaPipeline': 'chroma', 'Flux2KleinPipeline': 'klein',
     'StableDiffusion3Pipeline': 'sd35', 'StableDiffusionXLPipeline': 'sdxl',
 }
+TEXT_ENCODERS = {'chroma': 't5', 'klein': 'qwen', 'sd35': 'clip', 'sdxl': 'clip'}
 
 
 def number(value, label, low, high, integer=False):
@@ -57,17 +54,14 @@ def model_profile(model_path, model_id):
     family = FAMILIES.get(index.get('_class_name'))
     if not family:
         raise ValueError('Pipeline này chưa hỗ trợ quy trình Ảnh mới.')
+    if TEXT_ENCODERS[family] == 'clip':
+        raise ValueError('Model dùng CLIP để mã hóa prompt đã bị loại vĩnh viễn. Hãy chọn FLUX Chroma1-HD (T5).')
     presets = read_catalog()['runtimePresets']['textToImage']
-    defaults = {
-        'sd35': {'guidance': 4.5, 'steps': {'fast': 16, 'balanced': 28, 'quality': 40}},
-        'sdxl': {'guidance': 5.0, 'steps': {'fast': 16, 'balanced': 28, 'quality': 40}},
-        'chroma': {'guidance': 3.0, 'steps': {'fast': 12, 'balanced': 28, 'quality': 40}},
-        'klein': {'guidance': 1.0, 'steps': {'fast': 4, 'balanced': 4, 'quality': 4}},
-    }
-    configured = presets.get('profiles', {}).get(family, defaults[family])
-    profile = {**defaults[family], **configured}
-    profile.update(family=family, pipeline=index['_class_name'], modelId=model_id,
-                   supportsNegative=family != 'klein', supportsDetail=family in ('sd35', 'sdxl'),
+    profile = dict(presets['profiles'][family])
+    policy=model_policy(model_id, index['_class_name'])
+    if not policy:raise ValueError('Thiếu cấu hình encoder cho model.')
+    profile.update(family=family, pipeline=index['_class_name'], modelId=model_id, encoderPolicy=policy,
+                   supportsNegative=policy['supportsNegative'], supportsDetail=family in ('sd35', 'sdxl'),
                    supportsSLG=family == 'sd35', sizes=presets['sizes'])
     return profile
 
@@ -102,9 +96,9 @@ def plan(body, model_path, model_id):
     if profile['family'] == 'klein':
         if steps != 4 or guidance != 1:
             warnings.append('FLUX.2 klein sử dụng cố định 4 bước và mức bám mô tả 1.')
-        if negative:
-            warnings.append('Model này không áp dụng Điều cần tránh; hãy diễn đạt yêu cầu trong mô tả chính.')
         steps, guidance = 4, 1.0
+    if negative and not profile['supportsNegative']:
+        warnings.append('Model này không áp dụng Điều cần tránh; nội dung được giữ trong ô nhập và không gửi đến model.')
     seed = secrets.randbelow(MAX_SEED + 1) if body.get('seed') is None else number(body['seed'], 'Seed', 0, MAX_SEED, True)
     count = number(body.get('count', 2), 'Số phương án', 1, 4, True)
     slg = body.get('skipLayerGuidance', False)
@@ -113,16 +107,8 @@ def plan(body, model_path, model_id):
     inputs = {'prompt': [effective_prompt]}
     if profile['supportsNegative']:
         inputs['negative_prompt'] = [negative]
-    clip = body.get('clipPrompt', '')
-    clip_negative = body.get('clipNegativePrompt', '')
-    text(clip, 'Mô tả CLIP'); text(clip_negative, 'Điều cần tránh CLIP')
-    if profile['family'] == 'sd35':
-        inputs.update(prompt=[FRAMING[framing] + clip if clip.strip() else effective_prompt], prompt_2=[FRAMING[framing] + clip if clip.strip() else effective_prompt],
-                      prompt_3=[effective_prompt], negative_prompt=[clip_negative if clip_negative.strip() else negative],
-                      negative_prompt_2=[clip_negative if clip_negative.strip() else negative], negative_prompt_3=[negative],
-                      max_sequence_length=256)
-    elif profile['family'] in ('klein', 'chroma'):
-        inputs['max_sequence_length'] = 512
+    if profile['family'] in ('klein', 'chroma'):
+        inputs['max_sequence_length'] = profile['encoderPolicy']['maxSequenceLength']
     encoders, errors = [], []
     folders = ('tokenizer', 'tokenizer_2', 'tokenizer_3') if profile['family'] == 'sd35' else ('tokenizer', 'tokenizer_2') if profile['family'] == 'sdxl' else ('tokenizer',)
     for index, folder in enumerate(folders):
@@ -132,18 +118,18 @@ def plan(body, model_path, model_id):
         native = getattr(tokenizer, 'model_max_length', None)
         if isinstance(native, int) and 1 < native < 1000000:
             limit = min(limit, native)
+        if index == 0:
+            limit=sequence_limit(profile['encoderPolicy'],tokenizer)
         item = {'name': 'T5' if index == 2 or profile['family'] == 'chroma' else 'Qwen' if profile['family'] == 'klein' else f'CLIP {index+1}', 'limit': limit}
         for prefix in ('prompt', 'negative_prompt'):
             if prefix not in inputs:
                 continue
             value = inputs.get(prefix + suffix, inputs[prefix])[0]
             actual = value
-            if profile['family'] == 'klein':
-                actual = tokenizer.apply_chat_template([{'role': 'user', 'content': value}], tokenize=False, add_generation_prompt=True, enable_thinking=False)
-            tokens = len(tokenizer(actual, add_special_tokens=True, truncation=False)['input_ids'])
+            tokens = token_count(tokenizer,value,profile['encoderPolicy'])[0]
             item[prefix], item[prefix + 'Tokens'] = value, tokens
             if tokens > limit:
-                errors.append(f'{item["name"]} · {"mô tả" if prefix == "prompt" else "điều cần tránh"}: {tokens}/{limit} token. Hãy rút gọn' + (' ô Mô tả ngắn cho CLIP.' if profile['family'] == 'sd35' and index < 2 else ' nội dung.'))
+                errors.append(f'{item["name"]} · {"mô tả" if prefix == "prompt" else "điều cần tránh"}: {tokens}/{limit} token. Hãy rút gọn nội dung.')
         encoders.append(item)
     return {'ok': True, 'valid': not errors, 'version': VERSION, 'profile': profile, 'encoders': encoders,
             'errors': errors, 'warnings': warnings, 'inputs': inputs, 'prompt': prompt, 'negativePrompt': negative,

@@ -1,0 +1,66 @@
+{
+  "newImageCases": [
+    [
+      "product",
+      "Studio product photograph of a blue cotton shirt laid flat on a white background, complete garment, realistic fabric weave, soft directional light.",
+      "1:1"
+    ],
+    [
+      "portrait",
+      "Fashion portrait of an adult woman wearing a beige linen jacket, natural skin texture, relaxed expression, soft window light, gray studio background.",
+      "4:5"
+    ],
+    [
+      "full-body",
+      "Full-body editorial photograph of an adult man wearing a navy suit and brown shoes, standing with both hands visible, entire body in frame, neutral studio background.",
+      "2:3"
+    ],
+    [
+      "two-people",
+      "Two adults standing side by side, woman on the left wearing a red jacket, man on the right wearing a blue shirt, both faces and hands visible, daylight.",
+      "3:2"
+    ],
+    [
+      "fabric",
+      "Close-up product photograph of a folded green and cream checkered cotton shirt, regular intersecting lines, visible seams and buttons, soft studio light.",
+      "1:1"
+    ],
+    [
+      "composition",
+      "Wide fashion campaign photograph, an adult woman in a yellow coat on the left third, empty pale gray wall on the right, full body visible, soft side lighting.",
+      "16:9"
+    ]
+  ],
+  "objectRemovalPrompts": [
+    "A continuous matte beige wall.",
+    "A continuous softly lit gray wall.",
+    "Continuous pale square floor tiles with straight gray grout lines.",
+    "A continuous light wooden tabletop with horizontal grain.",
+    "A continuous pale blue wall with evenly spaced thin horizontal lines."
+  ],
+  "newImageNegative": "blur, distorted anatomy, watermark",
+  "objectRemovalSmoke": "A continuous matte beige wall, with matching color and lighting.",
+  "qualitySmoke": "A white ceramic cup on a gray table in soft daylight.",
+  "objectRemovalSeedBase": 82000,
+  "objectRemovalSmokeSettings": {
+    "modelId": "qwen-image-controlnet-inpainting",
+    "count": 1,
+    "seed": 82000,
+    "maxSide": 1024
+  },
+  "qualitySmokeSettings": {
+    "modelId": "sd35-medium",
+    "negativePrompt": "",
+    "seed": 528,
+    "size": 256,
+    "aspectRatio": "1:1",
+    "steps": 4,
+    "guidance": 4.5,
+    "count": 1,
+    "quality": "custom",
+    "livePreview": false
+  },
+  "newImageSeeds": [
+    433
+  ]
+}

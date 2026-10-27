@@ -57,7 +57,7 @@ def clean_stale_huggingface_cache(partial: Path):
             pass
 
 
-def download_huggingface(source: str, partial: Path, status: Path):
+def download_huggingface(source: str, partial: Path, status: Path, allow_patterns=None):
     # hf-xet can deadlock after an interrupted Windows download. Standard HTTP
     # is slower but resumes reliably and keeps the UI heartbeat responsive.
     os.environ.setdefault("HF_HUB_DISABLE_XET", "1")
@@ -67,7 +67,11 @@ def download_huggingface(source: str, partial: Path, status: Path):
     token = os.environ.get("HF_TOKEN") or get_token()
     clean_stale_huggingface_cache(partial)
     info = HfApi(token=token).model_info(repo_id, files_metadata=True)
-    total = sum(int(file.size or 0) for file in info.siblings or [])
+    selected = list(info.siblings or [])
+    if allow_patterns:
+        import fnmatch
+        selected = [file for file in selected if any(fnmatch.fnmatch(file.rfilename, pattern) for pattern in allow_patterns)]
+    total = sum(int(file.size or 0) for file in selected)
     received = directory_size(partial)
     percent = round(min(99.9, received * 100 / total), 1) if total else None
     write_status(status, stage="downloading", bytesDownloaded=received, totalBytes=total, percent=percent, message=f"Đang tải snapshot {repo_id}")
@@ -90,6 +94,7 @@ def download_huggingface(source: str, partial: Path, status: Path):
             local_dir_use_symlinks=False,
             resume_download=True,
             max_workers=1,
+            allow_patterns=allow_patterns or None,
         )
     finally:
         stop.set()
@@ -145,6 +150,7 @@ def main():
     parser.add_argument("--source", required=True)
     parser.add_argument("--target", required=True)
     parser.add_argument("--status", required=True)
+    parser.add_argument("--include", action="append", default=[])
     args = parser.parse_args()
     target, status = Path(args.target).resolve(), Path(args.status).resolve()
     partial = target.with_name(target.name + ".partial")
@@ -156,7 +162,7 @@ def main():
         if args.source.startswith("ollama://"):
             download_ollama(args.source, partial, status)
         elif "huggingface.co/" in args.source:
-            download_huggingface(args.source, partial, status)
+            download_huggingface(args.source, partial, status, args.include)
         elif "civitai.com/" in args.source:
             download_civitai(args.source, partial, status)
         else:

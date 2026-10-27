@@ -1,7 +1,7 @@
 const fs=require('fs'),path=require('path'),assert=require('assert');
 const baseUrl=process.argv[2]||'http://127.0.0.1:27866';
 (async()=>{
- const baseline={...require('../app/makeup-styles.json').office,parts:['lips','eyes','cheeks','brows'],brow:'#493332',blush:'#b78871',strengths:{lips:100,eyes:80,cheeks:90,brows:100,base:100}};
+ const baseline={...require('../app/prompt-store').readCatalog().featurePresets['makeup.styles'].office,parts:['lips','eyes','cheeks','brows'],brow:'#493332',blush:'#b78871',strengths:{lips:100,eyes:80,cheeks:90,brows:100,base:100}};
  const description='Giữ màu son, giảm phấn mắt, má hồng nhẹ hơn.';
  const response=await fetch(baseUrl+'/api/makeup-plan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({style:'office',baseSettings:baseline,description})});
  const plan=await response.json();assert(response.ok&&plan.ok,JSON.stringify(plan));

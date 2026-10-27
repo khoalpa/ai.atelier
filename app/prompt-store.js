@@ -78,6 +78,10 @@ function validate(v){
     if(!object(spec)||(spec.components!==undefined&&!Array.isArray(spec.components)))throw new Error('Cấu hình ghép prompt không hợp lệ.');
     if(spec.template&&!Object.hasOwn(v.templates,spec.template))throw new Error('Tham chiếu template không tồn tại.');
     for(const id of spec.components||[])if(!Object.hasOwn(v.components,id))throw new Error('Tham chiếu thành phần không tồn tại.');
+    if(spec.libraryIds!==undefined){
+      if(!Array.isArray(spec.libraryIds))throw new Error('Tham chiếu thư viện không hợp lệ.');
+      for(const id of spec.libraryIds){const item=v.library.find(item=>item.id===id);if(!item||item.slot.endsWith('-negative')!==(polarity==='negative'))throw new Error('Tham chiếu thư viện không tồn tại hoặc sai loại: '+id);}
+    }
   }
   }
   for(const [id,preset] of Object.entries(v.presets)){
@@ -90,11 +94,12 @@ function validate(v){
   }
   if(v.legacyLibrary!==undefined){if(!object(v.legacyLibrary))throw new Error('Dữ liệu prompt cũ không hợp lệ.');for(const entry of Object.values(v.legacyLibrary))text(entry,true);}
   if(v.migrations!==undefined&&(!Array.isArray(v.migrations)||v.migrations.some(id=>typeof id!=='string'||!/^[a-zA-Z0-9-]{1,80}$/.test(id))))throw new Error('Dữ liệu chuyển đổi không hợp lệ.');
+  require('./catalog-schema').validateFeatures(v);
   return v;
 }
 const MAX_IMPORT_BYTES=2*1024*1024;
 function revision(value){return crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');}
-function summary(value){return {components:Object.keys(value.components).length,templates:Object.keys(value.templates).length,tasks:Object.keys(value.tasks).length,processingModes:Object.keys(value.processingModes).length,presets:Object.keys(value.presets).length,library:value.library.length,promptAssist:Object.keys(value.promptAssist.tasks).length,ui:Object.keys(value.ui).length,uiPlaceholders:Object.keys(value.uiPlaceholders).length,runtimePresets:Object.keys(value.runtimePresets).length,outfitTypes:value.outfitTypes.length};}
+function summary(value){return {components:Object.keys(value.components).length,templates:Object.keys(value.templates).length,tasks:Object.keys(value.tasks).length,processingModes:Object.keys(value.processingModes).length,presets:Object.keys(value.presets).length,library:value.library.length,promptAssist:Object.keys(value.promptAssist.tasks).length,ui:Object.keys(value.ui).length,uiPlaceholders:Object.keys(value.uiPlaceholders).length,runtimePresets:Object.keys(value.runtimePresets).length,outfitTypes:value.outfitTypes.length,encoderPolicies:Object.keys(value.promptQuality?.models||{}).length,featurePresets:Object.keys(value.featurePresets||{}).length,qualityRevision:value.promptQuality?.revision||0};}
 function prepareImport(candidate,current){
   if(Buffer.byteLength(JSON.stringify(candidate)??'')>MAX_IMPORT_BYTES)throw new Error('Tệp prompt tối đa 2 MB.');
   function safeKeys(value){
@@ -105,10 +110,13 @@ function prepareImport(candidate,current){
     }
   }
   safeKeys(candidate);
+  if(current.promptQuality&&!candidate.promptQuality)throw new Error('Tệp nhập thiếu promptQuality chứa cấu hình encoder đang sử dụng.');
   validate(candidate);
+  if(current.promptQuality)for(const id of Object.keys(current.promptQuality.models))if(!candidate.promptQuality.models[id])throw new Error('Thiếu cấu hình encoder đang sử dụng: '+id);
   // Compiled callers use these IDs and template variables. Imported files may
   // add entries and change text, but must retain the application's contract.
-  for(const group of ['components','templates','processingModes','presets','ui','uiPlaceholders','runtimePresets'])for(const key of Object.keys(current[group])){
+  for(const group of ['components','templates','processingModes','presets','ui','uiPlaceholders','runtimePresets',...(current.featurePresets?['featurePresets']:[])])for(const key of Object.keys(current[group])){
+    if(!object(candidate[group]))throw new Error('Thiếu nhóm cấu hình: '+group);
     if(!Object.hasOwn(candidate[group],key))throw new Error('Tệp nhập thiếu mục cần thiết: '+group+'.'+key);
   }
   for(const item of current.outfitTypes)if(!candidate.outfitTypes.some(entry=>entry.id===item.id))throw new Error('Tệp nhập thiếu loại đối tượng: '+item.id);
@@ -124,6 +132,8 @@ function importCatalog(candidate,expectedRevision,file=FILE){
     if(typeof expectedRevision!=='string'||expectedRevision!==revision(current))throw new Error('Cấu hình đã thay đổi sau khi xem trước. Chọn lại tệp để nhập.');
     prepareImport(candidate,current);
     const next=structuredClone(candidate);
+    // Older exports predate unified personal libraries. Preserve local data.
+    if(current.personalLibraries&&!next.personalLibraries)next.personalLibraries=structuredClone(current.personalLibraries);
     // Browser migration bookkeeping belongs to this installation.
     if(current.migrations)next.migrations=current.migrations;else delete next.migrations;
     for(const key of Object.keys(current))delete current[key];

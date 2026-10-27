@@ -1,8 +1,13 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert');
 const script=require('./helpers/source').read(require('path').join(__dirname,'../app/public/new-image.js'),'utf8').replace('  initialize();return','  return');
+assert(script.includes("el('chromaGenerateButton').hidden=true"),'Tạo ảnh phải chỉ còn một CTA chính trên thanh tác vụ.');
+assert(script.includes("promptLabel.firstChild.textContent='Bạn muốn tạo ảnh gì? '"),'Mô tả phải đứng đầu luồng Tạo ảnh.');
+assert(script.includes("composition.append(el('chromaCount').closest('label'))"),'Số phương án phải nằm cùng nhóm khung ảnh.');
+assert(script.includes("pipelineLabel.hidden=true;el('textToImagePipeline').value='generate'"),'Pipeline thay trang phục không được xuất hiện trong Tạo ảnh mới.');
+assert(script.includes("data-new-similar"),'Ảnh đã chọn phải có hành động tạo thêm tương tự.');
 function setup(valid=true){
   const nodes=new Map();const get=id=>{if(!nodes.has(id))nodes.set(id,{value:'',checked:false,classList:{toggle(){}},innerHTML:'',textContent:'',after(){},focus(){},remove(){}});return nodes.get(id);};
-  const fields={textToImageModel:'flux-2-klein-4b',chromaPrompt:'blue fabric '.repeat(65)+'red shoes',chromaNegativePrompt:'',chromaClipPrompt:'',chromaClipNegative:'',chromaSize:'1024',chromaAspect:'4:5',chromaQuality:'4',chromaGuidance:'1',chromaCount:'2',textToImagePipeline:'generate'};
+  const fields={textToImageModel:'flux-2-klein-4b',chromaPrompt:'blue fabric '.repeat(65)+'red shoes',chromaNegativePrompt:'',chromaSize:'1024',chromaAspect:'4:5',chromaQuality:'4',chromaGuidance:'1',chromaCount:'2',textToImagePipeline:'generate'};
   for(const [id,value]of Object.entries(fields))get(id).value=value;
   const calls=[],errors=[];
   const ctx={window:{},document:{getElementById:get},textQuality:'quality',activeJobId:'',textToImageModels:new Map(),

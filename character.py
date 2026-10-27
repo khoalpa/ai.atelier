@@ -1,3 +1,4 @@
+from prompt_catalog import prompt_text
 """Character edits: validated plans, protected compositing and atomic job publication."""
 import hashlib
 import json
@@ -18,7 +19,7 @@ import character_quality as quality
 
 
 def configuration(root):
-    return {**runtime.configuration(root), 'expressions':geometry.EXPRESSIONS, 'poses':geometry.POSES, 'joints':geometry.JOINTS, 'edges':geometry.EDGES,'qualityRecoveryReady':quality.available(root)}
+    return {**runtime.configuration(root), 'expressions':dict(geometry.EXPRESSIONS), 'poses':dict(geometry.POSES), 'joints':geometry.JOINTS, 'edges':geometry.EDGES,'qualityRecoveryReady':quality.available(root)}
 
 
 def detect_faces(source,env,detected=None):
@@ -115,7 +116,7 @@ def appearance_description(source,people,ids,sha,env):
         else:
             box=np.asarray(people[i]['box'])*[*source.size,*source.size];crop=source.copy() if len(people)==1 else source.crop(tuple(box));crop.thumbnail((512,768))
             try:
-                response=requests.post('http://127.0.0.1:11434/api/chat',json=dict(model='llava:7b',stream=False,keep_alive=0,options=dict(temperature=0,num_predict=90),messages=[dict(role='user',content='Describe ONLY the visible clothing and footwear, with exact colors, in one English phrase of at most 15 words. Do not describe the person or pose.',images=[makeup.encode(crop).split(',')[1]])]),timeout=120)
+                response=requests.post('http://127.0.0.1:11434/api/chat',json=dict(model='llava:7b',stream=False,keep_alive=0,options=dict(temperature=0,num_predict=90),messages=[dict(role='user',content=prompt_text('character.appearanceAnalysis'),images=[makeup.encode(crop).split(',')[1]])]),timeout=120)
                 response.raise_for_status();text=response.json().get('message',{}).get('content','').strip()
                 if not re.fullmatch(r'[\x20-\x7e\s]{1,240}',text):text=''
                 text=' '.join(text.split()[:20]);file.write_text(json.dumps(dict(description=text)),encoding='utf8')
@@ -177,6 +178,11 @@ def prepare(body,env):
         mask=np.array(allowed)
         mask[np.asarray(geometry.stationary_torso_mask(people,targets,source.size))>0]=0
         allowed=Image.fromarray(mask)
+    # Body diffusion must never repaint a face just because an expression was
+    # requested. LivePortrait handles the face in a separate, identity-aware
+    # pass below. Keep both masks: body_allowed drives SDXL, while allowed is
+    # the union used for the final protected composite and review overlay.
+    body_allowed=allowed.copy()
     if settings['mode']!='face':
         if face_ids:
             facial=geometry.allowed_mask(people,targets,source.size,'face',protected) if face_ids==set(selected) else None
@@ -201,6 +207,7 @@ def prepare(body,env):
     if body.get('limitSelection',False):
         selection=enhancement.read_mask(body.get('editableMask'),source.size)
         allowed=Image.fromarray(np.minimum(np.asarray(allowed),np.asarray(selection)))
+        body_allowed=Image.fromarray(np.minimum(np.asarray(body_allowed),np.asarray(selection)))
         if not allowed.getbbox():raise ValueError('Vùng giới hạn chưa được tô hoặc đã bị bảo vệ hết.')
     if not allowed.getbbox():raise ValueError('Vùng bảo vệ che hết vùng thay đổi.')
     if settings['mode']!='face':
@@ -217,7 +224,7 @@ def prepare(body,env):
     for key in ('preview','count','seed','steps','resolution','variantOffset'):signature.pop(key,None)
     plan_hash=hashlib.sha256(json.dumps(signature,sort_keys=True).encode()).hexdigest()
     control=geometry.draw_pose(targets,source.size,settings['pose'],settings)
-    return dict(settings=settings,source=source,alpha=alpha,sha=sha,people=people,faces=faces,reference=reference,targets=targets,target_json=target_json,contacts=contacts,protected=protected,allowed=allowed,control=control,plan_hash=plan_hash)
+    return dict(settings=settings,source=source,alpha=alpha,sha=sha,people=people,faces=faces,reference=reference,targets=targets,target_json=target_json,contacts=contacts,protected=protected,allowed=allowed,body_allowed=body_allowed,control=control,plan_hash=plan_hash)
 
 
 def plan(body,env):
@@ -258,6 +265,8 @@ def refine_faces(candidate,p,env,active,progress):
 
 def run(body,env):
     started=time.perf_counter();job_id=str(body.get('jobId',''))[:80]
+    if body.get('mode','face')!='face':
+        raise ValueError('Chỉnh tư thế và tương tác dùng token CLIP đã bị loại vĩnh viễn; hiện chỉ còn chỉnh khuôn mặt không dùng prompt CLIP.')
     active=lambda:env['ensure_job_active'](job_id);update=lambda **kw:env['update_job'](job_id,**kw)
     active();update(status='running',taskType='character',stage='character-validating',sourceId=body.get('sampleId'),results=[])
     env['persist_job_request'](job_id,'character',body)
@@ -267,6 +276,7 @@ def run(body,env):
     needs_face=settings['mode']=='face' or any(controls.face_requested(controls.person(settings,i)) for i in p['targets'])
     if needs_face and not config['faceReady']:raise ValueError('Chưa chuẩn bị xong bộ xử lý khuôn mặt. Chạy scripts/setup-character.py.')
     if settings['mode']!='face' and not config['bodyReady']:raise ValueError('Chưa chuẩn bị xong bộ xử lý tư thế. Chạy scripts/setup-character.py.')
+    if settings['mode']!='face' and settings['pipeline']=='sd35-pose-hybrid' and not config.get('hybridReady'):raise ValueError('Pipeline SD3.5 + T5 chưa sẵn sàng trên máy.')
     source=p['source'];progress=lambda i,n:update(stage='character-processing',completedSteps=i,totalWorkSteps=n)
     update(stage='character-loading',totalVariants=settings['count'],completedSteps=0,totalWorkSteps=settings['count'])
     if settings['mode']=='face':
@@ -275,7 +285,8 @@ def run(body,env):
             rs,rp,rf=p['reference'];reference=(rs,rf[rp['faceIndex']])
         candidates=env.get('character_face',runtime.face_candidates)(source,p['faces'][person['faceIndex']],controls.person(settings,settings['personIds'][0]),env,active,progress,reference)
     elif settings['pose']=='look_each_other':candidates=(source.copy() for _ in range(settings['count']))
-    else:candidates=env.get('character_body',runtime.body_candidates)(source,p['control'],p['allowed'],p['people'],p['targets'],settings,env,active,progress)
+    elif not p['body_allowed'].getbbox():candidates=(source.copy() for _ in range(settings['count']))
+    else:candidates=env.get('character_body',runtime.body_candidates)(source,p['control'],p['body_allowed'],p['people'],p['targets'],settings,env,active,progress)
     folder=env['OUTPUTS']/'character'/uuid.uuid4().hex[:20];relative=lambda f:f.relative_to(env['ROOT']).as_posix();items=[]
     saved={**settings,'targetPoses':p['target_json'],'referenceId':body.get('referenceId'),'referenceSha256':body.get('referenceSha256'),'referencePersonId':body.get('referencePersonId'),'plannedDescription':body.get('plannedDescription',''),'limitSelection':bool(body.get('limitSelection',False))}
     env['JOBS_DIR'].mkdir(parents=True,exist_ok=True)
@@ -288,19 +299,39 @@ def run(body,env):
                 quality_metrics=dict(available=False,reason='disabled' if not settings['qualityRecovery'] else 'parser-unavailable')
                 if settings['mode']!='face' and settings['qualityRecovery']:
                     if quality.available(env['ROOT']):
-                        active();candidate,quality_metrics=quality.recover(source,candidate,p['people'],p['targets'],p['allowed'],env['ROOT'],settings['clothing']);active()
-                    candidate=quality.match_boundary(source,candidate,p['allowed'])
+                        active();candidate,quality_metrics=quality.recover(source,candidate,p['people'],p['targets'],p['body_allowed'],env['ROOT'],settings['clothing']);active()
+                    candidate=quality.match_boundary(source,candidate,p['body_allowed'])
                 if settings['mode']!='face':candidate=refine_faces(candidate,p,env,active,lambda *_:active())
                 feather=max(4,min(source.size)*.018) if settings['mode']!='face' else max(3,min(source.size)*.006)
                 _,result,metrics=enhancement.composite(source,candidate,p['allowed'],dict(method='character',scale=1,feather=feather))
                 if settings['mode']!='face':
-                    metrics['targetPose']=geometry.pose_score(p['targets'],env['detect_people_pose'](result),source.size)
+                    result_people=env['detect_people_pose'](result)
+                    extremities=quality.extremity_review(result_people,p['targets'],source.size,settings['anatomyQuality'])
+                    repair_limit={'balanced':1,'enhanced':2,'strict':3}[settings['anatomyQuality']]
+                    repairs=0
+                    while not extremities['passed'] and repairs<repair_limit and config.get('hybridReady'):
+                        repair_mask=quality.extremity_repair_mask(p['targets'],extremities,source.size,p['allowed'])
+                        if not repair_mask.getbbox():break
+                        active();repaired=runtime.repair_extremities(result,repair_mask,settings,env,active,settings['seed']+index+1000+repairs)
+                        _,result,_=enhancement.composite(result,repaired,repair_mask,dict(method='character-extremity-repair',scale=1,feather=max(3,min(source.size)*.006)))
+                        result_people=env['detect_people_pose'](result);extremities=quality.extremity_review(result_people,p['targets'],source.size,settings['anatomyQuality']);repairs+=1
+                    extremities['repairAttempts']=repairs;metrics['extremityAnatomy']=extremities
+                    if settings['anatomyQuality']=='strict' and not extremities['passed']:
+                        detail=' '.join(item['message'] for item in extremities['issues'][:3])
+                        raise ValueError(f'Kiểm tra giải phẫu nghiêm ngặt không đạt. {detail}')
+                    metrics['targetPose']=geometry.pose_score(p['targets'],result_people,source.size)
                     if not metrics['targetPose']['available']:raise ValueError('Không nhận diện đủ nhân vật trong ảnh tạo ra. Kết quả lỗi chưa được lưu; thử mức Chi tiết hoặc đổi seed.')
+                    if not metrics['targetPose']['passed']:raise ValueError('Tư thế tạo ra lệch khung xương đã duyệt. Kết quả lỗi chưa được lưu; thử seed khác hoặc giảm mức thay đổi.')
+                    metrics['anatomyArtifacts']=quality.anatomy_artifact_review(source,result,p['people'],p['targets'])
+                    if not metrics['anatomyArtifacts']['passed']:raise ValueError('Phát hiện xương hoặc đường giải phẫu bất thường trong thân người. Kết quả lỗi chưa được lưu; thử seed khác hoặc giảm mức thay đổi.')
                 else:
                     metrics['faceDetected']=bool(detect_faces(result,env))
                     if not metrics['faceDetected']:raise ValueError('Không còn nhận diện được mặt sau chỉnh sửa. Giảm góc đầu hoặc mức biểu cảm và thử lại.')
                 metrics['garmentRecovery']=quality_metrics
-                metrics['handControl']={'requested':any(controls.hand_targets(q,controls.person(settings,i),source.size) for i,q in p['targets'].items()),'verified':False}
+                metrics['generationPipeline']={'id':settings['pipeline'],'textEncoder':'T5-XXL','maxSequenceLength':256} if settings['pipeline']=='sd35-pose-hybrid' else {'id':'sdxl-openpose','textEncoder':'CLIP','maxSequenceLength':77}
+                controlled_hands=sum(len(controls.hand_targets(q,controls.person(settings,i),source.size)) for i,q in p['targets'].items())
+                metrics['handControl']={'requested':controlled_hands>0,'controlledHands':controlled_hands,'requirement':'exactly-five-clear-fingers'}
+                metrics['extremityRequirements']={'mandatory':True,'visibleHands':'exactly-five-clear-fingers','visibleFeet':'exactly-five-clear-toes'}
                 metrics.update(identityVerified=False,clothingVerified=False,contactVerified=False,requiresVisualReview=True)
                 if p['alpha'] is not None:result.putalpha(p['alpha'])
                 crop=p['allowed'].getbbox() if settings['preview'] and settings['mode']=='face' else None

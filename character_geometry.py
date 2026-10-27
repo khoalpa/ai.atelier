@@ -1,3 +1,4 @@
+from prompt_catalog import prompt_text, prompt_template, catalog_value, CatalogMap, read_catalog
 """Validated character plans, COCO joints, OpenPose controls and target-based QA."""
 import math
 import colorsys
@@ -6,12 +7,12 @@ import cv2
 import numpy as np
 from PIL import Image
 
-EXPRESSIONS = {'keep':'Giữ biểu cảm', 'smile':'Cười nhẹ', 'laugh':'Cười rõ', 'serious':'Nghiêm túc', 'surprised':'Ngạc nhiên', 'sad':'Buồn', 'angry':'Tức giận'}
-POSES = {'keep':'Giữ tư thế', 'relaxed':'Đứng tự nhiên', 'hands_hips':'Chống hông', 'crossed_arms':'Khoanh tay', 'wave':'Vẫy tay', 'point':'Chỉ hướng', 'thumbs_up':'Giơ ngón cái', 'peace':'Dấu V', 'touch_hair':'Chạm tóc', 'hand_chest':'Tay lên ngực', 'walk':'Đi bộ', 'run':'Chạy', 'jump':'Nhảy', 'sit':'Ngồi', 'read':'Đọc sách', 'hold_cup':'Cầm cốc', 'show_product':'Giới thiệu sản phẩm', 'handshake':'Bắt tay', 'handover':'Trao đồ vật', 'look_each_other':'Nhìn nhau', 'group':'Tạo dáng nhóm', 'custom':'Tư thế chỉnh tay'}
+EXPRESSIONS = CatalogMap("featurePresets", 'character.expressions')
+POSES = CatalogMap("featurePresets", 'character.poses')
 INTERACTIONS = {'handshake','handover','look_each_other','group'}
 JOINTS = ['Mũi','Mắt trái','Mắt phải','Tai trái','Tai phải','Vai trái','Vai phải','Khuỷu trái','Khuỷu phải','Cổ tay trái','Cổ tay phải','Hông trái','Hông phải','Gối trái','Gối phải','Cổ chân trái','Cổ chân phải']
 EDGES = [(5,6),(5,7),(7,9),(6,8),(8,10),(5,11),(6,12),(11,12),(11,13),(13,15),(12,14),(14,16),(0,1),(0,2),(1,3),(2,4)]
-ACTION_PROMPTS = {'keep':'same body pose','relaxed':'standing naturally with arms relaxed','hands_hips':'both hands on hips','crossed_arms':'arms folded across the chest','wave':'waving with an open hand','point':'pointing with the index finger','thumbs_up':'giving a thumbs up','peace':'making a V sign with index and middle fingers','touch_hair':'one hand touching hair','hand_chest':'one hand gently resting on chest','walk':'taking a natural walking step','run':'running, bent elbows and knees','jump':'jumping, feet off the ground','sit':'sitting naturally on a seat','read':'holding an open book and reading it','hold_cup':'holding a cup naturally','show_product':'presenting a product with both hands','handshake':'two people shaking hands at the marked contact point','handover':'two people passing a small object between their hands','look_each_other':'people looking toward each other','group':'people posing together naturally','custom':'follow the target skeleton precisely'}
+ACTION_PROMPTS = CatalogMap("featurePresets", 'character.actions')
 
 def number(value, name, low, high):
     if isinstance(value,bool) or not isinstance(value,(int,float)) or not math.isfinite(value) or not low<=value<=high:
@@ -35,7 +36,17 @@ def options(body):
     description=body.get('description','');prompt=body.get('prompt','')
     if not isinstance(description,str) or not isinstance(prompt,str) or len(description)>2000 or len(prompt)>2000: raise ValueError('Mô tả quá dài.')
     if description.strip() and body.get('plannedDescription')!=description: raise ValueError('Mô tả đã đổi. Đọc lại mô tả và kiểm tra kế hoạch trước khi tạo.')
-    result=dict(mode=mode,pose=pose,expression=expression,personIds=ids,count=count,seed=seed,description=description,prompt=prompt,
+    pipeline=body.get('pipeline','disabled' if mode=='face' else 'sdxl-openpose')
+    if mode=='face':
+        if pipeline not in ('disabled','sdxl-openpose','sd35-pose-hybrid'):raise ValueError('Pipeline tư thế không hợp lệ.')
+        pipeline='disabled'
+    elif pipeline=='disabled':
+        raise ValueError('Chỉnh tư thế hiện chưa khả dụng. Bạn vẫn có thể chỉnh khuôn mặt và hướng nhìn.')
+    elif pipeline not in ('sdxl-openpose','sd35-pose-hybrid'):raise ValueError('Pipeline tư thế không hợp lệ.')
+    anatomy_quality=body.get('anatomyQuality','balanced')
+    if anatomy_quality not in ('balanced','enhanced','strict'):raise ValueError('Mức kiểm tra giải phẫu không hợp lệ.')
+    result=dict(mode=mode,pose=pose,expression=expression,pipeline=pipeline,personIds=ids,count=count,seed=seed,description=description,prompt=prompt,
+        anatomyQuality=anatomy_quality,
         intensity=number(body.get('intensity',.6),'Mức biểu cảm',0,1),yaw=number(body.get('yaw',0),'Xoay đầu',-20,20),pitch=number(body.get('pitch',0),'Cúi/ngẩng',-15,15),roll=number(body.get('roll',0),'Nghiêng đầu',-15,15),
         gazeX=number(body.get('gazeX',0),'Hướng nhìn ngang',-1,1),gazeY=number(body.get('gazeY',0),'Hướng nhìn dọc',-1,1),
         identity=number(body.get('identity',.65),'Giữ diện mạo',0,1),clothing=number(body.get('clothing',.45),'Giữ trang phục',0,1),

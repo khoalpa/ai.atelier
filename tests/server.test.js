@@ -218,9 +218,8 @@ console.log('OK: registry, checksum, cấu hình động và A/B LoRA SD3.5 Spri
 for (const file of ['scripts/convert-kohya-sd3-lora.py','docs/SPRINT-4O.md'])assert.ok(fs.existsSync(path.join(root,file)),`Thiếu tệp Sprint 4O: ${file}`);
 checkWorkspaceArtifact('workspace/review/lora-sd35-large-photorealistic-conversion.json');
 const loraRegistry=JSON.parse(require('./helpers/source').read(path.join(root,'models/lora/registry.json'),'utf8'));
-const photorealistic=loraRegistry.adapters.find((item)=>item.id==='sd35-large-photorealistic');
-assert.ok(photorealistic?.file?.endsWith('.diffusers.safetensors'),'LoRA photorealistic chưa dùng bản Diffusers');
-assert.equal(photorealistic?.status,'converted-experimental','Sai trạng thái LoRA photorealistic');
+assert.equal(loraRegistry.baseModel,'qwen-image','LoRA registry chưa chuyển khỏi SD3.5');
+assert.deepEqual(loraRegistry.adapters,[],'LoRA SD3.5 đã loại vẫn còn trong registry');
 assert.ok(require('./helpers/source').read(path.join(root,'ai_service.py'),'utf8').includes('"active": public_active'),'Trạng thái LoRA còn lộ đối tượng Path');
 console.log('OK: bộ chuyển đổi Kohya SD3.5 và A/B Sprint 4O đã được khai báo.');
 for (const feature of ['automatic_protected_detail_mask','lora_ab_matrix','"protectedMask"'])assert.ok(require('./helpers/source').read(path.join(root,'ai_service.py'),'utf8').includes(feature),`Thiếu mask/ma trận Sprint 4P: ${feature}`);
@@ -372,7 +371,7 @@ console.log('OK: danh sách model đã được tách khỏi tab Thêm model.');
 const modelCatalog=JSON.parse(require('./helpers/source').read(path.join(root,'models/inpaint-candidates.json'),'utf8'));
 // The catalog is user-managed: an optional candidate can be removed without
 // breaking the application or turning a source-tree test red.
-for(const id of ['grounding-dino-base','birefnet','florence-2-large','flux-1-fill-dev','idm-vton']){
+for(const id of ['grounding-dino-base','birefnet','florence-2-large','idm-vton']){
   const candidate=modelCatalog.candidates.find((item)=>item.id===id);
   assert.ok(candidate,`Thiếu model đề xuất trong thư viện: ${id}`);
   assert.ok(['integration','restricted'].includes(candidate.compatibility),`Thiếu trạng thái tương thích an toàn: ${id}`);
@@ -412,6 +411,9 @@ console.log('OK: Đặt lại phiên và Bỏ chọn ảnh đã được triển
 
 const downloaderSource=require('./helpers/source').read(path.join(root,'scripts/download_model.py'),'utf8');
 for(const feature of ['files_metadata=True','monitor_directory_progress','bytesDownloaded','totalBytes'])assert.ok(downloaderSource.includes(feature),`Thiếu tiến độ tải Hugging Face: ${feature}`);
+for(const feature of ['--include','allow_patterns','downloadPatterns'])assert.ok((downloaderSource+serverSource).includes(feature),`Thiếu tải chọn lọc tệp model: ${feature}`);
+const bundledModels=JSON.parse(require('./helpers/source').read(path.join(root,'models/inpaint-candidates.json'),'utf8')).candidates;
+for(const id of ['dwpose-wholebody'])assert.ok(bundledModels.some((item)=>item.id===id&&item.downloadPatterns?.length),`Thiếu model đề xuất hoặc bộ lọc tải: ${id}`);
 for(const feature of ['liveModelDownloadStatus','aria-valuenow','percent.toFixed(1)'])assert.ok((serverSource+studioBehavior).includes(feature),`Thiếu phần trăm tải model trên giao diện: ${feature}`);
 console.log('OK: tải model Hugging Face hiển thị phần trăm thực theo số byte đã nhận.');
 
@@ -427,6 +429,10 @@ for (const feature of ['/api/chroma-generate','/chroma-generate','chroma_generat
   assert.ok(chromaGeneratorSource.includes(feature), `Thiếu chức năng tạo ảnh Chroma: ${feature}`);
 }
 console.log('OK: tạo ảnh từ mô tả bằng Chroma đã được kết nối từ giao diện đến pipeline.');
+
+const characterAnatomySource=require('./helpers/source').read(path.join(root,'character_quality.py'),'utf8')+require('./helpers/source').read(path.join(root,'character_runtime.py'),'utf8')+require('./helpers/source').read(path.join(root,'character.py'),'utf8')+require('./helpers/source').read(path.join(root,'app/public/character.js'),'utf8')+studioMarkup+studioBehavior;
+for(const feature of ['characterAnatomyQuality','extremity_review','extremity_repair_mask','repair_extremities','fingerJointCoverage','fiveToesVerified','Kết quả chưa vượt cổng giải phẫu'])assert.ok(characterAnatomySource.includes(feature),`Thiếu cổng giải phẫu tay/chân: ${feature}`);
+console.log('OK: DWPose kiểm tra tay/chân, sửa cục bộ SD3.5 và khóa kết quả không đạt.');
 
 for (const feature of ['editorLiveProgress','chromaLiveProgress','activityPreview','TEXT_TO_IMAGE_STAGES','text-generating','renderGenerationLive','save_diffusion_preview','callback_on_step_end_tensor_inputs=["latents"]']) {
   assert.ok(chromaGeneratorSource.includes(feature), `Thiếu tiến trình hoặc preview trực tiếp: ${feature}`);
@@ -447,7 +453,7 @@ for (const feature of ['data-view="create">Chỉnh sửa ảnh','data-view="chro
 }
 console.log('OK: Tạo ảnh từ mô tả và Chỉnh sửa ảnh có không gian điều hướng riêng.');
 
-for (const feature of ['imageViewerDialog','imageViewerImage','openImageAtFullSize','document.addEventListener(\'dblclick\'','image.naturalWidth','closeImageViewer']) {
+for (const feature of ['imageViewerDialog','imageViewerImage','openImageAtFullSize','document.addEventListener(\'dblclick\'','image.naturalWidth','closeImageViewer','sendViewerImageToStudioButton','sendViewerImageToStudio','Đã chuyển ảnh sang Studio và đặt làm ảnh nguồn.']) {
   assert.ok(chromaGeneratorSource.includes(feature), `Thiếu trình xem ảnh kích thước 100%: ${feature}`);
 }
 console.log('OK: nhấp đúp vào ảnh mở trình xem ở kích thước 100%.');
@@ -515,8 +521,9 @@ assert.ok(require('./helpers/source').read(path.join(root,'app/public/app.js'),'
 console.log('OK: lỗi một API không làm dừng máy chủ và lỗi kết nối được hướng dẫn rõ ràng.');
 
 const extendedGeneratorUi=require('./helpers/source').read(path.join(root,'app/public/index.html'),'utf8')+require('./helpers/source').read(path.join(root,'app/public/app.js'),'utf8');
-for(const feature of ['textToImagePipeline','Inpainting SD3.5','CatVTON · thay trang phục','LoRA SD3.5 · theo phong cách','ControlNet SD 3.5','runExtendedTextPipeline','/api/sd35-conditioned-generate','loadTextToImageLoras'])assert.ok(extendedGeneratorUi.includes(feature),`Thiếu pipeline tạo ảnh mở rộng: ${feature}`);
-console.log('OK: Tạo ảnh từ mô tả hỗ trợ Inpainting, CatVTON, LoRA và ControlNet SD3.5 theo đầu vào sẵn có.');
+for(const feature of ['textToImagePipeline','CatVTON · thay trang phục','runExtendedTextPipeline'])assert.ok(extendedGeneratorUi.includes(feature),`Thiếu pipeline tạo ảnh không dùng CLIP: ${feature}`);
+for(const removed of ['Inpainting SD3.5','LoRA SD3.5 · theo phong cách','ControlNet SD 3.5'])assert.ok(!require('./helpers/source').read(path.join(root,'app/public/index.html'),'utf8').includes(removed),`Pipeline CLIP vẫn còn trên giao diện: ${removed}`);
+console.log('OK: Tạo ảnh chỉ công bố pipeline không dùng token CLIP.');
 
 assert.ok(serverSource.includes('manuallyCopied=path.join(modelsRoot,path.basename(configured))'),'Máy chủ chưa nhận diện model được sao chép trực tiếp vào models');
 assert.ok(require('./helpers/source').read(path.join(root,'ai_service.py'),'utf8').includes('manually_copied = ROOT / "models" / configured.name'),'AI pipeline chưa hỗ trợ đường dẫn model sao chép thủ công');
@@ -559,12 +566,11 @@ const installedProfiles=JSON.parse(require('./helpers/source').read(path.join(ro
 const catalogProfiles=JSON.parse(require('./helpers/source').read(path.join(root,'models/inpaint-candidates.json'),'utf8')).candidates.filter((item)=>item.kind==='inpaint');
 const migratedProfiles=require('../app/prompt-store').readCatalog().runtimePresets.modelInpaintProfiles;
 const registryProfiles=[...installedProfiles,...catalogProfiles.filter((candidate)=>!installedProfiles.some((installed)=>installed.id===candidate.id))].map(model=>({...model,removalProfile:migratedProfiles[model.id]}));
-for(const id of ['sd35-inpaint','waifu-inpaint-xl','sdxl-inpaint-base-0.1','flux-1-fill-dev']){
+for(const id of ['qwen-image-controlnet-inpainting']){
   const model=registryProfiles.find((item)=>item.id===id);assert.ok(model?.removalProfile,`Model ${id} thiếu removalProfile`);for(const key of ['nativeResolution','steps','strength','guidance','promptMode','supportsNegativePrompt','retryStrengthIncrement','maximumRetries'])assert.notEqual(model.removalProfile[key],undefined,`Profile ${id} thiếu ${key}`);
 }
 for(const feature of ['resolved_inpaint_profile','semantic_inpaint_residual_check','contentStyle'])assert.ok(removalSource.includes(feature),`Thiếu điều phối inpainting đa model: ${feature}`);
-assert.equal(registryProfiles.find((item)=>item.id==='flux-1-fill-dev').removalProfile.supportsNegativePrompt,false,'FLUX không được nhận negative prompt riêng');
-assert.equal(registryProfiles.find((item)=>item.id==='waifu-inpaint-xl').contentStyle,'anime','Waifu phải bị giới hạn cho anime');
+assert.equal(registryProfiles.find((item)=>item.id==='qwen-image-controlnet-inpainting').removalProfile.supportsNegativePrompt,true,'Qwen phải nhận negative prompt trực tiếp');
 assert.ok(!require('./helpers/source').read(path.join(root,'app/public/app.js'),'utf8').includes('autoSwitchModel: true'),'Giao diện không được yêu cầu tự chuyển model');
 assert.ok(!removalSource.includes('fallback_result = inpaint('),'Backend không được chạy lại bằng model khác');
 assert.ok(!removalSource.includes('def inpaint_fallback_entry('),'Không được tự chọn model thay thế');
@@ -582,8 +588,7 @@ assert.ok(downloadAllSource.includes("!['restricted','integration'].includes(lev
 console.log('OK: Thư viện model hỗ trợ tải tất cả theo hàng đợi tuần tự và bỏ qua model không phù hợp.');
 
 const gatedModelCatalog = JSON.parse(require('./helpers/source').read(path.join(root,'models/inpaint-candidates.json'),'utf8'));
-const waifuInpaint = gatedModelCatalog.candidates.find((item)=>item.id==='waifu-inpaint-xl');
-assert.equal(waifuInpaint.compatibility,'restricted','Waifu-Inpaint-XL phải được đánh dấu là model hạn chế quyền truy cập');
+assert.ok(!gatedModelCatalog.candidates.some((item)=>['waifu-inpaint-xl','flux-1-fill-dev'].includes(item.id)),'Model CLIP đã loại không được quay lại catalog');
 assert.ok(serverSource.includes("errorCode:'access-required'"),'Thiếu phân loại lỗi truy cập Hugging Face');
 assert.ok(downloadAllSource.includes('Thử lại sau khi cấp quyền')&&downloadAllSource.includes('Mở trang cấp quyền'),'Thiếu hướng dẫn phục hồi khi model gated bị từ chối');
 console.log('OK: lỗi model Hugging Face gated được phân loại, hướng dẫn cấp quyền và loại khỏi tải hàng loạt.');
@@ -606,20 +611,13 @@ for(const feature of ["part.endsWith('.partial')","part==='.cache'","catalogOwne
 console.log('OK: bộ quét model bỏ qua thư mục .partial, cache và tệp con của model trong catalog.');
 
 const integrationSource = serverSource + require('./helpers/source').read(path.join(root,'ai_service.py'),'utf8') + require('./helpers/source').read(path.join(root,'app/public/app.js'),'utf8') + require('./helpers/source').read(path.join(root,'app/public/index.html'),'utf8');
-for(const feature of ['INTEGRATED_MODEL_NOTES','birefnet_mask','transformer_detect_regions','id="regionDetector"','value="grounding-dino"','value="florence-2"','ControlNetUnionModel','control_mode=1'])assert.ok(integrationSource.includes(feature),`Thiếu tích hợp model mở rộng: ${feature}`);
-for(const id of ['grounding-dino-base','birefnet','controlnet-union-sdxl-1.0','florence-2-large'])assert.ok(integrationSource.includes(id),`Thiếu model tích hợp: ${id}`);
+for(const feature of ['INTEGRATED_MODEL_NOTES','birefnet_mask','transformer_detect_regions','id="regionDetector"','value="grounding-dino"','value="florence-2"','QwenImageControlNetPipeline','qwen_depth_generate'])assert.ok(integrationSource.includes(feature),`Thiếu tích hợp model mở rộng: ${feature}`);
+for(const id of ['grounding-dino-base','birefnet','qwen-image-controlnet-union','florence-2-large'])assert.ok(integrationSource.includes(id),`Thiếu model tích hợp: ${id}`);
 console.log('OK: BiRefNet, ControlNet Union, Grounding DINO và Florence-2 đã được nối vào pipeline sử dụng.');
 
 const baseInpaintCatalog = JSON.parse(require('./helpers/source').read(path.join(root,'models/inpaint-candidates.json'),'utf8'));
-for(const id of ['sdxl-inpaint-base-0.1']){
-  const candidate=baseInpaintCatalog.candidates.find((item)=>item.id===id);
-  assert.ok(candidate,`Thiếu model nền ${id}`);
-  assert.equal(candidate.kind,'inpaint',`Model ${id} phải dùng được trực tiếp như Inpainting`);
-  assert.equal(candidate.compatibility,'ready',`Model ${id} không được tiếp tục hiển thị Cần model nền`);
-  assert.deepEqual(candidate.dependencies,[],`Model ${id} không cần model nền bổ sung để nạp pipeline`);
-}
-assert.ok(serverSource.includes("'sdxl-inpaint-base-0.1':'Đã hỗ trợ trực tiếp"),'Thiếu ghi chú tích hợp cho model Inpainting nền');
-console.log('OK: model Inpainting nền được nhận diện là pipeline dùng trực tiếp, không còn trạng thái Cần model nền.');
+assert.ok(baseInpaintCatalog.candidates.some((item)=>item.id==='qwen-image-controlnet-inpainting'&&item.textEncoder==='qwen'),'Thiếu Qwen Inpainting trong catalog');
+console.log('OK: Qwen Inpainting thay thế model nền CLIP cũ.');
 
 for(const feature of ['MODEL_LICENSE_POLICIES','LOCALLY_USABLE_RESTRICTED_MODELS','licenseAcceptedForLocalUse','licenseCategory','licenseNotice'])assert.ok(serverSource.includes(feature),`Thiếu xử lý giấy phép model: ${feature}`);
 const licenseUiSource=require('./helpers/source').read(path.join(root,'app/public/app.js'),'utf8')+require('./helpers/source').read(path.join(root,'app/public/index.html'),'utf8');
@@ -631,7 +629,7 @@ assert.ok(resilientDownloaderSource.includes('get_token()'),'Trình tải chưa 
 console.log('OK: quyền Hugging Face đã chấp nhận được nhận diện và token cache được chuyển cho trình tải model.');
 
 assert.ok(!/\$env:INPAINT_MODEL\s*=/.test(require('./helpers/source').read(path.join(root,'start-all.ps1'),'utf8')),'Script khởi động không được ghi đè lựa chọn model');
-assert.ok(require('./helpers/source').read(path.join(root,'ai_service.py'),'utf8').includes('"text-to-image" / "stable-diffusion-3.5-large"'),'Thiếu đường dẫn mặc định Inpainting đã chuẩn hóa');
+assert.ok(require('./helpers/source').read(path.join(root,'ai_service.py'),'utf8').includes('"controlnet" / "qwen-image-inpainting"'),'Thiếu đường dẫn Qwen Inpainting mặc định');
 assert.ok(require('./helpers/source').read(path.join(root,'ai_service.py'),'utf8').includes('models_root.rglob(configured.name)'),'AI service chưa tự phục hồi đường dẫn model cũ');
 assert.ok(serverSource.includes('findNamedModel'),'Máy chủ chưa tự phục hồi đường dẫn registry cũ');
 console.log('OK: đường dẫn SD3.5 Large được chuẩn hóa và có cơ chế phục hồi cấu hình từ phiên bản cũ.');

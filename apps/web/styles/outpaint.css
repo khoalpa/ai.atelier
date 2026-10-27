@@ -4,6 +4,19 @@
 #studioOutpaintPanel label.checkbox>input[type="checkbox"]{width:16px;height:16px;min-width:16px;min-height:16px;flex:0 0 16px;margin:0;padding:0}
 #studioOutpaintPanel>small{display:block;margin:8px 0;line-height:1.5}
 .outpaint-fields input,.outpaint-fields select{width:100%;min-width:0}
+.outpaint-main-section{display:grid;gap:10px;padding:14px;border:1px solid var(--line);border-radius:12px;background:color-mix(in srgb,var(--panel) 88%,transparent)}
+.outpaint-main-section>small{color:var(--muted);margin-top:2px}
+.outpaint-ratio-buttons,.outpaint-direction-buttons,.outpaint-align-buttons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.outpaint-ratio-buttons button,.outpaint-direction-buttons button,.outpaint-align-buttons button{min-width:0;padding-inline:8px}
+.outpaint-custom-size{padding:10px 12px;border:1px solid var(--line);border-radius:10px}
+.outpaint-custom-size summary{cursor:pointer;font-weight:650}
+.outpaint-custom-size .outpaint-fields{margin-top:10px}
+.outpaint-quality-main,.outpaint-run-mode{display:grid;gap:10px;margin:0;padding:12px;border:1px solid var(--line);border-radius:10px}
+.outpaint-quality-main .button-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.outpaint-quality-main>label{margin-top:2px}
+.outpaint-run-mode label{display:flex;align-items:flex-start;gap:8px;padding:9px;border:1px solid var(--line);border-radius:9px}
+.outpaint-run-mode input{width:auto;min-height:auto;margin-top:3px}
+.outpaint-run-mode small{margin-left:auto;color:var(--accent)}
 .outpaint-inspector{width:94vw;max-width:94vw;height:90vh;max-height:90vh;padding:16px;background:var(--panel,#152133);color:var(--text,#eee);border:1px solid var(--line,#456);border-radius:12px}
 .outpaint-inspector::backdrop{background:#000b}
 .outpaint-inspector-tools{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:12px}
@@ -27,6 +40,7 @@ body[data-studio-task="outpaint"] .journey-content label:has(#overlayOpacity),
 body[data-studio-task="outpaint"] .journey-content label:has(#notes),
 body[data-studio-task="outpaint"] .journey-content label:has(#labelSelect){display:none!important}
 body[data-studio-task="outpaint"] .studio-compare-images{min-height:220px}
+@media(max-width:760px){.outpaint-ratio-buttons,.outpaint-direction-buttons,.outpaint-align-buttons{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:920px){
   body[data-studio-task="outpaint"] .studio-results-layout{height:auto;grid-template-rows:auto auto}
   body[data-studio-task="outpaint"] .studio-inline-compare{min-height:360px;grid-template-rows:minmax(220px,1fr) auto auto auto}

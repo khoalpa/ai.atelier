@@ -5,7 +5,7 @@ window.NewImage=(()=>{
   const el=id=>document.getElementById(id);
   const esc=value=>globalThis.AtelierApp.escapeHtml(String(value??''));
   function payload(){return {modelId:value('textToImageModel'),prompt:value('chromaPrompt'),negativePrompt:value('chromaNegativePrompt'),
-    clipPrompt:value('chromaClipPrompt'),clipNegativePrompt:value('chromaClipNegative'),size:Number(value('chromaSize')),
+    size:Number(value('chromaSize')),
     aspectRatio:value('chromaAspect'),framing:value('chromaFraming'),steps:Number(value('chromaQuality')),guidance:Number(value('chromaGuidance')),
     count:Number(value('chromaCount')),quality:['fast','balanced','quality'].includes(globalThis.AtelierApp.textQuality)?globalThis.AtelierApp.textQuality:'custom',
     skipLayerGuidance:el('chromaSlg').checked};}
@@ -14,29 +14,32 @@ window.NewImage=(()=>{
     const result=await response.json();if(!response.ok||!result.ok)throw new Error(result.error||'Không thể thực hiện yêu cầu.');return result;
   }
   function sync(){
-    const model=value('textToImageModel'),klein=model==='flux-2-klein-4b',sd35=model==='sd35-medium';
+    const model=value('textToImageModel'),klein=model==='flux-2-klein-4b';
     el('chromaGuidance').disabled=klein;if(klein)el('chromaGuidance').value='1';
-    el('newImageClipFields').hidden=!sd35;el('chromaSlgLabel').hidden=!sd35;if(!sd35)el('chromaSlg').checked=false;
+    el('chromaSlgLabel').hidden=true;el('chromaSlg').checked=false;
     const [a,b]=value('chromaAspect').split(':').map(Number),size=Number(value('chromaSize'));
     const w=Math.max(256,Math.round(size*Math.sqrt(a/b)/32)*32),h=Math.max(256,Math.round(size*Math.sqrt(b/a)/32)*32);
     el('newImageDimensions').textContent=`Ảnh tạo: ${w} × ${h} px · chọn một phương án để hoàn thiện.${model==='flux-chroma1-hd'?' Chroma có thể cần nhiều phút mỗi ảnh.':''}`;
     sequence++;valid=null;el('newImagePlan').textContent='Mô tả sẽ được kiểm tra trước khi tạo. Không tự cắt nội dung.';
+    el('newImagePlan').hidden=true;
+    globalThis.AtelierApp.refreshStudioReadiness();
   }
-  function renderPlan(result){
+  function renderPlan(result,reveal=false){
     valid=result.valid;
+    const needsAttention=!result.valid||result.warnings.length>0;
+    el('newImagePlan').hidden=!(reveal||needsAttention);
     el('newImagePlan').classList.toggle('has-error',!result.valid);
     el('newImagePlan').innerHTML=`<strong>${result.valid?'Đã kiểm tra · mô tả nằm trong giới hạn':'Cần điều chỉnh mô tả'}</strong>`+
       result.encoders.map(item=>`<small>${esc(item.name)}: mô tả ${item.promptTokens}/${item.limit}${item.negative_promptTokens===undefined?'':` · điều cần tránh ${item.negative_promptTokens}/${item.limit}`} token</small>`).join('')+
       [...result.errors,...result.warnings].map(item=>`<p>${esc(item)}</p>`).join('')+
       `<details><summary>Xem nội dung thực gửi vào model</summary>${result.encoders.map(item=>`<strong>${esc(item.name)}</strong><pre>${esc(item.prompt)}</pre>${item.negative_prompt===undefined?'':`<small>Điều cần tránh</small><pre>${esc(item.negative_prompt)||'(trống)'}</pre>`}`).join('')}</details>`;
-    if(!result.valid&&result.profile.family==='sd35')el('newImageClipFields').open=true;
     globalThis.AtelierApp.refreshStudioReadiness();
   }
-  async function check(body=payload()){
+  async function check(body=payload(),reveal=false){
     const revision=++sequence;
     el('newImagePlan').textContent='Đang đọc giới hạn của model…';
     const result=await api('/api/new-image-plan',body);
-    if(revision===sequence)renderPlan(result);
+    if(revision===sequence)renderPlan(result,reveal);
     return result;
   }
   function schedule(){clearTimeout(timer);sequence++;valid=null;timer=setTimeout(()=>{if(value('chromaPrompt').trim())check().catch(error=>{el('newImagePlan').textContent=error.message;});},700);}
@@ -44,11 +47,11 @@ window.NewImage=(()=>{
     el('chromaGallery').innerHTML=cards.map((item,index)=>`<article class="result-card ${selected===index?'new-image-selected':''}">
       <img src="${esc(item.image||globalThis.AtelierApp.outputUrl(item.file))}" alt="Phương án ${index+1}, seed ${esc(item.seed)}" data-new-open="${index}">
       <p>${esc(globalThis.AtelierApp.textToImageModels.get(item.model)?.name||item.model||'Ảnh đã lưu')} · seed ${esc(item.seed)}<br>${esc(item.width||'')} × ${esc(item.height||'')} ${item.method==='upscale'?'· phóng lớn giữ bố cục':item.method==='detail'?'· tinh chỉnh AI':''}</p>
-      <div class="button-row"><button type="button" data-new-select="${index}">${selected===index?'Đã chọn':'Chọn phương án'}</button><a class="button-link" href="${esc(item.image||globalThis.AtelierApp.outputUrl(item.file))}" download>Tải ảnh</a></div></article>`).join('');
-    let host=el('newImageFinish');if(!host){host=document.createElement('section');host.id='newImageFinish';host.className='new-image-finish';el('chromaGallery').after(host);}
+      <div class="new-image-card-actions"><button type="button" class="${selected===index?'':'primary'}" data-new-select="${index}">${selected===index?'Đã chọn':'Chọn ảnh này'}</button><details><summary aria-label="Thêm hành động">•••</summary><button type="button" data-new-evaluate="${index}">Đánh giá với prompt</button><a class="button-link" href="${esc(item.image||globalThis.AtelierApp.outputUrl(item.file))}" download>Tải ảnh</a></details></div></article>`).join('');
+    let assessment=el('promptResultAssessment');if(!assessment){assessment=document.createElement('section');assessment.id='promptResultAssessment';assessment.className='prompt-result-assessment';assessment.hidden=true;el('chromaGallery').after(assessment);}let host=el('newImageFinish');if(!host){host=document.createElement('section');host.id='newImageFinish';host.className='new-image-finish';assessment.after(host);}
     const item=cards[selected];host.hidden=!item;
     if(!item)return;
-    host.innerHTML=`<strong>Hoàn thiện phương án ${selected+1}</strong><p>Phóng lớn 2× giữ bố cục bằng nội suy và tăng nét nhẹ. Tinh chỉnh AI dùng chính ảnh đã chọn, có thể thay đổi chi tiết; hãy xem so sánh trước khi dùng.</p><div class="button-row"><button data-new-refine="upscale" ${!item.source||busy||item.width*item.height*4>5000000?'disabled':''}>Phóng lớn 2×</button>${item.canDetail?`<button data-new-refine="detail" ${busy?'disabled':''}>Tinh chỉnh AI nhẹ</button>`:''}<button data-new-enhance ${busy?'disabled':''}>Cải thiện ảnh này</button><button data-new-edit ${busy?'disabled':''}>Chỉnh sửa tiếp</button><button data-manual-url="${esc(item.image||globalThis.AtelierApp.outputUrl(item.file))}" data-manual-name="Ảnh mới · phương án ${selected+1}" ${busy?'disabled':''}>Chỉnh sửa thủ công</button></div><small>Mở ảnh trong Studio để xóa vật thể, thay trang phục hoặc mở rộng khung ảnh.</small>`;
+    host.innerHTML=`<div><strong>Ảnh ${selected+1} đã chọn</strong><small>Dùng ảnh này làm điểm bắt đầu cho bước tiếp theo.</small></div><div class="new-image-finish-actions"><button data-new-similar class="primary" ${busy?'disabled':''}>Tạo thêm tương tự</button><button data-new-edit ${busy?'disabled':''}>Chỉnh sửa tiếp</button><a class="button-link" href="${esc(item.image||globalThis.AtelierApp.outputUrl(item.file))}" download>Tải ảnh</a><details><summary>Hoàn thiện</summary><button data-new-refine="upscale" ${!item.source||busy||item.width*item.height*4>5000000?'disabled':''}>Phóng lớn 2×</button>${item.canDetail?`<button data-new-refine="detail" ${busy?'disabled':''}>Tinh chỉnh AI nhẹ</button>`:''}<button data-new-enhance ${busy?'disabled':''}>Cải thiện ảnh này</button><button data-manual-url="${esc(item.image||globalThis.AtelierApp.outputUrl(item.file))}" data-manual-name="Ảnh mới · phương án ${selected+1}" ${busy?'disabled':''}>Chỉnh sửa thủ công</button></details></div>`;
   }
   async function execute(request,source=null){
     const jobId=globalThis.AtelierApp.createJobId('text-to-image');globalThis.AtelierApp.setActiveJob(jobId);
@@ -108,17 +111,30 @@ window.NewImage=(()=>{
     globalThis.AtelierApp.setMessage('Đã mở ảnh trong Studio. Chọn công cụ, khoanh vùng và nhập yêu cầu.','success');
   }
   function initialize(){
-    const basic=el('newImageComposition');for(const id of ['chromaCount','chromaSize'])basic.append(el(id).closest('label'));
-    for(const id of ['chromaPrompt','chromaNegativePrompt','chromaClipPrompt','chromaClipNegative'])el(id).addEventListener('input',schedule);
-    for(const id of ['chromaAspect','chromaFraming','textToImageModel'])el(id).addEventListener('change',()=>{sync();schedule();});
-    el('newImageCheck').addEventListener('click',()=>check().catch(error=>{el('newImagePlan').textContent=error.message;}));
-    el('suggestClipPrompt').addEventListener('click',()=>globalThis.AtelierApp.runPromptAssist({task:'shortenPrompt',targetId:'chromaClipPrompt',buttonId:'suggestClipPrompt',statusId:'clipPromptAssistStatus',title:'Bản ngắn cho CLIP',context:'Preserve key visual constraints from this full prompt: '+value('chromaPrompt')}));
+    const panel=el('chromaGeneratorPanel'),composition=el('newImageComposition'),quality=el('textToImagePreset').closest('fieldset'),advanced=panel.querySelector('.advanced-panel');
+    const promptLabel=el('chromaPrompt').closest('label'),negativeLabel=el('chromaNegativePrompt').closest('label'),modelLabel=el('textToImageModel').closest('label'),pipelineLabel=el('textToImagePipeline').closest('label');
+    promptLabel.classList.add('new-image-prompt');promptLabel.firstChild.textContent='Bạn muốn tạo ảnh gì? ';
+    el('promptBuilder').querySelector('summary span').textContent='✦ Hỗ trợ viết mô tả';
+    composition.prepend(el('chromaAspect').closest('label'),el('chromaFraming').closest('label'));
+    composition.append(el('chromaCount').closest('label'));
+    pipelineLabel.hidden=true;el('textToImagePipeline').value='generate';
+    advanced.querySelector('summary').textContent='Thiết lập nâng cao';
+    advanced.append(modelLabel,negativeLabel,el('chromaGuidance').closest('label'),el('newImageCheck'),el('newImagePlan'));
+    panel.append(promptLabel,el('promptBuilder'),composition,quality,advanced,el('chromaGenerateButton'));
+    el('chromaGenerateButton').hidden=true;
+    el('newImageCheck').textContent='Kiểm tra mô tả';
+    el('newImagePlan').hidden=true;
+    for(const id of ['chromaPrompt','chromaNegativePrompt'])el(id).addEventListener('input',schedule);
+    for(const id of ['chromaAspect','chromaFraming','chromaCount','chromaSize','textToImageModel'])el(id).addEventListener('change',()=>{sync();schedule();});
+    el('newImageCheck').addEventListener('click',()=>check(payload(),true).catch(error=>{el('newImagePlan').hidden=false;el('newImagePlan').textContent=error.message;}));
     document.addEventListener('click',event=>{
-      const select=event.target.closest('[data-new-select]'),open=event.target.closest('[data-new-open]'),finish=event.target.closest('[data-new-refine]'),ratio=event.target.closest('[data-new-image-ratio]');
+      const select=event.target.closest('[data-new-select]'),open=event.target.closest('[data-new-open]'),finish=event.target.closest('[data-new-refine]'),ratio=event.target.closest('[data-new-image-ratio]'),evaluate=event.target.closest('[data-new-evaluate]');
       if(select){selected=Number(select.dataset.newSelect);window.QualityLearning?.selection({file:cards[selected].image||globalThis.AtelierApp.outputUrl(cards[selected].file)});render();}
       if(open){const item=cards[Number(open.dataset.newOpen)];globalThis.AtelierApp.openImageAtFullSize(item.image||globalThis.AtelierApp.outputUrl(item.file),'Ảnh mới');}
       if(finish)refine(finish.dataset.newRefine).catch(error=>globalThis.AtelierApp.setMessage(error.message,'error'));
       if(ratio){el('chromaAspect').value=ratio.dataset.newImageRatio;sync();}
+      if(evaluate)window.PromptBuilder?.evaluateResult(cards[Number(evaluate.dataset.newEvaluate)]);
+      if(event.target.closest('[data-new-similar]'))generate();
       if(event.target.closest('[data-new-enhance]'))edit('enhance').catch(error=>globalThis.AtelierApp.setMessage(error.message,'error'));
       if(event.target.closest('[data-new-edit]'))edit().catch(error=>globalThis.AtelierApp.setMessage(error.message,'error'));
     });

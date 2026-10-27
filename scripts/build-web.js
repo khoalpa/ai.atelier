@@ -16,7 +16,7 @@ bundle+='globalThis.dispatchEvent(new Event("atelier:ready"));\n})();\n';
 new vm.Script(bundle,{filename:'app.js'});fs.writeFileSync(path.join(output,'app.js'),bundle);
 for(const file of manifest.features){
  const shared={'manual-core.js':'document.js','export-core.js':'export.js'}[file];
- fs.copyFileSync(shared?path.join(root,'packages/editor-core',shared):path.join(home,'features',file),path.join(output,file));
+ fs.copyFileSync(file==='prompt-quality.js'?path.join(root,'packages/prompting/compiler.js'):shared?path.join(root,'packages/editor-core',shared):path.join(home,'features',file),path.join(output,file));
 }
 let html=fs.readFileSync(path.join(home,'index.html'),'utf8');html=html.replace('<script src="/ai-theme.js"></script>','<script src="/ai-theme.js"></script>\n  <script>window.AtelierApp={};</script>');fs.writeFileSync(path.join(output,'index.html'),html);
 fs.cpSync(path.join(home,'styles'),path.join(output,'styles'),{recursive:true});

@@ -17,7 +17,7 @@ import makeup_comparison as comparison
 class ComparisonTests(unittest.TestCase):
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory();self.root=Path(self.temp.name);(self.root/'app').mkdir()
-        (self.root/'app/makeup-styles.json').write_bytes((ROOT/'app/makeup-styles.json').read_bytes())
+        (self.root/'workspace').mkdir(exist_ok=True);(self.root/'workspace/prompts.json').write_bytes((ROOT/'workspace/prompts.json').read_bytes())
         self.image=Image.open(__import__('sample_catalog').resolve_sample(ROOT, 'outpaint-benchmark/portrait-left/reference.png')).convert('RGB');self.path=self.root/'source.png';self.image.save(self.path)
         self.points=np.array(json.loads((ROOT/'tests/fixtures/makeup-landmarks.json').read_text()),np.float32)
         masks,_,_=makeup.region_masks(self.points,self.image.size);self.selected=Image.fromarray(np.maximum.reduce([np.asarray(masks[p]) for p in makeup.PARTS]))

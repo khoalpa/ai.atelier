@@ -1,3 +1,4 @@
+const catalog=require('./catalog-values');
 'use strict';
 const ranges={intensity:[0,1],yaw:[-20,20],pitch:[-15,15],roll:[-15,15],gazeX:[-1,1],gazeY:[-1,1]};
 const expressions=['keep','smile','laugh','serious','surprised','sad','angry'];
@@ -25,7 +26,7 @@ async function refine(body,request,model){
   }
   const properties={expression:{type:'string',enum:expressions}};for(const [k,[minimum,maximum]] of Object.entries(ranges))properties[k]={type:'number',minimum,maximum};
   const schema={type:'object',additionalProperties:false,required:['changes','moves','summary'],properties:{changes:{type:'object',properties,additionalProperties:false},moves:{type:'array',maxItems:4,items:{type:'object',additionalProperties:false,required:['joint','dx','dy'],properties:{joint:{type:'integer',enum:[7,8,9,10,13,14,15,16]},dx:{type:'number',minimum:-.08,maximum:.08},dy:{type:'number',minimum:-.08,maximum:.08}}}},summary:{type:'string'}}};
-  const response=await request({model,stream:false,think:false,format:schema,keep_alive:0,options:{temperature:0,num_predict:500,num_ctx:4096},messages:[{role:'system',content:'Interpret an incremental edit to a photograph. Return ONLY requested changes. Preserve all unspecified controls by omitting them. Existing expression keep means unchanged, not neutral. Joint IDs are anatomical: 7 left elbow, 8 right elbow, 9 left wrist, 10 right wrist, 13/14 knees, 15/16 ankles. dx/dy are normalized image offsets; positive dy lowers. A little = .025. Never move joints when asked to keep pose. Summary in Vietnamese. Current controls: '+JSON.stringify(current)},{role:'user',content:body.description}]});
+  const response=await request({model,stream:false,think:false,format:schema,keep_alive:0,options:{temperature:0,num_predict:500,num_ctx:4096},messages:[{role:'system',content:catalog.value('components',"character-refine.interpret_an_incremental_edit_to_a_photograph")+JSON.stringify(current)},{role:'user',content:body.description}]});
   let value;try{value=JSON.parse(response.message?.content||response.response||'');}catch{throw Error('Chưa đọc được mô tả. Thử câu ngắn hơn.');}
   const parsed=validate(value);
   parsed.changes=Object.fromEntries(Object.entries(parsed.changes).filter(([key,v])=>v!==current[key]));

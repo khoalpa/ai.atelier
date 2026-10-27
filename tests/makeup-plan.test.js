@@ -1,6 +1,6 @@
 const assert=require('assert');
 const {planMakeup,validatePlan,explicitOverrides}=require('../app/makeup-plan');
-const base=require('../app/makeup-styles.json').natural;
+const base=require('../app/prompt-store').readCatalog().featurePresets['makeup.styles'].natural;
 (async()=>{
   let calls=0;
   const request=async body=>{calls++;assert.equal(body.keep_alive,0);assert.equal(body.format.type,'object');return {message:{content:JSON.stringify({...base,parts:['lips'],prompt:'muted rose lipstick',summary:'Chỉ tô son hồng đất.'})}};};

@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from outpainting import (prepare_canvas, prepare_inference, composite_canvas, detail_regions, merge_detail,
                         PatchAccumulator,seam_band,semantic_seam_masks,multiband_background,restore_source_core,seam_metrics,feather_seam_result,preserve_fabric_texture)
+from services.ai.tasks.outpaint import outpaint_pipeline_kwargs
 
 source = Image.fromarray(np.random.default_rng(1).integers(0, 256, (79, 113, 3), dtype=np.uint8))
 for left, top, right, bottom in [(35, 0, 0, 0), (0, 0, 47, 0), (0, 31, 0, 0), (0, 0, 0, 19), (21, 15, 13, 27)]:
@@ -190,7 +191,8 @@ with tempfile.TemporaryDirectory() as folder:
         ensure_job_active=active, release_inpaint=lambda:None,
         load_inpaint_pipe=lambda *args:SimpleNamespace(), traced_pipeline_call=pipeline,
         torch=SimpleNamespace(Generator=Generator,inference_mode=contextlib.nullcontext),
-        encode_image=lambda image:'data:image/png;base64,test', json=json)
+        encode_image=lambda image:'data:image/png;base64,test', json=json,
+        outpaint_pipeline_kwargs=outpaint_pipeline_kwargs)
     namespace['outpaint_semantics']=lambda image,manual=None:(Image.new('L',image.size,0),Image.new('L',image.size,0),
                                                             manual or Image.new('L',image.size,0),[])
     namespace['metadata']=metadata
@@ -247,7 +249,14 @@ with tempfile.TemporaryDirectory() as folder:
     namespace['outpaint'](dict(jobId='flux-defaults',sampleId='source.png',width=180,height=120,left=30))
     assert calls[-1]['num_inference_steps'] == 50 and calls[-1]['guidance_scale'] == 30
     assert calls[-1]['width']*calls[-1]['height'] <= 1024**2
+    namespace['detect_inpaint_architecture'] = lambda *args:'qwen-image-controlnet-inpaint'
+    namespace['resolved_inpaint_profile'] = lambda *args:{'nativeResolution':768,'steps':30,'guidance':4,'supportsNegativePrompt':True}
+    namespace['outpaint'](dict(jobId='qwen-defaults',sampleId='source.png',width=180,height=120,left=30))
+    assert calls[-1]['control_image'] and calls[-1]['control_mask']
+    assert calls[-1]['num_inference_steps'] == 30 and calls[-1]['true_cfg_scale'] == 4
+    assert 'prompt_2' not in calls[-1] and 'image' not in calls[-1] and 'mask_image' not in calls[-1]
     namespace['detect_inpaint_architecture'] = lambda *args:'sdxl'
+    namespace['resolved_inpaint_profile'] = lambda *args:{'nativeResolution':1024}
     namespace['safe_sample'] = lambda name:root/'large.png'
     def semantics(image,manual=None):
         fg=Image.new('L',image.size,0);fg.paste(255,(0,image.height//2,*image.size))

@@ -7,7 +7,68 @@ import io
 import numpy as np
 import torch
 from services.ai.models.pipelines import _detector, _transformer_detector, load_pose_model, load_predictor
-from services.ai.runtime.configuration import POSE_MODEL, ROOT, SAMPLES, device
+from services.ai.runtime.configuration import DWPOSE_ROOT, POSE_MODEL, ROOT, SAMPLES, device
+
+
+_dwpose_model = None
+_dwpose_failed = False
+
+
+def _load_dwpose():
+    """Load the optional whole-body ONNX detector without affecting YOLO fallback."""
+    global _dwpose_model, _dwpose_failed
+    detector = DWPOSE_ROOT / "yolox_l.onnx"
+    pose = DWPOSE_ROOT / "dw-ll_ucoco_384.onnx"
+    if _dwpose_failed or not detector.is_file() or not pose.is_file():
+        return None
+    if _dwpose_model is None:
+        try:
+            from dwpose import Wholebody
+            _dwpose_model = Wholebody(str(detector), str(pose), torchscript_device=device)
+        except Exception:
+            _dwpose_failed = True
+            return None
+    return _dwpose_model
+
+
+def _enrich_people_with_dwpose(source: Image.Image, people: list[dict]) -> None:
+    """Attach hands, feet and face landmarks while retaining COCO-17 body order."""
+    model = _load_dwpose()
+    if model is None or not people:
+        return
+    try:
+        wholebody = model(cv2.cvtColor(np.asarray(source.convert("RGB")), cv2.COLOR_RGB2BGR))
+    except Exception:
+        return
+    if wholebody is None:
+        return
+    remaining = set(range(len(wholebody)))
+    for person in people:
+        px0, py0, px1, py1 = person["box"]
+        center = np.asarray([(px0 + px1) / 2, (py0 + py1) / 2])
+        candidates = []
+        for index in remaining:
+            points = np.asarray(wholebody[index])
+            reliable = points[:, 2] > 0.20
+            if not reliable.any():
+                continue
+            dw_center = points[reliable, :2].mean(axis=0)
+            candidates.append((float(np.linalg.norm(dw_center - center)), index))
+        if not candidates:
+            continue
+        _, index = min(candidates)
+        remaining.remove(index)
+        points = np.asarray(wholebody[index], dtype=np.float32)
+        encode = lambda values: [[round(float(x), 1), round(float(y), 1), round(float(score), 4)] for x, y, score in values]
+        # DWPose emits OpenPose-18 body points, 6 feet, 68 face, then 21 points per hand.
+        person.update({
+            "source": "yolo11n-pose+dwpose",
+            "wholebodyKeypoints": encode(points),
+            "footKeypoints": encode(points[18:24]),
+            "faceKeypoints": encode(points[24:92]),
+            "handKeypoints": {"left": encode(points[92:113]), "right": encode(points[113:134])},
+            "anatomyLandmarksReady": bool(len(points) >= 134),
+        })
 
 
 def safe_sample(sample_id: str) -> Path:
@@ -92,6 +153,7 @@ def detect_people_pose(source: Image.Image) -> list[dict]:
             "normalizedBox": [round(float(box[0] / source.width), 4), round(float(box[1] / source.height), 4), round(float(box[2] / source.width), 4), round(float(box[3] / source.height), 4)],
             "confidence": round(float(confidences[index]), 4), "keypoints": points, "source": "yolo11n-pose",
         })
+    _enrich_people_with_dwpose(source, people)
     return people
 
 

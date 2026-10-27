@@ -53,6 +53,12 @@ sdxl_control_pipe = None
 sdxl_control_mode = "depth"
 
 
+qwen_control_pipe = None
+
+
+qwen_control_mode = ""
+
+
 vision_checker = None
 
 

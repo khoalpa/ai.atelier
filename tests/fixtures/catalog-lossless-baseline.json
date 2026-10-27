@@ -1,0 +1,188 @@
+{
+  "featurePresets": {
+    "character.expressions": {
+      "keep": "Giữ biểu cảm",
+      "smile": "Cười nhẹ",
+      "laugh": "Cười rõ",
+      "serious": "Nghiêm túc",
+      "surprised": "Ngạc nhiên",
+      "sad": "Buồn",
+      "angry": "Tức giận"
+    },
+    "character.poses": {
+      "keep": "Giữ tư thế",
+      "relaxed": "Đứng tự nhiên",
+      "hands_hips": "Chống hông",
+      "crossed_arms": "Khoanh tay",
+      "wave": "Vẫy tay",
+      "point": "Chỉ hướng",
+      "thumbs_up": "Giơ ngón cái",
+      "peace": "Dấu V",
+      "touch_hair": "Chạm tóc",
+      "hand_chest": "Tay lên ngực",
+      "walk": "Đi bộ",
+      "run": "Chạy",
+      "jump": "Nhảy",
+      "sit": "Ngồi",
+      "read": "Đọc sách",
+      "hold_cup": "Cầm cốc",
+      "show_product": "Giới thiệu sản phẩm",
+      "handshake": "Bắt tay",
+      "handover": "Trao đồ vật",
+      "look_each_other": "Nhìn nhau",
+      "group": "Tạo dáng nhóm",
+      "custom": "Tư thế chỉnh tay"
+    },
+    "character.actions": {
+      "keep": "same body pose",
+      "relaxed": "standing naturally with arms relaxed",
+      "hands_hips": "both hands on hips",
+      "crossed_arms": "arms folded across the chest",
+      "wave": "waving with an open hand",
+      "point": "pointing with the index finger",
+      "thumbs_up": "giving a thumbs up",
+      "peace": "making a V sign with index and middle fingers",
+      "touch_hair": "one hand touching hair",
+      "hand_chest": "one hand gently resting on chest",
+      "walk": "taking a natural walking step",
+      "run": "running, bent elbows and knees",
+      "jump": "jumping, feet off the ground",
+      "sit": "sitting naturally on a seat",
+      "read": "holding an open book and reading it",
+      "hold_cup": "holding a cup naturally",
+      "show_product": "presenting a product with both hands",
+      "handshake": "two people shaking hands at the marked contact point",
+      "handover": "two people passing a small object between their hands",
+      "look_each_other": "people looking toward each other",
+      "group": "people posing together naturally",
+      "custom": "follow the target skeleton precisely"
+    },
+    "character.hands": {
+      "open": "open palm",
+      "fist": "closed fist",
+      "point": "index finger pointing",
+      "peace": "index and middle fingers extended",
+      "thumbs_up": "thumb up, other fingers curled",
+      "grip": "fingers gripping the object"
+    },
+    "newImage.framing": {
+      "as-described": "",
+      "full-body-hands": "Wide full-length photograph, head to toe, with space around every person. Each person stands with both arms slightly away from the body, open hands fully visible beside the thighs. Include every face, both hands of each person, and shoes inside the frame. "
+    },
+    "enhancement.levels": {
+      "light": 0.35,
+      "balanced": 0.65,
+      "strong": 1.0
+    },
+    "enhancement.profiles": {
+      "product": [
+        0.85,
+        0.0
+      ],
+      "portrait": [
+        0.55,
+        0.1
+      ],
+      "general": [
+        1.0,
+        0.25
+      ]
+    },
+    "idm.descriptions": {
+      "upper_body": "an upper body garment",
+      "lower_body": "a lower body garment",
+      "overall": "a complete outfit",
+      "full_body": "a complete outfit"
+    },
+    "makeup.styles": {
+      "natural": {
+        "name": "Tự nhiên",
+        "description": "Son nhẹ, má hồng trong và nền mỏng.",
+        "prompt": "natural makeup, subtle rose lipstick, soft blush, thin eyeliner",
+        "intensity": "light",
+        "renderer": "color",
+        "lip": "#ad626c",
+        "eyeshadow": "#a47e70",
+        "blush": "#ce8d87",
+        "eyeliner": "thin",
+        "finish": "satin"
+      },
+      "office": {
+        "name": "Công sở",
+        "description": "Tông trung tính, chân mày gọn và mắt nhẹ.",
+        "prompt": "professional neutral makeup, muted rose lipstick, taupe eyeshadow, neat eyebrows",
+        "intensity": "medium",
+        "renderer": "color",
+        "lip": "#a35f66",
+        "eyeshadow": "#88736b",
+        "blush": "#bf827b",
+        "eyeliner": "thin",
+        "finish": "matte"
+      },
+      "peach": {
+        "name": "Tông đào",
+        "description": "Phấn mắt đào, má hồng ấm và son hồng cam.",
+        "prompt": "peach makeup, coral lipstick, peach eyeshadow, soft peach blush",
+        "intensity": "medium",
+        "renderer": "color",
+        "lip": "#cf776f",
+        "eyeshadow": "#d9947b",
+        "blush": "#e79b88",
+        "eyeliner": "thin",
+        "finish": "satin"
+      },
+      "evening": {
+        "name": "Tiệc tối",
+        "description": "Mắt khói, son nổi bật và sắc má trầm.",
+        "prompt": "evening makeup, smoky plum eyeshadow, berry lipstick, defined eyeliner",
+        "intensity": "bold",
+        "renderer": "color",
+        "lip": "#932f52",
+        "eyeshadow": "#604c65",
+        "blush": "#b77480",
+        "eyeliner": "defined",
+        "finish": "gloss"
+      },
+      "classic": {
+        "name": "Cổ điển",
+        "description": "Son đỏ, nền lì và đường kẻ mắt rõ.",
+        "prompt": "classic vintage makeup, red matte lipstick, black eyeliner, neutral eyeshadow",
+        "intensity": "bold",
+        "renderer": "color",
+        "lip": "#b52e3f",
+        "eyeshadow": "#93776b",
+        "blush": "#bd807a",
+        "eyeliner": "defined",
+        "finish": "matte"
+      },
+      "artistic": {
+        "name": "Nghệ thuật",
+        "description": "Sắc tím, nhũ mắt và hiệu ứng sáng tạo bằng AI.",
+        "prompt": "artistic makeup, violet eyeshadow, delicate silver glitter on eyelids, berry lips",
+        "intensity": "medium",
+        "renderer": "ai",
+        "lip": "#9c447e",
+        "eyeshadow": "#8366b8",
+        "blush": "#cb8fac",
+        "eyeliner": "defined",
+        "finish": "gloss"
+      },
+      "custom": {
+        "name": "Tùy chỉnh",
+        "description": "Mô tả phong cách, màu sắc và chi tiết bạn muốn.",
+        "prompt": "personalized makeup",
+        "intensity": "medium",
+        "renderer": "ai",
+        "lip": "#ad626c",
+        "eyeshadow": "#a47e70",
+        "blush": "#ce8d87",
+        "eyeliner": "thin",
+        "finish": "satin"
+      }
+    }
+  },
+  "components": {
+    "skin.positive": "Natural healthy skin surface matching the surrounding skin tone, fine pores, continuous skin texture, same lighting and anatomy, photographic detail",
+    "skin.negative": "scar, wound, mole, dirt, bruise, blemish, plastic skin, waxy skin, blur, changed anatomy, extra features, text"
+  }
+}

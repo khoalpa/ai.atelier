@@ -5,7 +5,7 @@ fields.makeupStyle.value='natural';fields.makeupRenderer.value='color';fields.ma
 let chosen=['lips','eyes','brows','cheeks','base'],selected=100;
 const boxes=['lips','eyes','brows','cheeks','base'].map(part=>({dataset:{makeupPart:part},get checked(){return chosen.includes(part)},set checked(value){chosen=value?[...new Set([...chosen,part])]:chosen.filter(p=>p!==part)}}));
 const context={window:{},document:{getElementById:id=>fields[id],querySelector:()=>null,querySelectorAll:selector=>selector.includes('data-makeup-strength')?[]:selector.includes(':checked')?boxes.filter(x=>x.checked):boxes},current:{id:'portrait'},sourceImage:{},activeJobId:'',editableMaskStats:()=>({selected}),refreshStudioReadiness(){},
-  fetch:async()=>({ok:true,json:async()=>({ok:true,serviceReady:true,landmarkReady:true,aiReady:true,plannerReady:true,styles:require('../app/makeup-styles.json')})})};
+  fetch:async()=>({ok:true,json:async()=>({ok:true,serviceReady:true,landmarkReady:true,aiReady:true,plannerReady:true,styles:require('../app/prompt-store').readCatalog().featurePresets['makeup.styles']})})};
 vm.createContext(context);vm.runInContext(require('./helpers/source').read('app/public/makeup.js','utf8'),context);
 (async()=>{
  const api=context.window.Makeup;api.setup();await new Promise(setImmediate);

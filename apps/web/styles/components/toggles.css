@@ -1,0 +1,130 @@
+/* Shared on/off control, based on the gold outlined reference treatment. */
+:root {
+  --toggle-card-min-height: 56px;
+  --toggle-card-radius: 14px;
+  --toggle-track-width: 50px;
+  --toggle-track-height: 30px;
+  --toggle-thumb-size: 22px;
+  --toggle-track-padding: 3px;
+}
+
+/* Checkboxes that select library items remain checkboxes rather than switches. */
+input[type="checkbox"]:not(.library-select input) {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  display: inline-block;
+  flex: 0 0 var(--toggle-track-width);
+  width: var(--toggle-track-width);
+  height: var(--toggle-track-height);
+  min-width: var(--toggle-track-width);
+  min-height: var(--toggle-track-height);
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--surface-3);
+  vertical-align: middle;
+  cursor: pointer;
+  transition: border-color .18s ease, background-color .18s ease, box-shadow .18s ease;
+}
+
+input[type="checkbox"]:not(.library-select input)::before {
+  content: "";
+  position: absolute;
+  top: var(--toggle-track-padding);
+  left: var(--toggle-track-padding);
+  width: var(--toggle-thumb-size);
+  height: var(--toggle-thumb-size);
+  border-radius: 50%;
+  background: var(--muted);
+  box-shadow: 0 1px 3px var(--palette-0009);
+  transition: transform .2s cubic-bezier(.2,.8,.2,1), background-color .18s ease;
+}
+
+input[type="checkbox"]:not(.library-select input):checked {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+input[type="checkbox"]:not(.library-select input):checked::before {
+  background: var(--accent-ink);
+  transform: translateX(calc(var(--toggle-track-width) - var(--toggle-thumb-size) - (var(--toggle-track-padding) * 2) - 2px));
+}
+
+input[type="checkbox"]:not(.library-select input):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px var(--palette-f3bd6514);
+}
+
+/* A direct checkbox denotes a full-width on/off row throughout the inspectors. */
+label:has(> input[type="checkbox"]):not(.library-select) {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: var(--toggle-card-min-height);
+  margin-bottom: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--toggle-card-radius);
+  color: var(--text);
+  background: var(--surface-2);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.45;
+  cursor: pointer;
+  transition: border-color .18s ease, background-color .18s ease, box-shadow .18s ease;
+}
+
+label:has(> input[type="checkbox"]):not(.library-select):hover {
+  border-color: var(--accent);
+  background: var(--surface-3);
+}
+
+label:has(> input[type="checkbox"]:checked):not(.library-select) {
+  border-color: var(--accent);
+}
+
+label:has(> input[type="checkbox"]:focus-visible):not(.library-select) {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+label:has(> input[type="checkbox"]:disabled):not(.library-select) {
+  cursor: not-allowed;
+  opacity: .52;
+}
+
+label:has(> input[type="checkbox"]:disabled):not(.library-select) > input {
+  cursor: not-allowed;
+}
+
+/* The label itself carries the visible focus ring for card-style switches. */
+label:has(> input[type="checkbox"]):not(.library-select) > input:focus-visible {
+  outline: 0;
+  box-shadow: none;
+}
+
+@media (max-width: 560px) {
+  :root {
+    --toggle-card-min-height: 52px;
+    --toggle-track-width: 46px;
+    --toggle-track-height: 28px;
+    --toggle-thumb-size: 20px;
+  }
+
+  label:has(> input[type="checkbox"]):not(.library-select) {
+    padding: 10px 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  input[type="checkbox"]:not(.library-select input),
+  input[type="checkbox"]:not(.library-select input)::before,
+  label:has(> input[type="checkbox"]):not(.library-select) {
+    transition: none;
+  }
+}

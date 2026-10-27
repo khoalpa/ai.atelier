@@ -60,6 +60,8 @@ def preview_encoder_prompts(model_path, architecture, prompt, negative, fill_mod
 
 
 def validate_prompt_limits(pipe, kwargs):
+    from encoder_policy import model_policy, sequence_limit, token_count
+    policy = model_policy(pipeline=type(pipe).__name__)
     report = {}
     if not any(getattr(pipe, 'tokenizer' + suffix, None) is not None for suffix in ('', '_2', '_3')):
         return report
@@ -78,19 +80,29 @@ def validate_prompt_limits(pipe, kwargs):
         klein = type(pipe).__name__ == 'Flux2KleinPipeline'
         if (suffix or klein) and isinstance(sequence, int) and sequence > 0:
             limits.append(sequence)
+        if policy:
+            limits.append(sequence_limit(policy, tokenizer, sequence))
         if not limits:
             raise ValueError('Không xác định được giới hạn tokenizer; chưa gửi prompt vào model.')
         limit = min(limits)
+        if policy and suffix == '':
+            limit = sequence_limit(policy, tokenizer, sequence)
         for prefix in ('prompt', 'negative_prompt'):
             key = prefix + suffix
             value = kwargs.get(key, kwargs.get(prefix))
             if value is None:
                 continue
             texts = value if isinstance(value, list) else [value]
-            if klein:
+            if policy:
+                template=getattr(pipe, 'prompt_template_encode', None)
+                drop=getattr(pipe, 'prompt_template_encode_start_idx', 0)
+                counts=[token_count(tokenizer,text,policy,template,drop)[0] for text in texts]
+            elif klein:
                 texts = [tokenizer.apply_chat_template([{'role': 'user', 'content': text}], tokenize=False,
                          add_generation_prompt=True, enable_thinking=False) for text in texts]
-            counts = [len(tokenizer(text, add_special_tokens=True, truncation=False)['input_ids']) for text in texts]
+                counts = [len(tokenizer(text, add_special_tokens=True, truncation=False)['input_ids']) for text in texts]
+            else:
+                counts = [len(tokenizer(text, add_special_tokens=True, truncation=False)['input_ids']) for text in texts]
             report[key] = {'tokens': counts, 'limit': limit}
             if any(count > limit for count in counts):
                 raise ValueError(f'{key}: {max(counts)} token, vượt giới hạn {limit}. Hãy rút ngắn nội dung; model chưa được gọi.')

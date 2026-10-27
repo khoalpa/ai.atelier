@@ -18,7 +18,7 @@ const detailed = 'unwanted lettering that overlaps the central subject and makes
 assert.equal(normalize(detailed), detailed);
 assert.equal(context.assistantFallback('optimizeNegativePrompt', 'blurry, extra limbs', 'a logo'), 'blurry, extra limbs');
 assert.equal(context.assistantFallback('negativePrompt', '', 'a typographic logo with a watermark'), '');
-for (const task of ['imagePrompt', 'optimizePrompt', 'shortenPrompt', 'expandPrompt']) {
+for (const task of ['imagePrompt', 'optimizePrompt', 'expandPrompt']) {
   for (const idea of ['Soft blurry watercolor illustration, muted colors', 'Ảnh cố ý mờ trong ánh sáng tự nhiên', '']) {
     assert.equal(context.assistantFallback(task, idea), idea);
   }

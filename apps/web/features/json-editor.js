@@ -19,9 +19,11 @@
   const empty=type=>({object:{},array:[],string:'',number:0,boolean:false,null:null})[type];
   function typeSelect(type,handler){const select=element('select');for(const name of ['string','number','boolean','null','object','array'])select.appendChild(new Option(name,name,false,name===type));select.addEventListener('change',()=>handler(select.value));return select;}
   function renderForm(){
-    const host=by('jsonEditorForm');host.replaceChildren();const query=by('jsonEditorSearch').value.trim().toLowerCase();let nodes=0;
-    function draw(value,path,label,parent){
-      if(query&&!String(label).toLowerCase().includes(query)&&!JSON.stringify(value).toLowerCase().includes(query))return null;
+    const host=by('jsonEditorForm');host.replaceChildren();const query=by('jsonEditorSearch').value.trim().toLowerCase(),feature=state.id==='prompts'?by('jsonEditorFeature').value:'';let nodes=0;
+    function draw(value,path,label,parent,force=false){
+      if(feature&&path.length>=2&&!String(path[1]).toLowerCase().includes(feature.toLowerCase())&&state.data.tasks?.[path[1]]?.feature!==feature)return null;
+      const labelMatch=query&&String(label).toLowerCase().includes(query);
+      if(query&&!force&&!labelMatch&&!JSON.stringify(value).toLowerCase().includes(query))return null;
       if(++nodes>4000)return null;
       const type=kind(value),row=element('div');row.className='json-node';
       const header=element('div');header.className='json-node-header';
@@ -35,9 +37,10 @@
       header.appendChild(typeSelect(type,next=>{change(()=>put(path,empty(next)));renderForm();}));
       if(parent){const remove=element('button','Xóa');remove.type='button';remove.addEventListener('click',()=>{change(()=>{if(Array.isArray(parent))parent.splice(Number(path.at(-1)),1);else delete parent[path.at(-1)];});renderForm();});header.appendChild(remove);}
       row.appendChild(header);
+      if(state.id==='prompts'&&path.length===2){const uses=(state.data.catalogUsage||[]).filter(item=>item.kind===path[0]&&item.key===path[1]);if(uses.length){const info=element('small','Nơi dùng: '+uses.map(item=>item.file+':'+item.line).join(' · '));info.className='json-editor-path';row.appendChild(info);}}
       if(type==='object'||type==='array'){
         const details=element('details'),summary=element('summary',`${type==='array'?'Danh sách':'Đối tượng'} · ${Object.keys(value).length} mục`);details.open=path.length<=selectedPath.length||!!query;details.appendChild(summary);
-        for(const [key,child] of Object.entries(value)){const node=draw(child,[...path,Array.isArray(value)?Number(key):key],key,value);if(node)details.appendChild(node);}
+        for(const [key,child] of Object.entries(value)){const node=draw(child,[...path,Array.isArray(value)?Number(key):key],key,value,force||labelMatch);if(node)details.appendChild(node);}
         const add=element('div');add.className='json-node-header';const name=element('input');name.setAttribute('aria-label','Tên trường mới');name.placeholder='Tên trường mới';if(type==='object')add.appendChild(name);
         let newType='string';add.appendChild(typeSelect(newType,next=>newType=next));const button=element('button',type==='array'?'Thêm phần tử':'Thêm trường');button.type='button';
         button.addEventListener('click',()=>{const key=type==='array'?value.length:name.value.trim();if(type==='object'&&(!key||Object.hasOwn(value,key)||['__proto__','prototype','constructor'].includes(key))){message('Tên trường trống, trùng hoặc không được hỗ trợ.');return;}change(()=>{value[key]=empty(newType);});renderForm();});add.appendChild(button);details.appendChild(add);row.appendChild(details);
@@ -58,6 +61,11 @@
     select.value=[...select.options].some(option=>option.value===previous)?previous:'[]';selectedPath=JSON.parse(select.value);
   }
   function render(){
+    const feature=by('jsonEditorFeature'),previous=feature.value;feature.replaceChildren(new Option('Tất cả tính năng',''));
+    if(state.id==='prompts')for(const name of new Set((state.data.catalogUsage||[]).map(item=>item.feature).filter(Boolean)))feature.appendChild(new Option(name,name));
+    feature.value=[...feature.options].some(item=>item.value===previous)?previous:'';feature.hidden=state.id!=='prompts';
+    by('jsonEditorTaskPanel').hidden=state.id!=='prompts';
+    const tasks=by('jsonEditorTask'),oldTask=tasks.value;tasks.replaceChildren();if(state.id==='prompts')for(const [id,task] of Object.entries(state.data.tasks||{}))if(task.positive||task.negative)tasks.appendChild(new Option(id,id));tasks.value=[...tasks.options].some(item=>item.value===oldTask)?oldTask:[...tasks.options].some(item=>item.value==='skin.retouch')?'skin.retouch':tasks.options[0]?.value||'';
     groups();syncRaw();renderForm();by('jsonEditorRaw').hidden=mode!=='raw';by('jsonEditorForm').hidden=mode!=='form';
     by('jsonEditorMode').value=mode;
     by('jsonEditorDirty').textContent=state.dirty?'Có thay đổi chưa lưu':'Đã đồng bộ với tệp';by('jsonEditorPath').textContent=state.path+' · '+state.note;
@@ -86,6 +94,18 @@
     by('jsonEditorGroup').onchange=()=>{const previous=JSON.stringify(selectedPath);try{commitRaw();selectedPath=JSON.parse(by('jsonEditorGroup').value);render();}catch(error){by('jsonEditorGroup').value=previous;message(error.message);}};
     by('jsonEditorMode').onchange=()=>{try{commitRaw();mode=by('jsonEditorMode').value;render();}catch(error){by('jsonEditorMode').value=mode;message(error.message);}};
     by('jsonEditorSearch').oninput=()=>{if(state)renderForm();};
+    by('jsonEditorFeature').onchange=()=>{if(state)renderForm();};
+    by('jsonEditorPreview').onclick=async()=>{
+      if(!state||state.id!=='prompts'||busy)return;controls(true);
+      try{
+        commitRaw();const variables=JSON.parse(by('jsonEditorVariables').value||'{}');
+        const response=await fetch('/api/catalog-preview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({catalog:state.data,taskId:by('jsonEditorTask').value,variables,modelId:by('jsonEditorTokenModel').value.trim()})});
+        const result=await response.json();if(!response.ok||!result.ok)throw Error(result.error||'Không thể xem trước tác vụ.');
+        const tokens=result.tokenCheck?.encoders?.map(item=>`${item.name}: positive ${item.tokens}/${item.limit}; negative ${item.negativeTokens??'không áp dụng'}`).join('\n')||'';
+        by('jsonEditorPreviewOutput').textContent=result.missingVariables.length?'Cần nhập các biến: '+result.missingVariables.join(', '):'Positive:\n'+result.prompt+'\n\nNegative:\n'+result.negativePrompt+'\n\n'+tokens+(result.tokenCheck?'\n'+(result.tokenCheck.withinLimits?'Trong giới hạn tokenizer.':'Vượt giới hạn tokenizer.'): '')+(result.tokenError?'\nChưa kiểm tra token: '+result.tokenError:'')+(result.warnings?.length?'\n\nCần kiểm tra:\n'+result.warnings.join('\n'):'');
+        message(result.missingVariables.length?'Điền dữ liệu thay biến để xem bản ghép đầy đủ.':'Đã ghép từ bản nháp. '+(!by('jsonEditorTokenModel').value.trim()?'Chọn ID model để kiểm tra token bằng tokenizer cục bộ.':''));
+      }catch(error){message(error.message);}finally{controls(false);}
+    };
     by('jsonEditorRaw').oninput=()=>{if(state){state.rawDraft=by('jsonEditorRaw').value;state.rawPath=[...selectedPath];mark();}};
     by('jsonEditorFormat').onclick=()=>{try{commitRaw();syncRaw();message('Đã định dạng JSON.');}catch(error){message(error.message);}};
     by('jsonEditorValidate').onclick=()=>run('validate');by('jsonEditorSave').onclick=()=>run('save');

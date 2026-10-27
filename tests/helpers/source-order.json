@@ -333,6 +333,9 @@
     {
       "fn": "openImageAtFullSize"
     },
+    {
+      "fn": "sendViewerImageToStudio"
+    },
     {},
     {
       "kind": "const",
@@ -838,9 +841,6 @@
       "declarations": [
         "TEXT_PIPELINE_HINTS="
       ]
-    },
-    {
-      "fn": "textControlUnavailableReason"
     },
     {
       "fn": "updateTextToImagePipeline"

@@ -17,7 +17,7 @@ from services.ai.runtime.factory import execution_journal, task_context
 from services.ai.runtime.jobs import job_health, job_lock, jobs, update_job
 from services.ai.tasks.benchmarks import benchmark, catvton_color_audit, catvton_dedicated_mask_matrix, catvton_geometry_audit, catvton_reference_matrix, catvton_retry_matrix, effective_step_matrix, hybrid_tryon_compare, lora_ab_matrix, lora_ab_test, lora_strength_matrix, qualify_product_reference, regression_audit, structural_refine_matrix, texture_recovery_matrix
 from services.ai.tasks.dispatch import resume_job
-from services.ai.tasks.generate import chroma_generate, chroma_smoke, new_image_plan, sd35_conditioned_generate, sdxl_conditioned_generate
+from services.ai.tasks.generate import chroma_generate, chroma_smoke, new_image_plan, qwen_depth_generate, sd35_conditioned_generate, sdxl_conditioned_generate
 from services.ai.tasks.inpaint import adetailer_refine, inpaint, resolve_inpaint_prompts, resolved_inpaint_profile
 from services.ai.tasks.outpaint import outpaint
 from services.ai.tasks.tryon import batch_tryon, tryon
@@ -27,7 +27,7 @@ def serialized_inference(function):
     @wraps(function)
     def wrapped(self):
         # Control requests must remain responsive while inference holds the lock.
-        if self.path in ("/prepare-restart", "/cancel-restart", "/cancel-job", "/job-status", "/inpaint-prompts", "/new-image-plan"):
+        if self.path in ("/catalog-token-preview", "/prepare-restart", "/cancel-restart", "/cancel-job", "/job-status", "/inpaint-prompts", "/new-image-plan"):
             return function(self)
         try:
             with service_lifecycle.request():
@@ -97,16 +97,19 @@ class Handler(BaseHTTPRequestHandler):
     @trusted_request(PORT)
     @serialized_inference
     def do_POST(self):
-        if self.path not in ("/prepare-restart", "/cancel-restart", "/manual-cutout", "/character-regenerate", "/character-analyze", "/character-preview", "/character-render", "/makeup-compare", "/makeup-reference", "/makeup", "/makeup-analyze", "/enhance", "/new-image-plan", "/sd35-conditioned-generate", "/outpaint", "/inpaint-prompts", "/segment", "/analyze-people", "/auto-mask", "/preprocess-garment", "/validate-product-reference", "/qualify-product-reference", "/normalize-garment-reference", "/catvton-reference-matrix", "/catvton-dedicated-mask-matrix", "/catvton-retry-matrix", "/catvton-color-audit", "/catvton-geometry-audit", "/chroma-smoke", "/chroma-generate", "/inpaint", "/tryon", "/batch-tryon", "/regression-audit", "/cancel-job", "/job-status", "/resume-job", "/benchmark", "/lora-configure", "/lora-ab-test", "/lora-ab-matrix", "/lora-strength-matrix", "/texture-recovery-matrix", "/structural-refine-matrix", "/effective-step-matrix", "/hybrid-tryon-compare", "/detect-regions", "/adetailer-refine", "/sdxl-conditioned-generate"):
+        if self.path not in ("/catalog-token-preview", "/prepare-restart", "/cancel-restart", "/manual-cutout", "/character-regenerate", "/character-analyze", "/character-preview", "/character-render", "/anatomy-preview", "/anatomy-inpaint", "/makeup-compare", "/makeup-reference", "/makeup", "/makeup-analyze", "/enhance", "/new-image-plan", "/sd35-conditioned-generate", "/outpaint", "/inpaint-prompts", "/segment", "/analyze-people", "/auto-mask", "/preprocess-garment", "/validate-product-reference", "/qualify-product-reference", "/normalize-garment-reference", "/catvton-reference-matrix", "/catvton-dedicated-mask-matrix", "/catvton-retry-matrix", "/catvton-color-audit", "/catvton-geometry-audit", "/chroma-smoke", "/chroma-generate", "/qwen-depth-generate", "/inpaint", "/tryon", "/batch-tryon", "/regression-audit", "/cancel-job", "/job-status", "/resume-job", "/benchmark", "/lora-configure", "/lora-ab-test", "/lora-ab-matrix", "/lora-strength-matrix", "/texture-recovery-matrix", "/structural-refine-matrix", "/effective-step-matrix", "/hybrid-tryon-compare", "/detect-regions", "/adetailer-refine", "/sdxl-conditioned-generate"):
             return self.reply(404, {"ok": False, "error": "Không tìm thấy endpoint"})
         try:
             length = int(self.headers.get("Content-Length", "0"))
-            max_payload = 30 * 1024 * 1024 if self.path in ("/inpaint", "/resume-job", "/tryon", "/batch-tryon", "/preprocess-garment", "/validate-product-reference", "/benchmark", "/lora-ab-test", "/lora-ab-matrix", "/lora-strength-matrix") else 2 * 1024 * 1024
+            max_payload = 30 * 1024 * 1024 if self.path in ("/inpaint", "/anatomy-preview", "/anatomy-inpaint", "/resume-job", "/tryon", "/batch-tryon", "/preprocess-garment", "/validate-product-reference", "/benchmark", "/lora-ab-test", "/lora-ab-matrix", "/lora-strength-matrix") else 2 * 1024 * 1024
             if self.path in ("/character-preview", "/character-render", "/makeup-compare", "/makeup", "/enhance", "/segment", "/auto-mask", "/inpaint-prompts"):
                 max_payload = 30 * 1024 * 1024
             if length > max_payload:
                 raise ValueError("Payload quá lớn")
             body = json.loads(self.rfile.read(length) or b"{}")
+            if self.path == '/catalog-token-preview':
+                from catalog_preview import token_preview
+                return self.reply(200, token_preview(ROOT, body))
             self._generation_job = ''
             if self.path in execution_journal().routes:
                 recovered = execution_journal().begin(self.path, body)
@@ -172,6 +175,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self.reply(200, chroma_smoke(body))
             if self.path == "/chroma-generate":
                 return self.reply(200, chroma_generate(body))
+            if self.path == "/qwen-depth-generate":
+                return self.reply(200, qwen_depth_generate(body))
             if self.path == "/detect-regions":
                 return self.reply(200, detect_regions(body))
             if self.path == "/adetailer-refine":
@@ -236,6 +241,12 @@ class Handler(BaseHTTPRequestHandler):
                 return self.reply(200, enhance(body, task_context()))
             if self.path == "/outpaint":
                 return self.reply(200, outpaint(body))
+            if self.path == "/anatomy-preview":
+                from services.ai.tasks.anatomy_inpaint import preview
+                return self.reply(200, preview(body, task_context()))
+            if self.path == "/anatomy-inpaint":
+                from services.ai.tasks.anatomy_inpaint import run
+                return self.reply(200, run(body, task_context()))
             if self.path == "/inpaint":
                 return self.reply(200, inpaint(body))
             if self.path == "/tryon":

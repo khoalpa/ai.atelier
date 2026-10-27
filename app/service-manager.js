@@ -11,12 +11,22 @@ function createServiceManager(root,{aiGet,aiPost,queues,jobs,runner,port,aiPort,
     operation={status:'running',startedAt:new Date().toISOString(),message:'Đang kiểm tra và khởi động lại dịch vụ AI…'};
     let reservation;
     try{
-      await idle();const health=await aiGet('/health');if(!health.ok)throw Error('Dịch vụ AI chưa chạy. Mở ứng dụng bằng start-all.ps1 trước.');
+      await idle();let health=await aiGet('/health');let recovery=false;
+      if(!health.ok){
+        // A broken configuration response must not make an otherwise live
+        // service impossible to restart. The control endpoint still reserves
+        // an idle service; the helper verifies port ownership and exact root.
+        const prepared=await aiPost('/prepare-restart',{confirm:true});
+        if(!prepared.ok||typeof prepared.token!=='string'||!(/^[a-f0-9]{32}$/).test(prepared.token))throw Error('Không thể xác nhận dịch vụ AI đang rảnh. Giữ nguyên tiến trình.');
+        reservation=prepared.token;recovery=true;health={ok:true,activeRequests:0};
+      }
       if(health.activeRequests)throw Error('Còn thao tác AI đang xử lý.');
       if(health.lifecycleVersion===1)reservation=(await aiPost('/prepare-restart',{confirm:true})).token;
       await idle();
       const shell=process.env.ATELIER_POWERSHELL||'powershell.exe';
-      const child=launch(shell,['-NoProfile','-File',path.join(root,'restart-ai.ps1'),'-AiPort',String(aiPort),'-WebPort',String(port)],{cwd:root,windowsHide:true,stdio:['ignore','pipe','pipe']});let output='';
+      const args=['-NoProfile','-File',path.join(root,'restart-ai.ps1'),'-AiPort',String(aiPort),'-WebPort',String(port)];
+      if(recovery)args.push('-RecoverReservedService','-ReservationToken',reservation);
+      const child=launch(shell,args,{cwd:root,windowsHide:true,stdio:['ignore','pipe','pipe']});let output='';
       const collect=data=>{output=(output+String(data)).slice(-12000);};child.stdout.on('data',collect);child.stderr.on('data',collect);
       let settled=false;
       const done=async error=>{if(settled)return;settled=true;const status=error?'failed':'completed';try{const current=await aiGet('/health');if(!error&&(current.version!==readVersion(root)||current.revision!==aiRevision(root)))error=Error('Dịch vụ mới chưa nạp đúng phiên bản.');}catch(e){error=e;}operation={...operation,status:error?'failed':status,finishedAt:new Date().toISOString(),message:error?error.message:'Dịch vụ AI đã sẵn sàng.',log:output};if(error&&reservation)await aiPost('/cancel-restart',{confirm:true,token:reservation}).catch(()=>{});await fs.mkdir(path.join(root,'workspace/logs'),{recursive:true});await fs.writeFile(path.join(root,'workspace/logs/service-restart.json'),JSON.stringify(operation,null,2));};

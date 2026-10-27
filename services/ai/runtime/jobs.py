@@ -86,7 +86,7 @@ def persist_job_request(job_id: str, task_type: str, body: dict) -> Path | None:
     request_file = JOBS_DIR / f"{safe_job_id}.request.json"
     request = {**body, "jobId": job_id, "taskType": task_type}
     request.pop("resume", None)
-    canonical_routes = {'character':'/character-render','makeup':'/makeup-compare' if request.get('comparisonStyles') else '/makeup','enhance':'/enhance','inpaint':'/inpaint','outpaint':'/outpaint','tryon':'/tryon','batch-tryon':'/batch-tryon','text-to-image':'/chroma-generate'}
+    canonical_routes = {'character':'/character-render','makeup':'/makeup-compare' if request.get('comparisonStyles') else '/makeup','enhance':'/enhance','inpaint':'/inpaint','anatomy-inpaint':'/anatomy-inpaint','outpaint':'/outpaint','tryon':'/tryon','batch-tryon':'/batch-tryon','text-to-image':'/chroma-generate'}
     request['_route'] = canonical_routes.get(task_type, request.get('_route', ''))
     metadata.write(request_file, request)
     return request_file

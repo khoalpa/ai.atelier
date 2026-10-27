@@ -29,6 +29,18 @@ def prompt_history():
 
 
 def traced_pipeline_call(pipe, **kwargs):
+    from encoder_policy import model_policy
+    import inspect
+    policy=model_policy(pipeline=type(pipe).__name__)
+    if policy and policy.get('wrapper') and hasattr(pipe,'prompt_template_encode'):
+        pipe.prompt_template_encode=policy['wrapper'].replace('{prompt}','{}')
+        pipe.prompt_template_encode_start_idx=policy['wrapperDropTokens']
+    if policy and 'max_sequence_length' in inspect.signature(pipe.__call__).parameters:
+        kwargs.setdefault('max_sequence_length', policy['maxSequenceLength'])
+    # CLIP vision encoders remain valid. Only CLIP text tokenizers are banned.
+    if any('clip' in type(getattr(pipe, name, None)).__name__.lower()
+           for name in ('tokenizer', 'tokenizer_2', 'tokenizer_3')):
+        raise RuntimeError('Tác vụ dùng token CLIP đã bị loại vĩnh viễn. Hãy dùng pipeline T5.')
     prompt_cache = kwargs.pop('_prompt_cache', None)
     from prompt_limits import validate_prompt_limits
     token_budget = validate_prompt_limits(pipe, kwargs)

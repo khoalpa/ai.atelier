@@ -135,3 +135,87 @@ def match_boundary(source,candidate,mask):
     fade=np.clip(1-distance/(width*3),0,1)*binary
     out=np.clip(generated+np.clip(delta,-24,24)*fade[...,None],0,255).astype(np.uint8);out[binary==0]=original[binary==0].astype(np.uint8)
     return Image.fromarray(out)
+
+
+def anatomy_artifact_review(source, candidate, people, targets):
+    """Detect newly introduced bone-like linework inside the torso.
+
+    Pose detection can score a literal rendered skeleton as a perfect pose.
+    Dense, high-contrast internal edges are therefore compared in matching
+    source/target torso polygons. The conservative threshold only rejects a
+    substantial increase over the source texture.
+    """
+    def density(image, points):
+        pixels=np.asarray(image.convert('RGB'));h,w=pixels.shape[:2]
+        gray=cv2.cvtColor(pixels,cv2.COLOR_RGB2GRAY);edges=cv2.Canny(gray,40,80)>0
+        polygon=np.rint(np.asarray(points)[[5,6,12,11],:2]*[w,h]).astype(np.int32)
+        region=np.zeros((h,w),np.uint8);cv2.fillConvexPoly(region,polygon,255)
+        # Ignore the outer silhouette; exposed ribs/spine are internal edges.
+        span=max(3,round(np.linalg.norm(polygon[0]-polygon[1])*.08))
+        region=cv2.erode(region,cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(span*2+1,)*2))>0
+        return float(edges[region].mean()) if region.any() else 0.
+    records=[]
+    for index,target in targets.items():
+        before=density(source,np.asarray(people[index]['keypoints']))
+        after=density(candidate,np.asarray(target))
+        records.append(dict(personId=index,sourceInternalEdgeDensity=before,resultInternalEdgeDensity=after))
+    worst=max((r['resultInternalEdgeDensity']-max(.012,r['sourceInternalEdgeDensity']*1.45) for r in records),default=-1)
+    return dict(passed=worst<=0,people=records,scope='torso-internal-edge-increase')
+
+
+def extremity_review(result_people, targets, size, mode='balanced'):
+    """Validate DWPose whole-body landmarks and return actionable Vietnamese errors.
+
+    DWPose exposes 21 landmarks per hand. Its six foot landmarks describe heel,
+    big-toe and small-toe anchors for both feet; they validate foot structure,
+    but cannot by themselves prove five individually visible toes. That limit is
+    reported explicitly instead of manufacturing a false toe count.
+    """
+    records=[];issues=[];available=False
+    ordered=sorted(result_people,key=lambda p:p.get('box',[0])[0])
+    for order,(person_id,target) in enumerate(sorted(targets.items())):
+        person=ordered[min(order,len(ordered)-1)] if ordered else {}
+        hands=person.get('handKeypoints') or {};feet=person.get('footKeypoints') or []
+        person_record={'personId':person_id,'hands':{},'feet':{},'passed':True}
+        for side,wrist in (('left',9),('right',10)):
+            expected=float(target[wrist][2])>.35
+            points=np.asarray(hands.get(side,[]),dtype=float)
+            if not expected:
+                person_record['hands'][side]={'expected':False,'passed':True};continue
+            available|=points.shape==(21,3)
+            groups=[] if points.shape!=(21,3) else [int((points[1+i*4:5+i*4,2]>.22).sum()) for i in range(5)]
+            passed=points.shape==(21,3) and points[0,2]>.22 and all(count>=3 for count in groups)
+            person_record['hands'][side]={'expected':True,'passed':passed,'landmarks':int(len(points)),'fingerJointCoverage':groups}
+            if not passed:
+                label='trái' if side=='left' else 'phải';visible=sum(count>=3 for count in groups)
+                issues.append({'personId':person_id,'part':f'hand-{side}','message':f'Bàn tay {label} chỉ xác nhận được {visible}/5 ngón rõ ràng.'})
+        foot=np.asarray(feet,dtype=float)
+        for side,ankle,selection in (('left',15,slice(0,3)),('right',16,slice(3,6))):
+            expected=float(target[ankle][2])>.35
+            anchors=foot[selection] if foot.shape==(6,3) else np.empty((0,3))
+            confident=int((anchors[:,2]>.20).sum()) if len(anchors) else 0
+            passed=not expected or confident>=2
+            person_record['feet'][side]={'expected':expected,'passed':passed,'structuralAnchors':confident,'fiveToesVerified':False}
+            if expected and not passed:
+                label='trái' if side=='left' else 'phải';issues.append({'personId':person_id,'part':f'foot-{side}','message':f'Bàn chân {label} không đủ mốc gót và đầu bàn chân để xác nhận giải phẫu.'})
+        person_record['passed']=not any(not value['passed'] for group in ('hands','feet') for value in person_record[group].values())
+        records.append(person_record)
+    passed=not issues if available else mode=='balanced'
+    if not available:issues.append({'personId':None,'part':'detector','message':'Không đọc được mốc DWPose chi tiết; cần duyệt tay và chân ở kích thước 100%.'})
+    return {'available':available,'passed':passed,'mode':mode,'people':records,'issues':issues,
+            'toeVerification':'DWPose validates foot structure; five individual toes still require visual review.'}
+
+
+def extremity_repair_mask(targets, review, size, allowed):
+    """Create small, ownership-safe masks only around failed wrists or feet."""
+    w,h=size;mask=np.zeros((h,w),np.uint8);failed={(item['personId'],item['part']) for item in review.get('issues',[]) if item.get('personId') is not None}
+    for person_id,target in targets.items():
+        span=max(16,float(np.linalg.norm((target[5,:2]-target[6,:2])*[w,h])))
+        for side,joint in (('left',9),('right',10)):
+            if (person_id,f'hand-{side}') in failed:
+                center=np.rint(target[joint,:2]*[w,h]).astype(int);radius=max(24,round(span*.48));cv2.circle(mask,tuple(center),radius,255,-1)
+        for side,joint in (('left',15),('right',16)):
+            if (person_id,f'foot-{side}') in failed:
+                center=np.rint(target[joint,:2]*[w,h]).astype(int);cv2.ellipse(mask,tuple(center),(max(28,round(span*.58)),max(22,round(span*.38))),0,0,360,255,-1)
+    mask[np.asarray(allowed)==0]=0
+    return Image.fromarray(mask)

@@ -36,6 +36,10 @@ class CharacterTests(unittest.TestCase):
     def test_selection_and_ranges(self):
         for change in [dict(personIds=[0,0]),dict(personIds=[[]]),dict(personIds=[True]),dict(personIds=[]),dict(mode='unknown'),dict(yaw=25),dict(gazeX=float('nan')),dict(seed=True),dict(count=5),dict(mode='interaction',pose='handshake',personIds=[0]),dict(mode='face',pose='handshake',personIds=[0,1])]:
             with self.subTest(change=change),self.assertRaises(ValueError):g.options({**self.body,**change})
+        with self.assertRaisesRegex(ValueError,'Pipeline'):g.options({**self.body,'pipeline':'sd35-openpose'})
+        self.assertEqual(g.options(self.body)['pipeline'],'disabled')
+        self.assertEqual(g.options({**self.body,'pipeline':'disabled'})['pipeline'],'disabled')
+        with self.assertRaisesRegex(ValueError,'chưa khả dụng'):g.options({**self.body,'mode':'body','pipeline':'disabled'})
     def test_stale_inputs_rejected(self):
         for changes in [dict(sourceSha256='old'),dict(description='mới',plannedDescription='cũ'),dict(personIds=[8])]:
             with self.assertRaises(ValueError):c.plan({**self.body,**changes},self.env)
@@ -85,27 +89,38 @@ class CharacterTests(unittest.TestCase):
         for changes in [dict(referenceSha256='old',referencePersonId=0),dict(referenceSha256=self.body['sourceSha256'],referencePersonId=8)]:
             with self.assertRaises(ValueError):c.plan({**self.body,'referenceId':'source','useReferenceExpression':True,**changes},self.env)
 
-    def test_body_edit_preserves_face_and_unselected_person(self):
+    def test_body_edit_using_clip_tokens_is_permanently_blocked(self):
         def generated(*args):
             for _ in range(args[5]['count']):yield Image.new('RGB',self.source.size,'white')
         self.env['character_body']=generated
-        result=self.run_case(mode='body',pose='wave',expression='keep')
-        pixels=np.array(Image.open(self.root/result['results'][0]['file']))
-        np.testing.assert_array_equal(pixels[55:115,100:150],np.array(self.source)[55:115,100:150])
-        np.testing.assert_array_equal(pixels[30:360,220:340],np.array(self.source)[30:360,220:340])
-        self.assertEqual(result['results'][0]['metrics']['outsideMaskMaxError'],0)
+        with self.assertRaisesRegex(ValueError,'CLIP.*loại vĩnh viễn'):
+            self.run_case(mode='body',pose='wave',expression='keep')
+        self.assertFalse(list((self.root/'outputs').rglob('result*.png')))
 
     def test_preview_count_and_resolution_share_reviewed_geometry(self):
         plan=c.plan(self.body,self.env)
         other=c.plan({**self.body,'count':1,'preview':True,'resolution':512,'steps':16},self.env)
         self.assertEqual(plan['planHash'],other['planHash'])
 
+    @unittest.skip('Pipeline chỉnh cơ thể bằng CLIP đã bị loại vĩnh viễn.')
     def test_disappeared_body_is_not_published(self):
         def generated(*args):
             self.env['detect_people_pose']=lambda _:[]
             yield self.source.copy()
         self.env['character_body']=generated
         with self.assertRaisesRegex(ValueError,'Không nhận diện đủ'):self.run_case(mode='body',pose='wave',expression='keep')
+        self.assertFalse(list((self.root/'outputs').rglob('result*.png')))
+
+    @unittest.skip('Pipeline chỉnh cơ thể bằng CLIP đã bị loại vĩnh viễn.')
+    def test_wrong_pose_is_not_published(self):
+        target=g.preset_joints(skeleton(),'wave')
+        self.env['character_body']=lambda *args:iter([self.source.copy()])
+        calls=[0]
+        def detect(_):
+            calls[0]+=1
+            return self.raw if calls[0]<3 else [dict(box=[60,30,180,360],keypoints=(skeleton(.2)*[400,400,1]).tolist())]
+        self.env['detect_people_pose']=detect
+        with self.assertRaisesRegex(ValueError,'lệch khung xương'):self.run_case(mode='body',pose='custom',expression='keep',count=1,targetPoses={'0':target.tolist()})
         self.assertFalse(list((self.root/'outputs').rglob('result*.png')))
 
     def test_old_fingers_are_in_editable_region(self):
@@ -168,6 +183,16 @@ class CharacterTests(unittest.TestCase):
             x,y=np.rint(skeleton(.4)[wrist,:2]*400).astype(int);self.assertEqual(mask[y,x],0)
         face_only=c.prepare({**self.body,'mode':'body','pose':'keep'},self.env)
         self.assertTrue(face_only['allowed'].getbbox())
+        self.assertFalse(face_only['body_allowed'].getbbox())
+
+    def test_body_diffusion_mask_excludes_expression_face(self):
+        body={**self.body,'mode':'body','pose':'wave','expression':'laugh'}
+        prepared=c.prepare(body,self.env)
+        box=np.asarray(prepared['people'][0]['faceBox'])*[400,400,400,400]
+        x,y=np.rint([(box[0]+box[2])/2,(box[1]+box[3])/2]).astype(int)
+        final=np.array(prepared['allowed'])>0;diffusion=np.array(prepared['body_allowed'])>0
+        self.assertTrue(final[y,x])
+        self.assertFalse(diffusion[y,x])
 
     def test_hand_controls_validate_and_bind_to_plan(self):
         from character_controls import hand_targets,person
@@ -177,6 +202,18 @@ class CharacterTests(unittest.TestCase):
         plan=c.plan(body,self.env);self.assertEqual(len(plan['handTargets']['0']['right']),21)
         body['perPerson']['0']['hands']['right']['fingers'][1]=1
         self.assertNotEqual(plan['planHash'],c.plan(body,self.env)['planHash'])
+
+    def test_contact_presets_emit_hand_geometry(self):
+        from character_controls import hand_targets,person
+        for pose in ('hand_chest','touch_hair','hands_hips','crossed_arms','show_product'):
+            settings=g.options({**self.body,'mode':'body','pose':pose,'expression':'keep'})
+            target=g.preset_joints(skeleton(),pose,settings['handSide'])
+            self.assertIn('right',hand_targets(target,person(settings,0),(400,400)))
+
+    def test_clip_body_pipeline_is_permanently_disabled(self):
+        import character_runtime as runtime
+        with self.assertRaisesRegex(RuntimeError,'CLIP'):
+            list(runtime.body_candidates(self.source,None,None,None,None,{'pipeline':'sd35-pose-hybrid'},self.env,lambda:None,lambda *a:None))
 
     def test_hand_at_image_boundary_is_rejected_instead_of_clipped(self):
         from character_controls import hand_targets
@@ -204,5 +241,31 @@ class CharacterTests(unittest.TestCase):
         allowed=np.array(mask)>0;np.testing.assert_array_equal(np.array(result)[~allowed],np.array(source)[~allowed])
         record=metrics['people'][0];self.assertGreater(record['recoveredPixels'],0);self.assertLess(record['colorDistanceAfter'],record['colorDistanceBefore'])
         matched=quality.match_boundary(source,result,mask);np.testing.assert_array_equal(np.array(matched)[~allowed],np.array(source)[~allowed])
+
+    def test_exposed_internal_structure_is_rejected(self):
+        import character_quality as quality
+        p=skeleton();people=[dict(keypoints=p.tolist())]
+        source=Image.new('RGB',(400,400),(170,130,100));broken=source.copy();draw=ImageDraw.Draw(broken)
+        for y in range(125,205,9):draw.line((112,y,150,y),fill='white',width=3)
+        review=quality.anatomy_artifact_review(source,broken,people,{0:p})
+        self.assertFalse(review['passed'])
+        self.assertTrue(quality.anatomy_artifact_review(source,source,people,{0:p})['passed'])
+
+    def test_dwpose_extremity_gate_reports_finger_and_foot_failures(self):
+        import character_quality as quality
+        target=skeleton();whole=np.ones((134,3),dtype=float);whole[:,:2]=.5
+        person={'box':[20,10,180,390],'handKeypoints':{'left':whole[92:113].tolist(),'right':whole[113:134].tolist()},'footKeypoints':whole[18:24].tolist()}
+        passed=quality.extremity_review([person],{0:target},(400,400),'strict')
+        self.assertTrue(passed['passed']);self.assertFalse(passed['people'][0]['feet']['left']['fiveToesVerified'])
+        person['handKeypoints']['right'][5][2]=0;person['handKeypoints']['right'][6][2]=0
+        failed=quality.extremity_review([person],{0:target},(400,400),'strict')
+        self.assertFalse(failed['passed']);self.assertIn('5 ngón',' '.join(item['message'] for item in failed['issues']))
+        mask=quality.extremity_repair_mask({0:target},failed,(400,400),Image.new('L',(400,400),255))
+        self.assertIsNotNone(mask.getbbox())
+
+    def test_anatomy_quality_validation(self):
+        self.assertEqual(g.options(self.body)['anatomyQuality'],'balanced')
+        self.assertEqual(g.options({**self.body,'anatomyQuality':'strict'})['anatomyQuality'],'strict')
+        with self.assertRaises(ValueError):g.options({**self.body,'anatomyQuality':'unknown'})
 
 if __name__=='__main__':unittest.main()

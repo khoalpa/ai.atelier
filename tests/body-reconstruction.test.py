@@ -31,7 +31,7 @@ assert not np.asarray(auto_added).any()
 assert np.array_equal(np.asarray(auto), np.where(p, 0, np.asarray(old)))
 html = read_source(root / 'app/public/index.html', encoding='utf-8')
 js = read_source(root / 'app/public/app.js', encoding='utf-8')
-assert 'id="reconstructExposedBodyToggle" type="checkbox" checked' in html
+assert 'id="reconstructExposedBodyToggle" type="checkbox"' in html and 'id="reconstructExposedBodyToggle" type="checkbox" role="switch" checked' in html
 assert js.count("reconstructExposedBody:$('reconstructExposedBodyToggle').checked") == 2
 head_function = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == 'automatic_protected_detail_mask')
 namespace['cv2'] = cv2

@@ -28,6 +28,7 @@ function openImageAtFullSize(source, alt='Ảnh phóng to'){
   deps.$('imageViewerTitle').textContent=alt||'Ảnh ở kích thước 100%';
   deps.$('imageViewerMeta').textContent='Đang tải ảnh ở kích thước gốc…';
   deps.$('saveViewerImageButton').disabled=true;
+  deps.$('sendViewerImageToStudioButton').disabled=true;
   image.alt=alt||'Ảnh phóng to';
   image.style.maxWidth='none';
   image.style.maxHeight='none';
@@ -35,6 +36,33 @@ function openImageAtFullSize(source, alt='Ảnh phóng to'){
   deps.$('toggleViewerFitButton').setAttribute('aria-pressed','false');
   image.src=source;
   if(!dialog.open)dialog.showModal();
+}
+
+async function sendViewerImageToStudio(){
+  const image=deps.$('imageViewerImage'),button=deps.$('sendViewerImageToStudioButton');
+  const source=image.currentSrc||image.src;
+  if(!source||!image.naturalWidth||button.disabled)return;
+  if(deps.activeJobId&&!['completed','failed','cancelled','restart-required'].includes(deps.activityState?.status))return deps.setMessage('Hãy đợi tác vụ đang chạy hoàn tất trước khi chuyển ảnh sang Studio.','error');
+  button.disabled=true;button.textContent='Đang chuyển…';
+  try{
+    const currentSource=deps.sourceImage?.currentSrc||deps.sourceImage?.src;
+    if(currentSource&&new URL(source,document.baseURI).href===new URL(currentSource,document.baseURI).href){
+      deps.$('imageViewerDialog').close();deps.activateAppView('create');
+      deps.setMessage('Ảnh này đã là ảnh nguồn trong Studio.','success');
+      return;
+    }
+    const response=await fetch(source);
+    if(!response.ok)throw new Error('Không thể đọc ảnh để chuyển sang Studio.');
+    const blob=await response.blob();
+    const extension={'image/png':'png','image/jpeg':'jpg','image/webp':'webp'}[blob.type];
+    if(!extension)throw new Error('Studio chỉ hỗ trợ ảnh PNG, JPG hoặc WebP.');
+    let base='anh-tu-trinh-xem';
+    try{base=decodeURIComponent(new URL(source,document.baseURI).pathname.split('/').pop()||base).replace(/\.[^.]+$/,'')||base;}catch{}
+    await deps.uploadSourceImage(new File([blob],`${base}-studio.${extension}`,{type:blob.type}));
+    deps.$('imageViewerDialog').close();deps.activateAppView('create');
+    deps.setMessage('Đã chuyển ảnh sang Studio và đặt làm ảnh nguồn.','success');
+  }catch(error){deps.setMessage(error.message,'error');}
+  finally{button.textContent='Dùng trong Studio';button.disabled=!image.naturalWidth;}
 }
 
 async function loadImagePromptTrace(source){
@@ -47,7 +75,7 @@ async function loadImagePromptTrace(source){
 
 function promptTraceMarkup(history){
   const strategy={direct:'Áp dụng trực tiếp','merged-into-positive':'Ghép vào prompt chính',unused:'Không áp dụng negative prompt riêng trong lần gọi này'};
-  return history.map((entry,index)=>`<article class="prompt-trace-entry"><h4>Lần gọi ${index+1} · ${deps.escapeHtml(deps.STAGE_LABELS[entry.stage]||entry.stage)}${entry.autoRetry?' · Tự thử lại':''}</h4><small>${deps.escapeHtml(entry.model)} · Seed ${deps.escapeHtml(entry.seed??'—')} · ${deps.escapeHtml(entry.timestamp)}${entry.sampleId?' · '+deps.escapeHtml(entry.sampleId):''}</small><p>Negative prompt: ${deps.escapeHtml(strategy[entry.negativePromptStrategy]||'Chưa xác định')}</p>${Object.entries(entry.tokenBudget||{}).map(([key,budget])=>`<p>${deps.escapeHtml(key==='prompt'?'CLIP':key==='prompt_2'?'T5':key)}: ${deps.escapeHtml((budget.tokens||[]).join(', '))} / ${deps.escapeHtml(budget.limit)} token</p>`).join('')}${entry.resolvedSources?.clipSummaryShortened?'<p>CLIP dùng bản tóm tắt; T5 giữ nguyên hướng dẫn đầy đủ.</p>':''}${Object.keys(entry.prompts||{}).length?Object.entries(entry.prompts).map(([key,value])=>`<strong>${deps.escapeHtml(key)}</strong><pre>${deps.escapeHtml(Array.isArray(value)?value.join('\n'):String(value??''))}</pre>`).join(''):'<p>Bước này không sử dụng prompt văn bản.</p>'}<details><summary>Nguồn tạo prompt và cấu hình</summary><strong>Prompt người dùng</strong><pre>${deps.escapeHtml(entry.userPrompt||'(Trống)')}</pre><strong>Negative prompt người dùng</strong><pre>${deps.escapeHtml(entry.userNegativePrompt||'(Trống)')}</pre><pre>${deps.escapeHtml(JSON.stringify({sources:entry.sources,resolvedSources:entry.resolvedSources,parameters:entry.parameters,pipeline:entry.pipeline},null,2))}</pre></details></article>`).join('');
+  return history.map((entry,index)=>`<article class="prompt-trace-entry"><h4>Lần gọi ${index+1} · ${deps.escapeHtml(deps.STAGE_LABELS[entry.stage]||entry.stage)}${entry.autoRetry?' · Tự thử lại':''}</h4><small>${deps.escapeHtml(entry.model)} · Seed ${deps.escapeHtml(entry.seed??'—')} · ${deps.escapeHtml(entry.timestamp)}${entry.sampleId?' · '+deps.escapeHtml(entry.sampleId):''}</small><p>Negative prompt: ${deps.escapeHtml(strategy[entry.negativePromptStrategy]||'Chưa xác định')}</p>${Object.entries(entry.tokenBudget||{}).map(([key,budget])=>`<p>${deps.escapeHtml(key==='prompt'?'Bộ mã hóa văn bản':key)}: ${deps.escapeHtml((budget.tokens||[]).join(', '))} / ${deps.escapeHtml(budget.limit)} token</p>`).join('')}${Object.keys(entry.prompts||{}).length?Object.entries(entry.prompts).map(([key,value])=>`<strong>${deps.escapeHtml(key)}</strong><pre>${deps.escapeHtml(Array.isArray(value)?value.join('\n'):String(value??''))}</pre>`).join(''):'<p>Bước này không sử dụng prompt văn bản.</p>'}<details><summary>Nguồn tạo prompt và cấu hình</summary><strong>Prompt người dùng</strong><pre>${deps.escapeHtml(entry.userPrompt||'(Trống)')}</pre><strong>Negative prompt người dùng</strong><pre>${deps.escapeHtml(entry.userNegativePrompt||'(Trống)')}</pre><pre>${deps.escapeHtml(JSON.stringify({sources:entry.sources,resolvedSources:entry.resolvedSources,parameters:entry.parameters,pipeline:entry.pipeline},null,2))}</pre></details></article>`).join('');
 }
 
 function renderPromptTrace(host,state){
@@ -231,6 +259,7 @@ get studioPendingResult(){return studioPendingResult;},set studioPendingResult(v
 get studioViewingResult(){return studioViewingResult;},set studioViewingResult(value){studioViewingResult=value;},
 get downloadFullSizeImage(){return downloadFullSizeImage;},set downloadFullSizeImage(value){downloadFullSizeImage=value;},
 get openImageAtFullSize(){return openImageAtFullSize;},set openImageAtFullSize(value){openImageAtFullSize=value;},
+get sendViewerImageToStudio(){return sendViewerImageToStudio;},set sendViewerImageToStudio(value){sendViewerImageToStudio=value;},
 get imagePromptRequest(){return imagePromptRequest;},set imagePromptRequest(value){imagePromptRequest=value;},
 get loadImagePromptTrace(){return loadImagePromptTrace;},set loadImagePromptTrace(value){loadImagePromptTrace=value;},
 get promptTraceMarkup(){return promptTraceMarkup;},set promptTraceMarkup(value){promptTraceMarkup=value;},

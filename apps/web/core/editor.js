@@ -200,7 +200,7 @@ function resetEditorSession({ask=true}={}){
   deps.studioTaskMasks={};
   window.Character?.reset();
   const selectedInpaintModel=deps.$('inpaintModelSelect')?.value;
-  for(const panel of [deps.$('studioInpaintPanel'),deps.$('studioTryonPanel'),deps.$('studioEnhancePanel'),deps.$('studioCharacterPanel')])for(const control of panel?.querySelectorAll('input, select, textarea')||[])restoreControlDefault(control);
+  for(const panel of [deps.$('studioInpaintPanel'),deps.$('studioTryonPanel'),deps.$('studioEnhancePanel'),deps.$('studioCharacterPanel'),deps.$('studioBodyPanel')])for(const control of panel?.querySelectorAll('input, select, textarea')||[])restoreControlDefault(control);
   if(selectedInpaintModel)deps.$('inpaintModelSelect').value=selectedInpaintModel;
   for(const id of ['brushSize','overlayOpacity','notes','labelSelect'])restoreControlDefault(deps.$(id));
   if(typeof deps.applyPreset==='function')deps.applyPreset(deps.$('accessoryPreset').value);

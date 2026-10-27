@@ -8,9 +8,13 @@ Mô tả chính và Điều cần tránh được giữ nguyên, không cắt th
 
 **Kiểm tra trước khi tạo** đọc tokenizer cục bộ và hiển thị số token cùng văn bản thực gửi vào từng bộ mã hóa. Bước này không nạp trọng số sinh ảnh. Yêu cầu vượt giới hạn bị chặn trước khi nạp model. API giới hạn mỗi trường văn bản ở 16.000 ký tự để kiểm soát kích thước yêu cầu, với thông báo lỗi rõ ràng.
 
-SD3.5 dùng hai bộ CLIP tối đa 77 token và T5 tối đa 256 token. Khi mô tả dài, mở **Mô tả ngắn cho CLIP khi nội dung dài**, tự nhập hoặc dùng gợi ý AI rồi xem trước bản nháp. Mô tả đầy đủ vẫn đi vào T5. Bản ngắn cho điều cần tránh là trường riêng. Khi để trống bản ngắn, hệ thống dùng nội dung đầy đủ và kiểm tra giới hạn; không tự rút gọn.
+Các pipeline mã hóa prompt bằng CLIP đã bị loại khỏi luồng Tạo ảnh. FLUX Chroma1-HD dùng T5 với giới hạn 512 token; hệ thống kiểm tra toàn bộ mô tả trước khi nạp model và không tự cắt nội dung. Dữ liệu cũ chứa `clipPrompt` hoặc `clipNegativePrompt` được bỏ qua.
 
-Chroma dùng T5 tối đa 512 token. Klein kiểm tra cả phần bao văn bản theo mẫu hội thoại trong giới hạn 512 token. Trợ lý viết mô tả nhận thông tin model, giới hạn và việc có hỗ trợ negative prompt hay không. Gợi ý vẫn cần được người dùng xem và áp dụng qua hộp thoại hiện có.
+Registry khai báo rõ `textEncoder` cho model có prompt. Backend chỉ cho phép `t5`, `qwen` hoặc `none`; model dùng `clip`, `clip+t5` hoặc chưa xác định không thể đăng ký cho tác vụ sinh ảnh. Inpaint và Outpaint đang tạm ngừng vì chưa có checkpoint T5-only tương thích. Job cũ vẫn xem được nhưng không thể chạy lại; migration lưu bản gốc trong `workspace/backups/clip-text-migration-*`.
+
+Checkpoint CLIP text được cách ly logic bằng `lifecycle: "quarantined"` và `quarantineReason: "clip-text-policy"`. Tệp model vẫn được giữ tại chỗ cho đến khi mọi consumer phụ đã được thay thế và qua thời gian theo dõi; CLIP Vision không thuộc diện cách ly này.
+
+Klein dùng Qwen và kiểm tra cả phần bao văn bản theo mẫu hội thoại trong giới hạn 512 token. Trợ lý viết mô tả nhận thông tin model, giới hạn và việc có hỗ trợ negative prompt hay không. Người dùng vẫn phải xem và xác nhận gợi ý trước khi áp dụng.
 
 ## Chất lượng và kích thước
 

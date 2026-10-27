@@ -1,6 +1,6 @@
 param(
   [string]$Destination = (Join-Path $PSScriptRoot 'workspace\releases'),
-  [string]$InpaintModelPath = (Join-Path $PSScriptRoot 'models\text-to-image\stable-diffusion-3.5-large'),
+  [string]$InpaintModelPath = (Join-Path $PSScriptRoot 'models\controlnet\qwen-image-inpainting'),
   [switch]$IncludeModels,
   [switch]$IncludeSampleTests
 )
@@ -75,14 +75,16 @@ foreach ($notice in @('README.md','LICENSE.txt')) { Copy-Item -LiteralPath (Join
 
 $modelChecks = @(
   @{ Name='Character Models'; Path=(Join-Path $PSScriptRoot 'models\character\installation.json') },
-  @{ Name='SDXL Shared Components'; Path=(Join-Path $PSScriptRoot 'models\inpainting\stable-diffusion-xl-1.0-inpainting-0.1\model_index.json') },
+  @{ Name='Qwen-Image Base'; Path=(Join-Path $PSScriptRoot 'models\qwen\qwen-image\model_index.json') },
+  @{ Name='Qwen Inpainting ControlNet'; Path=(Join-Path $PSScriptRoot 'models\controlnet\qwen-image-inpainting\diffusion_pytorch_model.safetensors') },
+  @{ Name='Qwen Union ControlNet'; Path=(Join-Path $PSScriptRoot 'models\controlnet\qwen-image-union\diffusion_pytorch_model.safetensors') },
   @{ Name='Makeup Face Landmarker'; Path=(Join-Path $PSScriptRoot 'models\makeup\face_landmarker.task') },
   @{ Name='SAM2'; Path=(Join-Path $PSScriptRoot 'models\segmentation\sam2.1_hiera_tiny.pt') },
   @{ Name='YOLO Pose'; Path=(Join-Path $PSScriptRoot 'models\pose\yolo11n-pose.pt') },
   @{ Name='CatVTON'; Path=(Join-Path $PSScriptRoot 'models\tryon\CatVTON') },
   @{ Name='CatVTON Base'; Path=(Join-Path $PSScriptRoot 'models\tryon\stable-diffusion-inpainting') },
   @{ Name='CatVTON VAE'; Path=(Join-Path $PSScriptRoot 'models\tryon\sd-vae-ft-mse') },
-  @{ Name='SD3.5'; Path=$InpaintModelPath },
+  @{ Name='Qwen Inpainting'; Path=$InpaintModelPath },
   @{ Name='Chroma1-HD'; Path=(Join-Path $PSScriptRoot 'models\flux\chroma1-hd') }
   @{ Name='SDXL Base FP16'; Path=(Join-Path $PSScriptRoot 'models\text-to-image\stable-diffusion-xl-base-1.0\unet\diffusion_pytorch_model.fp16.safetensors') }
   @{ Name='YOLO-World CLIP'; Path=(Join-Path $PSScriptRoot 'weights\clip\ViT-B-32.pt') }

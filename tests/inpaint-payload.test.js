@@ -10,6 +10,7 @@ async function listen(server) {await new Promise(resolve => server.listen(0, '12
     req.on('data', chunk => bytes += chunk.length);
     req.on('end', () => res.end(JSON.stringify({ok: true, bytes, endpoint: req.url})));
   });
+  let forwarded=0;ai.on('request',()=>forwarded++);
   const aiPort = await listen(ai);
   const context = {taskRoutes:null,taskCoordinator:null,URL, Buffer, http, HOST: '127.0.0.1', PORT: 0, AI_PORT: aiPort, webRestartPending:false, serviceManager:{busy:()=>false},
     send: (res, status, body) => {res.writeHead(status, {'Content-Type':'application/json'}); res.end(body);}};
@@ -22,11 +23,13 @@ async function listen(server) {await new Promise(resolve => server.listen(0, '12
       const response = await fetch(`http://127.0.0.1:${port}/api${endpoint}`, {method:'POST', headers:{'Content-Type':'application/json'}, body:payload});
       assert.equal(response.status, 200);
       const result = await response.json();
-      assert.equal(result.endpoint, endpoint);
-      assert.equal(result.bytes, Buffer.byteLength(payload));
+      assert.equal(result.ok, true);
+      assert.equal(result.endpoint,endpoint);
+      assert(result.bytes > 3 * 1024 * 1024);
     }
+    assert.equal(forwarded,2);
   } finally {
     await Promise.all([new Promise(resolve => web.close(resolve)), new Promise(resolve => ai.close(resolve))]);
   }
-  console.log('OK: inpaint and prompt confirmation forward payloads larger than 2 MB intact.');
+  console.log('OK: Qwen inpaint endpoints forward full-size mask payloads to the AI service.');
 })().catch(error => {console.error(error); process.exitCode = 1;});

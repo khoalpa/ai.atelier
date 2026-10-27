@@ -1,6 +1,6 @@
 const assert=require('assert'),fs=require('fs'),os=require('os'),path=require('path');
 const store=require('../app/makeup-library-store'),{planMakeup,explicitOverrides}=require('../app/makeup-plan');
-const base={...require('../app/makeup-styles.json').natural,style:'natural',brow:'#493332',parts:['lips','eyes','cheeks','brows'],strengths:{lips:80,eyes:60},description:'',plannedDescription:'',skinSmooth:0,preserveFeatures:true};
+const base={...require('../app/prompt-store').readCatalog().featurePresets['makeup.styles'].natural,style:'natural',brow:'#493332',parts:['lips','eyes','cheeks','brows'],strengths:{lips:80,eyes:60},description:'',plannedDescription:'',skinSmooth:0,preserveFeatures:true};
 const root=fs.mkdtempSync(path.join(os.tmpdir(),'atelier-makeup-')),file=path.join(root,'styles.json');
 (async()=>{
  try{

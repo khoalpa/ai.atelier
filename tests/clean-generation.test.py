@@ -26,6 +26,7 @@ for function in ('chroma_smoke',):
             json=json, hashlib=hashlib, time=time, datetime=datetime, timezone=timezone,
             update_job=lambda *args, **changes: events.append(changes), ensure_job_active=lambda *args: None,
             prompt_text=lambda *args: 'default prompt', prompt_history=lambda: [],
+            prompt_value=lambda value, label='Prompt': value,
             load_text_to_image_pipe=lambda *args: object(), load_chroma_pipe=lambda: object(),
             traced_pipeline_call=lambda *args, **kwargs: SimpleNamespace(images=[Image.new('RGB', (256, 256), 'green')]),
             torch=SimpleNamespace(Generator=Generator, cuda=SimpleNamespace(is_available=lambda: False,

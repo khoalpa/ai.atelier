@@ -9,7 +9,7 @@ class Element {
   get offsetHeight(){return parseFloat(this.style.height)||0;}
 }
 const fields=Object.fromEntries([...require('./helpers/source').read('app/public/index.html','utf8').matchAll(/id="(makeupCompare[^"]+)"/g)].map(([,id])=>[id,new Element()]));
-const catalog=require('../app/makeup-styles.json'),calls=[],restored=[],messages=[];
+const catalog=require('../app/prompt-store').readCatalog().featurePresets['makeup.styles'],calls=[],restored=[],messages=[];
 let setup,busy=false,active=false,ready=true,descriptionReady=true,current={style:'natural',styleName:'Màu tham chiếu',lip:'#b23b42',description:'Son đỏ'},resolveRun,lastRequest,lastState;
 const context={Image:class extends Element {constructor(){super('img');}},setTimeout,
   document:{getElementById:id=>fields[id],createElement:tag=>new Element(tag),addEventListener:(_,fn)=>setup=fn},

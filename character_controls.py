@@ -1,3 +1,4 @@
+from prompt_catalog import prompt_text, prompt_template, catalog_value, CatalogMap, read_catalog
 """Per-person controls and 21-point hand targets in character coordinates."""
 import math
 import numpy as np
@@ -67,7 +68,7 @@ def hand_targets(points, settings, size):
         gesture=control.get('gesture','auto')
         if gesture=='auto':
             if settings.get('handSide','right') not in (side,'both'):continue
-            gesture={'wave':'open','point':'point','peace':'peace','thumbs_up':'thumbs_up','hold_cup':'grip','read':'grip','handover':'grip'}.get(settings['pose'])
+            gesture={'wave':'open','point':'point','peace':'peace','thumbs_up':'thumbs_up','touch_hair':'open','hand_chest':'open','hands_hips':'open','crossed_arms':'open','show_product':'open','hold_cup':'grip','read':'grip','handover':'grip'}.get(settings['pose'])
         if not gesture or min(p[wrist,2],p[elbow,2])<.3:continue
         base=p[wrist,:2]*[w,h];direction=(p[wrist,:2]-p[elbow,:2])*[w,h];length=np.linalg.norm(direction)
         if length<5:continue
@@ -92,16 +93,16 @@ def hand_targets(points, settings, size):
 
 
 def hand_prompt(settings):
-    descriptions={'open':'open palm','fist':'closed fist','point':'index finger pointing','peace':'index and middle fingers extended','thumbs_up':'thumb up, other fingers curled','grip':'fingers gripping the object'}
+    descriptions=CatalogMap("featurePresets", 'character.hands')
     result=[]
     for side,hand in settings.get('hands',{}).items():
         gesture=hand.get('gesture','auto')
         if gesture=='auto':continue
         if gesture=='custom':
-            names=['thumb','index','middle','ring','little'];extended=[names[i] for i,v in enumerate(hand.get('fingers',[0]*5)) if v<.35]
-            detail=(', '.join(extended)+' extended, others curled') if extended else 'curled fingers'
+            names=catalog_value('featurePresets','character.fingers');extended=[names[i] for i,v in enumerate(hand.get('fingers',[0]*5)) if v<.35]
+            detail=(', '.join(extended)+prompt_text('character.extendedFingers')) if extended else prompt_text('character.curledFingers')
         else:detail=descriptions[gesture]
-        result.append(side+' hand: '+detail)
+        result.append(side+prompt_text('character.handLabel')+detail)
     return result
 
 

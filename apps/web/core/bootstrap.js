@@ -262,7 +262,7 @@ deps.$('toggleViewerFitButton').addEventListener('click',()=>{
   const image=deps.$('imageViewerImage'),button=deps.$('toggleViewerFitButton');
   const fit=button.getAttribute('aria-pressed')!=='true';
   image.style.maxWidth=fit?'100%':'none';
-  image.style.maxHeight=fit?'calc(100dvh - 160px)':'none';
+  image.style.maxHeight=fit?'calc(100dvh - 32px)':'none';
   button.setAttribute('aria-pressed',String(fit));
   button.textContent=fit?'Xem 100%':'Xem toàn ảnh';
   deps.$('imageViewerMeta').textContent=`${image.naturalWidth} × ${image.naturalHeight} px · ${fit?'toàn ảnh':'hiển thị 100% · dùng thanh cuộn để xem chi tiết'}`;
@@ -273,12 +273,13 @@ deps.$('saveFullSizeImageButton').addEventListener('click',()=>deps.downloadFull
 },
 function initialize(){
 deps.$('saveViewerImageButton').addEventListener('click',()=>deps.downloadFullSizeImage(deps.$('imageViewerImage')));
+deps.$('sendViewerImageToStudioButton').addEventListener('click',()=>deps.sendViewerImageToStudio());
 },
 function initialize(){
-deps.$('imageViewerImage').addEventListener('load',()=>{deps.$('saveViewerImageButton').disabled=false;});
+deps.$('imageViewerImage').addEventListener('load',()=>{deps.$('saveViewerImageButton').disabled=false;deps.$('sendViewerImageToStudioButton').disabled=false;});
 },
 function initialize(){
-deps.$('imageViewerImage').addEventListener('error',()=>{deps.$('saveViewerImageButton').disabled=true;deps.$('imageViewerMeta').textContent='Không thể tải ảnh.';});
+deps.$('imageViewerImage').addEventListener('error',()=>{deps.$('saveViewerImageButton').disabled=true;deps.$('sendViewerImageToStudioButton').disabled=true;deps.$('imageViewerMeta').textContent='Không thể tải ảnh.';});
 },
 function initialize(){
 deps.$('imageViewerImage').addEventListener('load',(event)=>{const image=event.currentTarget;deps.$('imageViewerMeta').textContent=`${image.naturalWidth} × ${image.naturalHeight} px · hiển thị 100% · dùng thanh cuộn để xem chi tiết`;});

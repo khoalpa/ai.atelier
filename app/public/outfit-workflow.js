@@ -45,6 +45,8 @@ function updateTryonInputMode(){
   const type=selectedOutfitType();
   if(!type?.category)globalThis.AtelierApp.$('tryonInputMode').value='description';
   const description=isDescriptionTryon();
+  for(const button of document.querySelectorAll('[data-tryon-input-mode]')){const active=button.dataset.tryonInputMode===(description?'description':'reference');button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));}
+  const referenceInput=document.querySelector('.tryon-input-main');if(referenceInput)referenceInput.hidden=description;
   if(globalThis.AtelierApp.$('referenceType'))globalThis.AtelierApp.$('referenceType').closest('label').hidden=description;
   if(globalThis.AtelierApp.$('targetGarmentFields'))globalThis.AtelierApp.$('targetGarmentFields').hidden=!type?.category;
   if(globalThis.AtelierApp.$('targetSleeveLength'))globalThis.AtelierApp.$('targetSleeveLength').disabled=type?.category==='lower_body';
@@ -69,7 +71,7 @@ function updateTryonInputMode(){
   const license=batchCard?.querySelector('.batch-command-license');if(license)license.hidden=description;
   if(globalThis.AtelierApp.studioMode==='tryon'){
     if(globalThis.AtelierApp.$('studioModeHint'))globalThis.AtelierApp.$('studioModeHint').textContent=description?'Mô tả trang phục hoặc phụ kiện mới rồi chọn vùng cần thay.':'Thêm ảnh trang phục tham chiếu rồi chọn chất lượng.';
-    const step=document.querySelector('.journey-steps li:nth-child(3)');if(step){step.querySelector('strong').textContent=description?'Mô tả trang phục':'Trang phục';step.querySelector('small').textContent=description?'Không cần ảnh mẫu':'Thêm ảnh tham chiếu';}
+    window.StudioWorkspace?.syncJourney();
   }
   globalThis.AtelierApp.refreshStudioReadiness();
 }

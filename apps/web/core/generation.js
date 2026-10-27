@@ -3,29 +3,19 @@
 // Dependencies: $, current, editableMaskStats, escapeHtml, garmentDataUrl, loadInpaintModelOptions, loadModelCandidates, loadModelCapabilities, loadModels, modelInventory, runInpaint, runTryon, seedForRun, setCustomSeed, setMessage, sourceImage
 module.exports=function createGeneration(deps){
 let textToImageModels, TEXT_PIPELINE_HINTS, modelSelectorRefreshPromise, modelStartupScanPromise, textQuality;
-function textControlUnavailableReason(){
-  const required=['controlnet-depth-sd35-large'];
-  for(const id of required){
-    const item=deps.modelInventory.find((model)=>model.id===id);
-    if(!item)return 'Chưa xác định được trạng thái model ControlNet SD3.5.';
-    if(!item.downloaded||item.operationalReady!==true)return item.runtimeReason||`Model ${item.name} chưa sẵn sàng.`;
-  }
-  return '';
-}
-
 function updateTextToImagePipeline(){
   const mode=deps.$('textToImagePipeline').value,hasImage=Boolean(deps.current&&deps.sourceImage),hasMask=deps.editableMaskStats().selected>0,hasReference=Boolean(deps.garmentDataUrl);
-  const ready=mode==='generate'||(mode==='inpaint'&&hasImage&&hasMask)||(mode==='catvton'&&hasImage&&hasReference)||(mode==='lora'&&hasImage&&hasMask&&Boolean(deps.$('textToImageLora').value))||(mode==='control'&&hasImage&&!textControlUnavailableReason());
-  const missing=mode==='control'&&textControlUnavailableReason()?textControlUnavailableReason():mode==='generate'?'Không cần ảnh đầu vào.':!hasImage?'Thiếu ảnh chính; chọn trong Chỉnh sửa ảnh.':['inpaint','lora'].includes(mode)&&!hasMask?'Thiếu mask; tô vùng trong Chỉnh sửa ảnh.':mode==='catvton'&&!hasReference?'Thiếu ảnh trang phục/tham chiếu.':mode==='lora'&&!deps.$('textToImageLora').value?'Chưa chọn LoRA.':'Đã đủ đầu vào.';
-  deps.$('textToImagePipelineHint').textContent=TEXT_PIPELINE_HINTS[mode];deps.$('textToImagePipelineReadiness').textContent=`${ready?'✓ Sẵn sàng':'○ Chưa sẵn sàng'} · ${missing}`;deps.$('textToImageLoraOptions').hidden=mode!=='lora';
+  const ready=mode==='generate'||(mode==='catvton'&&hasImage&&hasReference);
+  const missing=mode==='generate'?'Không cần ảnh đầu vào.':!hasImage?'Thiếu ảnh chính; chọn trong Chỉnh sửa ảnh.':!hasReference?'Thiếu ảnh trang phục/tham chiếu.':'Đã đủ đầu vào.';
+  deps.$('textToImagePipelineHint').textContent=TEXT_PIPELINE_HINTS[mode];deps.$('textToImagePipelineReadiness').textContent=`${ready?'✓ Sẵn sàng':'○ Chưa sẵn sàng'} · ${missing}`;deps.$('textToImageLoraOptions').hidden=true;
   updateTextToImageAvailability();
 }
 
 async function loadTextToImageLoras(){const response=await fetch('/api/lora-status'),result=await response.json();if(!response.ok||!result.ok)throw new Error(result.error||'Không thể đọc LoRA');const usable=result.adapters.filter((item)=>item.usable);deps.$('textToImageLora').innerHTML=usable.map((item)=>`<option value="${deps.escapeHtml(item.id)}">${deps.escapeHtml(item.name||item.id)}</option>`).join('')||'<option value="">Không có LoRA khả dụng</option>';updateTextToImagePipeline();}
 
-function updateTextToImageAvailability(){syncTextToImageControls();const select=deps.$('textToImageModel'),item=textToImageModels.get(select.value),ready=Boolean(item?.downloaded)&&!['integration','dependency'].includes(item?.compatibility),direct=!deps.$('textToImagePipeline')||deps.$('textToImagePipeline').value==='generate';deps.$('chromaGenerateButton').disabled=direct&&!ready||(!direct&&deps.$('textToImagePipeline').value==='control'&&Boolean(textControlUnavailableReason()));deps.$('textToImageModelHint').textContent=item?`${ready?'✓ Sẵn sàng':'Chưa tải, thiếu tệp hoặc cần tích hợp'} · ${item.recommendedVramGb||'VRAM chưa rõ'} GB · ${item.pipeline||'pipeline tự nhận diện'}`:'Không tìm thấy model trong thư viện';deps.$('chromaViewStatus').textContent=direct?(ready?`${item.name} · sẵn sàng trên máy`:`${item?.name||select.value} · chưa sẵn sàng`):`Pipeline mở rộng · ${deps.$('textToImagePipeline').selectedOptions[0]?.text||''}`;deps.$('chromaViewStatus').classList.toggle('error',direct&&!ready);}
+function updateTextToImageAvailability(){syncTextToImageControls();const select=deps.$('textToImageModel'),item=textToImageModels.get(select.value),ready=Boolean(item?.downloaded)&&item?.promptAllowed!==false&&!['integration','dependency'].includes(item?.compatibility),direct=!deps.$('textToImagePipeline')||deps.$('textToImagePipeline').value==='generate';deps.$('chromaGenerateButton').disabled=direct&&!ready;deps.$('textToImageModelHint').textContent=item?`${ready?'✓ Sẵn sàng':'Chưa tải, thiếu tệp hoặc không đạt chính sách encoder'} · ${item.textEncoder||'encoder chưa rõ'} · ${item.recommendedVramGb||'VRAM chưa rõ'} GB`:'Không tìm thấy model trong thư viện';deps.$('chromaViewStatus').textContent=direct?(ready?`${item.name} · sẵn sàng trên máy`:`${item?.name||select.value} · chưa sẵn sàng`):`Pipeline mở rộng · ${deps.$('textToImagePipeline').selectedOptions[0]?.text||''}`;deps.$('chromaViewStatus').classList.toggle('error',direct&&!ready);}
 
-async function loadTextToImageModels(){const response=await fetch('/api/model-candidates',{cache:'no-store'}),result=await response.json();if(!response.ok||!result.ok)throw new Error(result.error||'Không thể đọc model tạo ảnh');const preferred=['sdxl-base-1.0','sd35-medium','flux-chroma1-hd'],models=result.inventory.filter((item)=>item.kind==='text-to-image'||(item.features||[]).some((feature)=>String(feature).toLowerCase()==='text-to-image')).sort((a,b)=>{const ai=preferred.indexOf(a.id),bi=preferred.indexOf(b.id);return(ai<0?999:ai)-(bi<0?999:bi)||String(a.name).localeCompare(String(b.name),'vi');});textToImageModels=new Map(models.map((item)=>[item.id,item]));const previous=deps.$('textToImageModel').value,selected=localStorage.getItem('textToImageModelChoice')||previous||'sd35-medium';deps.$('textToImageModel').innerHTML=models.map((item)=>{const ready=Boolean(item.downloaded),compatible=!['integration','dependency'].includes(item.compatibility);return `<option value="${deps.escapeHtml(item.id)}" ${item.id===selected?'selected':''} ${ready&&compatible?'':'disabled'}>${deps.escapeHtml(item.name)}${ready&&compatible?' · sẵn sàng':ready?' · cần tích hợp':' · chưa tải'}</option>`;}).join('')||'<option value="" disabled>Không có model tương thích</option>';const current=textToImageModels.get(selected);if(!current?.downloaded||['integration','dependency'].includes(current?.compatibility)){const fallback=models.find((item)=>item.downloaded&&!['integration','dependency'].includes(item.compatibility));deps.$('textToImageModel').value=fallback?.id||'';if(fallback)localStorage.setItem('textToImageModelChoice',fallback.id);else localStorage.removeItem('textToImageModelChoice');}if(deps.$('textToImageModel').value!==previous)applyTextToImagePreset(textQuality);else updateTextToImageAvailability();}
+async function loadTextToImageModels(){const response=await fetch('/api/model-candidates',{cache:'no-store'}),result=await response.json();if(!response.ok||!result.ok)throw new Error(result.error||'Không thể đọc model tạo ảnh');const allowed=new Set(['flux-chroma1-hd','flux-2-klein-4b']),preferred=['flux-chroma1-hd','flux-2-klein-4b'],models=result.inventory.filter((item)=>allowed.has(item.id)&&(item.kind==='text-to-image'||(item.features||[]).some((feature)=>String(feature).toLowerCase()==='text-to-image'))).sort((a,b)=>preferred.indexOf(a.id)-preferred.indexOf(b.id)||String(a.name).localeCompare(String(b.name),'vi'));textToImageModels=new Map(models.map((item)=>[item.id,item]));const previous=deps.$('textToImageModel').value,stored=localStorage.getItem('textToImageModelChoice'),selected=allowed.has(stored)?stored:'flux-chroma1-hd';deps.$('textToImageModel').innerHTML=models.map((item)=>{const ready=Boolean(item.downloaded),compatible=!['integration','dependency'].includes(item.compatibility);return `<option value="${deps.escapeHtml(item.id)}" ${item.id===selected?'selected':''} ${ready&&compatible?'':'disabled'}>${deps.escapeHtml(item.name)}${ready&&compatible?' · sẵn sàng':ready?' · cần tích hợp':' · chưa tải'}</option>`;}).join('')||'<option value="" disabled>Không có model T5/Qwen tương thích</option>';const current=textToImageModels.get(selected);if(!current?.downloaded||['integration','dependency'].includes(current?.compatibility)){const fallback=models.find((item)=>item.downloaded&&!['integration','dependency'].includes(item.compatibility));deps.$('textToImageModel').value=fallback?.id||'';if(fallback)localStorage.setItem('textToImageModelChoice',fallback.id);else localStorage.removeItem('textToImageModelChoice');}if(deps.$('textToImageModel').value!==previous)applyTextToImagePreset(textQuality);else updateTextToImageAvailability();globalThis.PromptBuilder?.refresh();}
 
 async function refreshModelSelectors(){
   if(modelSelectorRefreshPromise)return modelSelectorRefreshPromise;
@@ -69,28 +59,15 @@ async function runChromaGenerate(){return window.NewImage.generate();}
 
 async function runExtendedTextPipeline(mode,prompt){
   updateTextToImagePipeline();
-  if(mode==='control'&&textControlUnavailableReason())return deps.setMessage(textControlUnavailableReason(),'error');
-  const negative=deps.$('chromaNegativePrompt').value.trim(),seed=deps.seedForRun('chromaSeed'),steps=Number(deps.$('chromaQuality').value);
   if(!deps.current||!deps.sourceImage)throw new Error('Hãy chọn ảnh chính trong Chỉnh sửa ảnh trước.');
-  if(['inpaint','lora'].includes(mode)&&deps.editableMaskStats().selected===0)throw new Error('Hãy tô mask trong Chỉnh sửa ảnh trước.');
-  if(mode==='catvton'&&!deps.garmentDataUrl)throw new Error('Hãy thêm ảnh trang phục hoặc ảnh tham chiếu trong Chỉnh sửa ảnh trước.');
+  if(mode!=='catvton')throw new Error('Pipeline này đã ngừng vì chưa có model T5-only.');
+  if(!deps.garmentDataUrl)throw new Error('Hãy thêm ảnh trang phục hoặc ảnh tham chiếu trong Chỉnh sửa ảnh trước.');
+  const seed=deps.seedForRun('chromaSeed'),steps=Number(deps.$('chromaQuality').value);
   deps.$('inpaintPrompt').value=prompt;deps.setCustomSeed('inpaintSeed',seed);deps.$('inpaintSteps').value=String(steps);
-  if(mode==='inpaint')return deps.runInpaint();
-  if(mode==='catvton')return deps.runTryon();
-  if(mode==='lora'){
-    const id=deps.$('textToImageLora').value;if(!id)throw new Error('Chưa có LoRA khả dụng.');
-    const response=await fetch('/api/lora-configure',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({adapters:[{id,weight:Number(deps.$('textToImageLoraWeight').value)}]})});const result=await response.json();if(!response.ok||!result.ok)throw new Error(result.error||'Không thể áp dụng LoRA');
-    return deps.runInpaint();
-  }
-  const button=deps.$('chromaGenerateButton');button.disabled=true;const original=button.textContent;button.textContent='Đang tạo có điều kiện…';
-  try{
-    const response=await fetch('/api/sd35-conditioned-generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sampleId:deps.current.id,prompt,negativePrompt:negative,seed,steps,guidance:4.5,controlScale:.7,maxSide:Number(deps.$('chromaSize').value)})});const result=await response.json();if(!response.ok||!result.ok)throw new Error(result.error||'Không thể chạy ControlNet SD3.5');
-    deps.$('chromaGallery').innerHTML=`<article class="result-card"><img src="${result.image}" alt="Kết quả ControlNet SD3.5"><p>ControlNet SD3.5 · seed ${result.seed}</p><a class="button-link" href="${result.image}" download="conditioned-${result.seed}.png">Tải ảnh</a></article>`;deps.$('chromaGalleryMeta').textContent='Đã tạo ảnh theo chiều sâu và bố cục ảnh chính.';deps.setMessage('ControlNet SD3.5 đã tạo ảnh thành công.','success');
-  }finally{button.disabled=false;button.textContent=original;}
+  return deps.runTryon();
 }
 return {bindings:{get textToImageModels(){return textToImageModels;},set textToImageModels(value){textToImageModels=value;},
 get TEXT_PIPELINE_HINTS(){return TEXT_PIPELINE_HINTS;},set TEXT_PIPELINE_HINTS(value){TEXT_PIPELINE_HINTS=value;},
-get textControlUnavailableReason(){return textControlUnavailableReason;},set textControlUnavailableReason(value){textControlUnavailableReason=value;},
 get updateTextToImagePipeline(){return updateTextToImagePipeline;},set updateTextToImagePipeline(value){updateTextToImagePipeline=value;},
 get loadTextToImageLoras(){return loadTextToImageLoras;},set loadTextToImageLoras(value){loadTextToImageLoras=value;},
 get updateTextToImageAvailability(){return updateTextToImageAvailability;},set updateTextToImageAvailability(value){updateTextToImageAvailability=value;},
@@ -109,7 +86,7 @@ function initialize(){
 (textToImageModels = new Map());
 },
 function initialize(){
-(TEXT_PIPELINE_HINTS = {generate:'Tạo ảnh mới hoàn toàn từ prompt.',inpaint:'Dùng ảnh và mask đang chọn trong Chỉnh sửa ảnh để tái tạo vùng bằng SD3.5.',catvton:'Dùng ảnh người đang chọn và ảnh trang phục tham chiếu bằng CatVTON.',lora:'Áp dụng LoRA SD3.5 rồi tái tạo vùng mask đang chọn.',control:'Giữ chiều sâu và bố cục ảnh chính bằng ControlNet Depth SD 3.5 Large.'});
+(TEXT_PIPELINE_HINTS = {generate:'Tạo ảnh mới hoàn toàn bằng T5 hoặc Qwen.',catvton:'Dùng ảnh người đang chọn và ảnh trang phục tham chiếu bằng CatVTON.'});
 },
 function initialize(){
 (modelSelectorRefreshPromise = null);

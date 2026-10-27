@@ -45,7 +45,15 @@ async function main(){
     response=await post('/api/json-config/prompts',{action:'restore',backup:'../../config.json',revision:configSaved.revision});assert.equal(response.status,400);
     response=await post('/api/json-config/prompts',{action:'restore',backup:configSaved.backup,revision:configSaved.revision});assert.equal(response.status,200);assert.deepEqual((await response.json()).data,candidate);
     response=await fetch(url+'/api/json-config/unknown-file');assert.equal(response.status,400);
-    console.log('OK: live HTTP startup, browser export, JSON saves, stale-save rejection and origin checks.');
+    response=await post('/api/catalog-preview',{catalog:candidate,taskId:'skin.retouch',variables:{}});assert.equal(response.status,200);assert.equal((await response.json()).prompt,candidate.components['skin.positive']);
+    response=await post('/api/catalog-preview',{catalog:candidate,taskId:'makeup.render',variables:{}});assert.equal(response.status,200);assert.deepEqual((await response.json()).missingVariables,['prompt']);
+    response=await post('/api/catalog-preview',{taskId:'skin.retouch'},{origin:'https://other.example'});assert.equal(response.status,403);
+    const bundle=await (await fetch(url+'/api/catalog-package?scope=system')).json();const systemOnly=structuredClone(candidate);delete systemOnly.personalLibraries;assert.deepEqual(bundle.system,systemOnly);assert(!bundle.libraries);
+    response=await post('/api/catalog-package',{action:'preview',bundle});assert.equal(response.status,200);const packagePreview=await response.json();assert.deepEqual(packagePreview.documents,['system']);
+    bundle.system.uiPlaceholders.promptName='Package API change';response=await post('/api/catalog-package',{action:'import',bundle,revisions:packagePreview.revisions});assert.equal(response.status,200);assert.equal((await response.json()).catalog.uiPlaceholders.promptName,'Package API change');
+    response=await post('/api/catalog-package',{action:'import',bundle,revisions:packagePreview.revisions});assert.equal(response.status,400);
+    response=await fetch(url+'/api/catalog-package?scope=unknown');assert.equal(response.status,400);
+    console.log('OK: live HTTP startup, catalog previews, scoped package transfer, browser export, JSON saves and origin checks.');
   }finally{child.kill();await new Promise(r=>child.exitCode!==null?r():child.once('exit',r));fs.rmSync(dir,{recursive:true,force:true});}
 }
 main().catch(error=>{console.error(error);process.exitCode=1;});

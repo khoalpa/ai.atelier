@@ -32,7 +32,7 @@ async function select(value,name='custom-prompts.json'){
   assert.deepEqual(store.readCatalog(file),original);
   get('[data-cancel-import]').click();assert(apply.disabled);assert.deepEqual(store.readCatalog(file),original);
   await select('{invalid');assert(apply.disabled);assert(status.textContent.includes('JSON'));assert.deepEqual(store.readCatalog(file),original);
-  const before=requestCount;input.files=[{size:2*1024*1024+1}];await input.change();assert.equal(requestCount,before);assert(status.textContent.includes('2 MB'));
+  const before=requestCount;input.files=[{size:4*1024*1024+1}];await input.change();assert.equal(requestCount,before);assert(status.textContent.includes('4 MB'));
   await select(candidate);offline=true;await apply.click();assert.equal(applied,0);assert(!apply.disabled);assert(status.textContent.includes('Connection unavailable'));assert.deepEqual(store.readCatalog(file),original);
   offline=false;await apply.click();assert.equal(applied,1);assert.deepEqual(store.readCatalog(file),candidate);assert(messages[0].includes('Đã nhập'));
   assert.equal(catalog.defaults.library,defaultsReference);assert.equal(defaultsReference[0].text,'UI imported reset default');

@@ -19,6 +19,7 @@ const window={events:{},confirm:()=>true,addEventListener(name,fn){this.events[n
 const document={getElementById:id=>elements[id],createElement:tag=>new Node(tag),body:new Node(),addEventListener(){}};
 const context={window,document,Option:class extends Node{constructor(text,value){super('option');this.textContent=text;this.value=value;}},fetch:async(url,options)=>{
   try{
+    if(url==='/api/catalog-preview'){const body=JSON.parse(options.body);return {ok:true,json:async()=>({ok:true,...require('../app/catalog-inspector').preview(body.catalog,body.taskId,body.variables)})};}
     const id=url.split('/').at(-1);let result;
     if(url==='/api/json-config')result={files:store.list()};
     else if(!options.method)result=store.read(id);
@@ -29,6 +30,8 @@ const context={window,document,Option:class extends Node{constructor(text,value)
 vm.runInNewContext(require('./helpers/source').read(path.join(project,'app/public/json-editor.js'),'utf8'),context);window.events.DOMContentLoaded();
 (async()=>{
   await window.AtelierJsonEditor.open('prompts');assert(elements.jsonEditorDialog.open);assert.equal(elements.jsonEditorFile.options.length,7);
+  elements.jsonEditorTask.value='skin.retouch';elements.jsonEditorVariables.value='{}';elements.jsonEditorTokenModel.value='';await elements.jsonEditorPreview.click();assert(elements.jsonEditorPreviewOutput.textContent.includes(store.read('prompts').data.components['skin.positive']));
+  elements.jsonEditorTask.value='makeup.render';await elements.jsonEditorPreview.click();assert(elements.jsonEditorPreviewOutput.textContent.includes('prompt'));
   elements.jsonEditorGroup.value=JSON.stringify(['uiPlaceholders']);elements.jsonEditorGroup.onchange();
   elements.jsonEditorMode.value='raw';elements.jsonEditorMode.onchange();
   const before=store.read('prompts'),subset=JSON.parse(elements.jsonEditorRaw.value);subset.librarySearch='Full JSON editor import';

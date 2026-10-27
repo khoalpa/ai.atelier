@@ -36,20 +36,21 @@
   }
   function syncJourney(){
     const task=document.body.dataset.studioTask,description=byId('tryonInputMode').value==='description';
-    const steps=task==='character'?[['Ảnh nguồn','Chọn ảnh nhân vật','imageSelect'],['Nhân vật','Chọn người cần thay đổi','characterDetect'],['Tư thế & biểu cảm','Kiểm tra vùng tác động','characterPreview']]:task==='makeup'?[['Ảnh nguồn','Chọn ảnh nhân vật','imageSelect'],['Khuôn mặt','Chọn người cần trang điểm','makeupDetect'],['Phong cách','Chọn kiểu hoặc nhập mô tả','makeupStyle']]:task==='enhance'?
-      [['Ảnh nguồn','Chọn hoặc tải ảnh','imageSelect'],['Cải thiện','Chọn mức độ và phạm vi','enhanceMethod'],['Xem thử','Kiểm tra chi tiết','enhancePreview']]:task==='outpaint'?
-      [['Ảnh nguồn','Chọn hoặc tải ảnh','imageSelect'],['Khung mở rộng','Chọn tỷ lệ và vị trí','outpaintWidth'],['Mô tả','Nội dung phần mở rộng','outpaintPrompt']]:task==='chroma'?
-      [['Ý tưởng','Mô tả ảnh muốn tạo','chromaPrompt'],['Chất lượng','Chọn mức chi tiết','textToImagePreset'],['Tạo và so sánh','Sinh phương án','studioPrimaryAction']]:
-      [['Ảnh nguồn','Chọn hoặc tải ảnh','imageSelect'],['Chọn vùng','Vẽ hoặc dùng AI','addTool'],task==='inpaint'?['Yêu cầu','Mô tả kết quả mong muốn','inpaintPrompt']:description?['Mô tả','Trang phục hoặc phụ kiện mới','tryonDescription']:['Tham chiếu','Thêm ảnh trang phục','garmentFile']];
+    const steps=task==='body'?[['Ảnh nguồn','Chọn hoặc tải ảnh','imageSelect'],['Nhân vật','Nhận diện và chọn người','characterFaceMain'],['Thay đổi cơ thể','Tư thế, bộ phận hoặc tương tác','characterChangeMain'],['Phạm vi & bảo toàn','Giữ mặt, trang phục và nền','bodyScopeMain'],['Xem thử & áp dụng','Kiểm tra vùng và chọn phương án','studioPrimaryAction']]:task==='character'?[['Ảnh nguồn','Chọn hoặc tải ảnh','imageSelect'],['Khuôn mặt','Nhận diện và chọn người','characterFaceMain'],['Thay đổi','Nhanh, mô tả hoặc tham chiếu','characterChangeMain'],['Phạm vi & bảo toàn','Mức độ và vùng được phép sửa','characterScopeMain'],['Xem thử & áp dụng','So sánh hai phương án','studioPrimaryAction']]:task==='makeup'?[['Ảnh nguồn','Chọn ảnh nhân vật','imageSelect'],['Khuôn mặt','Nhận diện và chọn người','makeupFaceMain'],['Phong cách','Mẫu, mô tả hoặc tham chiếu','makeupStyleMain'],['Vùng & mức độ','Chọn vùng và độ đậm','makeupRegionMain'],['Xem thử & áp dụng','So sánh hai phương án','studioPrimaryAction']]:task==='enhance'?
+      [['Ảnh nguồn','Chọn hoặc tải ảnh','imageSelect'],['Mục tiêu','Chọn cách cải thiện','enhanceMethodMain'],['Phạm vi','Toàn ảnh hoặc vùng chọn','enhanceScopeMain'],['Xem thử','Kiểm tra trước và sau','studioPrimaryAction'],['Áp dụng & so sánh','Lưu kết quả phù hợp','studioPrimaryAction']]:task==='outpaint'?
+      [['Ảnh nguồn','Chọn hoặc tải ảnh','imageSelect'],['Khung mới','Chọn tỷ lệ và vị trí','outpaintWidth'],['Mô tả','Nội dung phần mở rộng','outpaintPrompt'],['Tạo và so sánh','Chọn bố cục phù hợp','studioPrimaryAction']]:task==='chroma'?
+      [['Mô tả','Nội dung ảnh muốn tạo','chromaPrompt'],['Khung ảnh','Chọn tỷ lệ và bố cục','newImageComposition'],['Chất lượng','Chọn mức chi tiết','textToImagePreset'],['Tạo và so sánh','Sinh phương án','studioPrimaryAction']]:
+      task==='inpaint'?[['Ảnh nguồn','Chọn hoặc tải ảnh','imageSelect'],['Chọn vật thể','Tự động hoặc tô thủ công','aiTool'],['Cách lấp vùng','Phục hồi nền hoặc bề mặt','inpaintFillMode'],['Xóa và so sánh','Tạo phương án','studioPrimaryAction']]:[['Ảnh nguồn','Chọn hoặc tải ảnh','imageSelect'],description?['Trang phục mới','Mô tả trang phục','tryonDescription']:['Trang phục mới','Thêm ảnh mẫu','garmentFile'],['Người & vùng thay','Tạo tự động hoặc chỉnh tay','autoMaskButton'],['Chất lượng','Chọn mức và số phương án','tryonQualityMain'],['Tạo và so sánh','Sinh phương án','studioPrimaryAction']];
     document.querySelectorAll('.journey-steps li').forEach((step,index)=>{
-      step.hidden=task==='chroma'&&index===3;
-      if(index<3){step.dataset.stepTarget=steps[index][2];step.querySelector('strong').textContent=steps[index][0];step.querySelector('small').textContent=steps[index][1];}
+      step.hidden=index>=steps.length;
+      if(index<steps.length){step.hidden=false;step.dataset.stepTarget=steps[index][2];step.querySelector('strong').textContent=steps[index][0];step.querySelector('small').textContent=steps[index][1];}
       if(task==='chroma')step.classList.toggle('complete',index===0?Boolean(byId('chromaPrompt').value.trim()):index===1?Boolean(byId('textToImageModel').value):Boolean(byId('studioCompareAfter').getAttribute('src')));
     });
     document.querySelectorAll('[data-studio-mode]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.studioMode===task)));
-    const count=task==='character'?byId('characterCount').value:task==='makeup'?2:task==='enhance'?1:byId(task==='outpaint'?'outpaintCount':task==='inpaint'?'inpaintCount':task==='chroma'?'chromaCount':'tryonCount')?.value;
+    const count=['character','body'].includes(task)?byId('characterCount').value:task==='makeup'?2:task==='enhance'?1:byId(task==='outpaint'?'outpaintCount':task==='inpaint'?'inpaintCount':task==='chroma'?'chromaCount':'tryonCount')?.value;
     const hint=byId('studioCommandHint');
-    if(hint&&!globalThis.AtelierApp.activeJobId)hint.textContent=hint.textContent.replace(/ · \d+ phương án$/,'')+` · ${count||1} phương án`;
+    if(hint&&!globalThis.AtelierApp.activeJobId&&task!=='enhance'&&!((task==='outpaint')&&/ · \d+ (?:bố cục|phương án)$/.test(hint.textContent)))hint.textContent=hint.textContent.replace(/ · \d+ phương án$/,'')+` · ${count||1} phương án`;
+    if(task==='enhance')document.querySelectorAll('.journey-steps li').forEach((step,index)=>step.classList.toggle('complete',index===0?Boolean(globalThis.AtelierApp.sourceImage):index<3?Boolean(globalThis.AtelierApp.sourceImage):index===3?Boolean(window.ImageEnhancement?.previewReady?.()):Boolean(byId('studioCompareAfter').getAttribute('src'))));
   }
   function setup(){
     try{const saved=JSON.parse(localStorage.getItem('studioPanelLayout')||'{}');state=saved&&typeof saved==='object'&&!Array.isArray(saved)?saved:{};}catch{state={};}
@@ -69,7 +70,7 @@
       const button=document.createElement('button');button.type='button';button.dataset.panelToggle=name;button.setAttribute('aria-controls',panels[name].id);
       button.onclick=()=>togglePanel(name);bar.append(button);
       const heading=panels[name].querySelector(name==='journey'?'.journey-heading':name==='settings'?'.panel-heading':'.studio-results-head');
-      const local=button.cloneNode();local.onclick=button.onclick;heading.append(local);
+      if(name==='results'){const local=button.cloneNode();local.onclick=button.onclick;heading.append(local);}
       addLayoutIcon(button,name);
       setPanel(name,state[name]);
     }
@@ -88,7 +89,8 @@
     const updateAll=()=>{const collapsed=Object.keys(panels).every(name=>state[name]);all.setAttribute('aria-expanded',String(!collapsed));labelToggle(all,collapsed?'Mở tất cả':'Thu tất cả');};
     new MutationObserver(updateAll).observe(byId('appMain'),{attributes:true,attributeFilter:['class']});updateAll();
     const switcher=document.querySelector('.studio-mode-card'),header=document.createElement('div');header.className='workspace-compact-header';
-    workspace.prepend(header);header.append(switcher,bar);
+    workspace.prepend(header);header.append(switcher);
+    document.querySelector('.app-header .header-actions').prepend(bar);
     const progressDock=document.createElement('div');progressDock.className='workspace-progress-dock';
     byId('canvasWrap').after(progressDock);progressDock.append(byId('editorLiveProgress'),byId('chromaLiveProgress'));
     const statusDetails=document.createElement('button');statusDetails.type='button';statusDetails.className='studio-status-details';statusDetails.textContent='Chi tiết';statusDetails.setAttribute('aria-expanded','false');progressDock.id='studioProgressDetails';statusDetails.setAttribute('aria-controls',progressDock.id);
@@ -100,16 +102,20 @@
     byId('canvasWrap').before(tools);
     const content=tools.querySelector('div');
     for(const node of [byId('addTool').closest('.tool-group'),byId('brushSize').closest('label'),byId('undoButton').closest('.button-row')])content.append(node);
-    byId('clearButton').textContent='Xóa vùng đã chọn';byId('aiTool').textContent='Chọn vùng bằng AI';byId('saveButton').textContent='Lưu vùng đã chọn';
-    document.querySelector('.mask-action-heading strong').textContent='Lưu vùng chỉnh sửa';
+    byId('clearButton').textContent='Xóa vùng đã chọn';byId('aiTool').textContent='Chọn tự động';byId('addTool').textContent='Tô thủ công';byId('eraseTool').textContent='Bớt vùng';byId('protectTool').textContent='Giữ nguyên';byId('saveButton').textContent='Lưu vùng đã chọn';
+    document.querySelector('.mask-action-heading strong').textContent='Vùng chỉnh sửa';
+    const regionStatus=document.createElement('small');regionStatus.className='inpaint-region-status';regionStatus.textContent='Vùng xóa được dùng trực tiếp khi tạo kết quả.';byId('saveButton').after(regionStatus);
     const advanced=document.createElement('details');advanced.className='advanced-panel';advanced.innerHTML='<summary>Thiết lập nâng cao</summary>';byId('outpaintRun').before(advanced);
-    const advancedIds=['outpaintModel','outpaintNegative','outpaintOverlap','outpaintSeed','outpaintSteps','outpaintGuidance','outpaintResolution','outpaintSeamWidth','outpaintSeamSteps'];
-    for(const id of advancedIds){const label=byId(id)?.closest('label');if(label)advanced.append(label);}
+    const advancedIds=['outpaintModel','outpaintNegative','outpaintOverlap','outpaintSeed','outpaintSteps','outpaintGuidance','outpaintResolution','outpaintSeamWidth','outpaintSeamRepair','outpaintBackgroundContinuity','outpaintPreserve','outpaintDetail','outpaintMaterialRefine','outpaintSourceEnhance'];
+    for(const id of advancedIds){const label=byId(id)?.closest('label');if(label){const help=label.nextElementSibling;advanced.append(label);if(help?.tagName==='SMALL')advanced.append(help);}}
     // Advanced settings remain discoverable in simple mode, behind an explicit disclosure.
     document.querySelectorAll('.advanced-panel').forEach(node=>node.classList.remove('expert-only'));
     byId('inpaintNegativePrompt').closest('label').parentElement.classList.add('expert-only');
     byId('inpaintFillModePrompt').closest('.studio-result-instructions').classList.add('expert-only');
     byId('tryonDescriptionNegative').closest('label').classList.add('expert-only');
+    byId('tryonDescriptionModel').closest('label').classList.add('expert-only');
+    byId('descriptionSteps').closest('details').classList.add('expert-only');
+    byId('referenceType').closest('label').classList.add('expert-only');
     byId('emptyCanvasState').innerHTML='<strong>Thêm ảnh để bắt đầu</strong><p>Kéo ảnh vào vùng này hoặc chọn ảnh trên máy.</p><button type="button">Chọn ảnh nguồn</button>';
     byId('emptyCanvasState').querySelector('button').onclick=()=>byId('sourceImageFile').click();
     byId('canvasWrap').addEventListener('dragover',event=>{if(event.dataTransfer.types.includes('Files'))event.preventDefault();});
@@ -158,8 +164,8 @@
     new MutationObserver(()=>{zoom=1;x=y=0;controls.querySelector('select').value='1';paint();setPanel('results',false);document.querySelector('.workspace').scrollIntoView({block:'start',behavior:'instant'});}).observe(byId('studioCompareAfter'),{attributes:true,attributeFilter:['src']});
   }
   function applyQualityDefaults(){
-    for(const [id,value] of [['qualityPreset','quality'],['inpaintQualityPreset','detail']]){const field=byId(id);if(field){field.value=value;field.dispatchEvent(new Event('change'));}}
-    byId('outpaintQuality').click();globalThis.AtelierApp.applyTextToImagePreset('balanced');
+    for(const [id,value] of [['qualityPreset','balanced'],['inpaintQualityPreset','balanced']]){const field=byId(id);if(field){field.value=value;field.dispatchEvent(new Event('change'));}}
+    const outpaintBalanced=byId('outpaintBalancedQualityButton');if(outpaintBalanced)outpaintBalanced.click();else byId('outpaintQuality').click();globalThis.AtelierApp.applyTextToImagePreset('balanced');
     syncJourney();
   }
   global.StudioWorkspace={setup,syncJourney,reveal,setPanel,applyQualityDefaults};

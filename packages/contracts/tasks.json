@@ -6,6 +6,7 @@
     "tryon": {"route":"/tryon","taskType":"tryon","label":"Thay trang phục","resume":"replay"},
     "batch-tryon": {"route":"/batch-tryon","taskType":"batch-tryon","label":"Thay trang phục nhiều ảnh","resume":"remaining-items"},
     "inpaint": {"route":"/inpaint","taskType":"inpaint","label":"Xóa vật thể","resume":"replay"},
+    "anatomy-inpaint": {"route":"/anatomy-inpaint","taskType":"anatomy-inpaint","label":"Sửa chi tiết cơ thể","resume":"replay"},
     "outpaint": {"route":"/outpaint","taskType":"outpaint","label":"Mở rộng ảnh","resume":"replay"},
     "enhance": {"route":"/enhance","taskType":"enhance","label":"Cải thiện ảnh","resume":"replay"},
     "makeup": {"route":"/makeup","taskType":"makeup","label":"Trang điểm","resume":"replay"},

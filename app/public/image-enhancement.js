@@ -1,7 +1,7 @@
 /* Standalone enhancement shares Studio's masks, jobs and result selection. */
 window.ImageEnhancement = (() => {
   const el = id => document.getElementById(id);
-  let config = null, running = false, edgePick = null;
+  let config = null, running = false, edgePick = null, previewReady = false;
   let edgePoints = {skin:null,background:null};
   const methods = {light:'Cải thiện nhẹ', ai2x:'Phóng lớn AI 2×','skin-smooth':'Làm mịn da tự nhiên','skin-heal':'Xóa khuyết điểm nhỏ','skin-ai':'Sửa vùng da bằng AI','skin-edge':'Làm rõ viền da'};
   const skinMode = () => ['skin-smooth','skin-heal','skin-ai'].includes(el('enhanceMethod').value);
@@ -10,6 +10,15 @@ window.ImageEnhancement = (() => {
   const pointsReady = () => Boolean(edgePoints.skin)===Boolean(edgePoints.background);
   const serviceReady = () => Boolean(config?.serviceReady && (!skinMode() || config?.skin?.version===1) && (!edgeMode() || config?.edgeVersion===1));
   const modelReady = () => el('enhanceMethod').value==='skin-ai'?Boolean(config?.skin?.modelReady):el('enhanceMethod').value!=='ai2x'||Boolean(config?.modelReady);
+  const invalidatePreview = () => { previewReady=false; };
+  const methodLabel = () => methods[el('enhanceMethod').value]||'Cải thiện ảnh';
+  const primaryLabel = () => {
+    if(!previewReady)return edgeMode()?'Xem thử và nhận diện viền':skinMode()?'Xem thử vùng da':'Xem thử một vùng';
+    if(el('enhanceMethod').value==='ai2x')return 'Phóng lớn ảnh lên 2×';
+    if(edgeMode())return 'Áp dụng làm rõ viền';
+    if(skinMode())return 'Áp dụng cho vùng da';
+    return el('enhanceScope').value==='selected'?'Áp dụng cho vùng đã chọn':'Cải thiện toàn ảnh';
+  };
   function requirements(hasSource, hasMask) {
     const scale = el('enhanceMethod').value === 'ai2x' ? 2 : 1;
     const w = (globalThis.AtelierApp.sourceImage?.naturalWidth || 0)*scale, h = (globalThis.AtelierApp.sourceImage?.naturalHeight || 0)*scale;
@@ -26,11 +35,12 @@ window.ImageEnhancement = (() => {
     el('skinRetouchControls').hidden=!skin;
     el('skinEdgeControls').hidden=!edge;
     el('enhanceProfileRow').hidden=skin||edge;
-    el('enhanceLevelRow').hidden=method==='skin-smooth';
+    el('enhanceLevelRow').hidden=Boolean(el('enhanceLevelMain'))||method==='skin-smooth';
     el('enhanceLevelLabel').textContent=edge?'Độ rõ đường biên':skin?'Mức sửa khuyết điểm':'Mức độ';
     el('enhancePreviewPosition').hidden=skin||edge;
-    el('enhanceProtectionHint').hidden=skin||edge;
+    el('enhanceProtectionHint').hidden=Boolean(el('enhanceScopeMain'))||skin||edge;
     for(const name of ['Width','Softness','Decontam'])el(`edge${name}Value`).textContent=el(`edge${name}`).value+(name==='Width'?' px':'%');
+    for(const id of ['edgeWidth','edgeSoftness','edgeDecontam']){const row=el(id).closest?.('label');if(row&&row.closest?.('.enhance-advanced'))row.hidden=!edge;}
     el('edgePickSkin').setAttribute('aria-pressed',String(edgePick==='skin'));
     el('edgePickBackground').setAttribute('aria-pressed',String(edgePick==='background'));
     el('edgePointsStatus').textContent=edgePick?`Nhấp một điểm nằm rõ bên phía ${edgePick==='skin'?'Da':'Nền'} trên ảnh. Nhấp lại nút để hủy chọn điểm.`:!edgePoints.skin&&!edgePoints.background?'Tự động ước lượng hai phía theo màu. Chọn hai điểm tham chiếu nếu nhận diện chưa đúng.':`Da: ${edgePoints.skin?`${Math.round(edgePoints.skin.x)}, ${Math.round(edgePoints.skin.y)}`:'chưa chọn'} · Nền: ${edgePoints.background?`${Math.round(edgePoints.background.x)}, ${Math.round(edgePoints.background.y)}`:'chưa chọn'}. ${pointsReady()?'Đã đủ hai điểm tham chiếu.':'Chọn thêm điểm còn thiếu hoặc Xóa hai điểm để dùng tự động.'}`;
@@ -38,7 +48,11 @@ window.ImageEnhancement = (() => {
     el('skinSmoothValue').textContent=`${el('skinSmooth').value}%`;
     el('skinRetouchHint').textContent=(method==='skin-ai'?'Tô phủ vết sẹo và phần bóng đổ cần sửa. AI có thể thay đổi chi tiết trong vùng tô; hãy xem thử.':method==='skin-heal'?'Tô sát vết bẩn, nốt ruồi hoặc từng khuyết điểm nhỏ. Với vùng rộng hoặc sẹo sâu, chọn Sửa vùng da bằng AI.':'Tô vùng da cần làm mịn. Công cụ này không xóa sẹo hoặc nốt ruồi.')+' Dùng cọ xanh để giữ mắt, môi, tóc hoặc dấu đặc trưng. Xem thử tự đặt tại vùng đã tô.';
     el('enhancePreview').textContent=edge?'Xem thử và nhận diện viền':skin?'Xem thử vùng da':'Xem thử một vùng';
-    el('enhanceRun').textContent=edge?'Áp dụng làm rõ viền':skin?'Áp dụng cho vùng da đã tô':'Cải thiện toàn ảnh';
+    el('enhanceRun').textContent=edge?'Áp dụng ngay cho viền':skin?'Áp dụng ngay cho vùng da':'Áp dụng ngay';
+    for(const button of document.querySelectorAll?.('[data-enhance-method]')||[]){const active=button.dataset.enhanceMethod===method;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));}
+    for(const button of document.querySelectorAll?.('[data-enhance-level]')||[]){const active=button.dataset.enhanceLevel===el('enhanceLevel').value;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));}
+    for(const button of document.querySelectorAll?.('[data-enhance-scope]')||[]){const active=button.dataset.enhanceScope===el('enhanceScope').value;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));button.disabled=skin||edge;}
+    const levelMain=el('enhanceLevelMain');if(levelMain)levelMain.hidden=method==='skin-smooth';
     const w=globalThis.AtelierApp.sourceImage?.naturalWidth||0,h=globalThis.AtelierApp.sourceImage?.naturalHeight||0,scale=el('enhanceMethod').value==='ai2x'?2:1;
     el('enhanceDimensions').textContent=w?`${w} × ${h} → ${w*scale} × ${h*scale} px`:'Chọn ảnh để xem kích thước đầu ra.';
     el('enhanceStatus').textContent=!config?'Đang kiểm tra dịch vụ…':!config.serviceReady?'Dịch vụ cần nạp phiên bản Cải thiện ảnh. Mở phiên nâng cấp hoặc khởi động lại ứng dụng.':scale===2&&!config.modelReady?'Chưa có model AI 2× trên máy. Có thể dùng Cải thiện nhẹ.':scale===2?'AI có thể suy diễn chi tiết. Vùng bảo vệ được phóng lớn bằng nội suy; hãy kiểm tra mặt, chữ và họa tiết.':'Giảm nhiễu và tăng nét nhẹ; vùng ngoài lựa chọn và vùng bảo vệ giữ nguyên pixel.';
@@ -75,7 +89,7 @@ window.ImageEnhancement = (() => {
     try{
       const response=await fetch('/api/enhance',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...request,jobId})});
       const result=await response.json();if(!response.ok||!result.ok)throw new Error(result.error||'Không thể cải thiện ảnh.');
-      success=true;show(result);
+      success=true;show(result);previewReady=preview;globalThis.AtelierApp.refreshStudioReadiness();
       globalThis.AtelierApp.setMessage(preview?'Đã xử lý vùng xem thử. Chạy toàn ảnh khi thiết lập phù hợp.':`Đã lưu ảnh ${result.width} × ${result.height} px · ${result.durationSeconds}s. Hãy so sánh ở 100%.`,'success');
     }catch(error){errorText=error.message;globalThis.AtelierApp.setMessage(error.message,'error');}
     finally{await globalThis.AtelierApp.settleJob(jobId,success?'completed':'failed',errorText);running=false;sync();}
@@ -160,10 +174,22 @@ window.ImageEnhancement = (() => {
     context.restore();
   }
   function setup() {
-    el('enhanceMethod').addEventListener('change',()=>{el('skinSmooth').value=el('enhanceMethod').value==='skin-smooth'?'35':'0';edgePick=null;globalThis.AtelierApp.render();});
-    for(const id of ['enhanceMethod','enhanceProfile','enhanceLevel','enhanceScope'])el(id).addEventListener('change',()=>{sync();globalThis.AtelierApp.refreshStudioReadiness();});
-    el('skinSmooth').addEventListener('input',()=>{sync();globalThis.AtelierApp.refreshStudioReadiness();});
-    for(const id of ['edgeWidth','edgeSoftness','edgeDecontam'])el(id).addEventListener('input',sync);
+    const panel=el('studioEnhancePanel');
+    if(panel&&document.createElement){
+      const methodSelect=el('enhanceMethod'),methodLabelNode=methodSelect.closest('label');methodLabelNode.hidden=true;
+      const methodMain=document.createElement('fieldset');methodMain.id='enhanceMethodMain';methodMain.className='enhance-choice-main';methodMain.innerHTML='<legend>Mục tiêu cải thiện</legend><div class="enhance-method-buttons" role="group" aria-label="Mục tiêu cải thiện"><button type="button" data-enhance-method="light">Tăng nét & giảm nhiễu</button><button type="button" data-enhance-method="ai2x">Phóng lớn 2×</button><button type="button" data-enhance-method="skin-smooth">Làm mịn da</button><button type="button" data-enhance-method="skin-heal">Xóa khuyết điểm</button><button type="button" data-enhance-method="skin-ai">Sửa da bằng AI</button><button type="button" data-enhance-method="skin-edge">Làm rõ viền da</button></div>';
+      panel.querySelector('p').after(methodMain);for(const button of methodMain.querySelectorAll('[data-enhance-method]'))button.onclick=()=>{methodSelect.value=button.dataset.enhanceMethod;methodSelect.dispatchEvent(new Event('change'));};
+      const levelMain=document.createElement('fieldset');levelMain.id='enhanceLevelMain';levelMain.className='enhance-choice-main';levelMain.innerHTML='<legend>Mức độ</legend><div class="button-row" role="group" aria-label="Mức độ cải thiện"><button type="button" data-enhance-level="light">Nhẹ</button><button type="button" data-enhance-level="balanced">Cân bằng</button><button type="button" data-enhance-level="strong">Mạnh</button></div>';
+      methodMain.after(levelMain);el('enhanceLevelRow').hidden=true;for(const button of levelMain.querySelectorAll('[data-enhance-level]'))button.onclick=()=>{el('enhanceLevel').value=button.dataset.enhanceLevel;el('enhanceLevel').dispatchEvent(new Event('change'));};
+      const scopeMain=document.createElement('fieldset');scopeMain.id='enhanceScopeMain';scopeMain.className='enhance-choice-main';scopeMain.innerHTML='<legend>Phạm vi</legend><div class="button-row" role="group" aria-label="Phạm vi cải thiện"><button type="button" data-enhance-scope="all">Toàn ảnh</button><button type="button" data-enhance-scope="selected">Vùng đã chọn</button></div><small>Dùng cọ xanh để bảo vệ mặt, chữ, logo hoặc chi tiết cần giữ.</small>';
+      levelMain.after(scopeMain);el('enhanceScope').closest('label').hidden=true;for(const button of scopeMain.querySelectorAll('[data-enhance-scope]'))button.onclick=()=>{el('enhanceScope').value=button.dataset.enhanceScope;el('enhanceScope').dispatchEvent(new Event('change'));};
+      const advanced=document.createElement('details');advanced.className='advanced-panel enhance-advanced';advanced.innerHTML='<summary>Thiết lập nâng cao</summary>';el('enhanceStatus').after(advanced);advanced.append(el('enhanceProfileRow'),el('enhancePreviewPosition'));for(const id of ['edgeWidth','edgeSoftness','edgeDecontam'])advanced.append(el(id).closest('label'));advanced.append(el('enhanceRefresh'));
+      el('enhancePreview').hidden=true;el('enhanceRun').classList.remove('primary');
+    }
+    el('enhanceMethod').addEventListener('change',()=>{invalidatePreview();el('skinSmooth').value=el('enhanceMethod').value==='skin-smooth'?'35':'0';edgePick=null;globalThis.AtelierApp.render();});
+    for(const id of ['enhanceMethod','enhanceProfile','enhanceLevel','enhanceScope'])el(id).addEventListener('change',()=>{invalidatePreview();sync();globalThis.AtelierApp.refreshStudioReadiness();});
+    el('skinSmooth').addEventListener('input',()=>{invalidatePreview();sync();globalThis.AtelierApp.refreshStudioReadiness();});
+    for(const id of ['edgeWidth','edgeSoftness','edgeDecontam'])el(id).addEventListener('input',()=>{invalidatePreview();sync();globalThis.AtelierApp.refreshStudioReadiness();});
     for(const [id,kind] of [['edgePickSkin','skin'],['edgePickBackground','background']])el(id).onclick=()=>{
       if(running||globalThis.AtelierApp.activeJobId)return;edgePick=edgePick===kind?null:kind;sync();globalThis.AtelierApp.setMessage(el('edgePointsStatus').textContent);globalThis.AtelierApp.canvas.scrollIntoView({block:'center'});
     };
@@ -172,5 +198,5 @@ window.ImageEnhancement = (() => {
     el('studioContinueEnhance').onclick=()=>globalThis.AtelierApp.continueFromSelectedResult('enhance');
     refresh();
   }
-  return {setup,sync,run,requirements,restore,inspect,payload,editAgain,resetEdgeGuides,captureEdgePoint,drawEdgeGuides,pickMissingPoint};
+  return {setup,sync,run:()=>run(!previewReady),apply:run,primaryRun:()=>run(!previewReady),primaryLabel,methodLabel,previewReady:()=>previewReady,requirements,restore,inspect,payload,editAgain,resetEdgeGuides,captureEdgePoint,drawEdgeGuides,pickMissingPoint};
 })();

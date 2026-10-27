@@ -5,7 +5,7 @@ window.QualityLearning = (() => {
   const profileNames = {validating:'Đang kiểm chứng', active:'Đang áp dụng', 'rolled-back':'Đã khôi phục mặc định', rejected:'Chưa đạt', superseded:'Đã thay thế'};
   const reasonNames = {'task-check':'Kết quả chưa đạt kiểm tra của tác vụ', 'already-finished':'Ảnh bố cục hoặc đã được hoàn thiện', 'image-too-large':'Ảnh vượt giới hạn kích thước', 'time-budget':'Hết thời gian xử lý cho phép', 'unsuitable-detail':'Không có vùng chi tiết phù hợp', 'mask-unavailable':'Thiếu hoặc sai vùng chỉnh sửa / bảo vệ', 'job-limit':'Đã dùng một lượt hoàn thiện của tác vụ', 'comparison-failed':'Bản thử chưa vượt kiểm tra pixel', 'mode-changed':'Chế độ tự động thay đổi trong lúc xử lý', 'source-changed':'Ảnh ban đầu thay đổi trong lúc xử lý', 'processing-error':'Không hoàn tất bước xử lý bổ sung', 'legacy-unspecified':'Bản ghi cũ chưa tách rõ nguyên nhân'};
   const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  let latestJob = '', dialog = null, cache = null, dialogJob = '', refreshTimer = null, emptyPolls = 0;
+  let latestJob = '', dialog = null, cache = null, dialogJob = '', refreshTimer = null, emptyPolls = 0, activeResultId = '';
   async function api(action = 'state', body = {}) {
     const response = await fetch('/api/quality-learning/' + action, {
       method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body),
@@ -82,23 +82,35 @@ window.QualityLearning = (() => {
     } catch (error) { section.querySelector('[data-quality-settings-status]').textContent = error.message; }
   }
   function cards(data) {
-    return data.results.map(r => {
+    return data.results.map((r, index) => {
       const f = r.feedback || {};
-      return `<article class="quality-result" data-quality-result="${esc(r.id)}"><div class="quality-result-heading"><strong>${esc(names[r.task])} · seed ${esc(r.seed ?? '—')}</strong><span>${r.status === 'improved' ? 'Có bản hoàn thiện' : r.status === 'retained' ? 'Giữ bản ban đầu' : 'Cần đánh giá'}</span></div><p>${esc(r.message)}</p>
-        <div class="quality-image-pair"><figure><a href="${esc(r.original)}" target="_blank" rel="noopener"><img loading="lazy" src="${esc(r.original)}" alt="Ảnh ban đầu"></a><figcaption>Ảnh ban đầu</figcaption></figure>${r.improved ? `<figure><a href="${esc(r.improved)}" target="_blank" rel="noopener"><img loading="lazy" src="${esc(r.improved)}" alt="Bản hoàn thiện nhẹ"></a><figcaption>Bản hoàn thiện nhẹ · ${(r.finishingSeconds || 0).toFixed(2)} giây</figcaption></figure>` : ''}</div>
-        <div class="quality-feedback"><label>Ảnh đang đánh giá<select data-quality-target><option value="original">Ảnh ban đầu</option>${r.improved ? `<option value="improved" ${f.target === 'improved' ? 'selected' : ''}>Bản hoàn thiện</option>` : ''}</select></label><label>Điểm cần sửa<select data-quality-defect><option value="">Chọn nếu có</option>${Object.entries(defects).map(([id,label]) => `<option value="${id}" ${f.defects?.includes(id) ? 'selected' : ''}>${label}</option>`).join('')}</select></label><div class="button-row"><button data-quality-rate="good">Hài lòng</button><button data-quality-rate="needs-work">Cần sửa</button><button data-quality-rate="clear">Xóa đánh giá</button></div>
-        ${r.improved ? '<p>Sau khi xem cả hai ảnh, bạn ưu tiên:</p><div class="button-row"><button data-quality-prefer="improved">Bản hoàn thiện</button><button data-quality-prefer="original">Ảnh ban đầu</button><button data-quality-prefer="tie">Tương đương</button></div>' : ''}
-        <p class="quality-feedback-saved">${f.rating ? `Đã lưu: ${f.rating === 'good' ? 'Hài lòng' : 'Cần sửa'} · ${f.target === 'improved' ? 'bản hoàn thiện' : 'ảnh ban đầu'}. ` : 'Chưa có đánh giá. '}${f.preference ? `Ưu tiên: ${{original:'ảnh ban đầu',improved:'bản hoàn thiện',tie:'tương đương'}[f.preference]}.` : ''}</p>
-        <div class="button-row"><a data-quality-download href="${esc(f.target === 'improved' && r.improved ? r.improved : r.original)}" download>Tải ảnh đang chọn</a><button data-quality-continue>Dùng để chỉnh sửa tiếp</button></div>
-        <details><summary>Thông tin kiểm tra</summary><p>${esc(r.model)} · ${r.width} × ${r.height} px. ${r.technical.passed ? 'Không phát hiện vi phạm trong các kiểm tra hiện có.' : esc(r.technical.reasons.join(' '))} Nội dung và thẩm mỹ cần được xem trực tiếp.</p>${r.comparison ? `<p>Thay đổi lớn nhất: ${r.comparison.maxDelta}/255. Ngoài vùng cho phép: ${r.comparison.outsideMaxDelta}/255. ${r.comparison.passed ? 'Bản thử vượt kiểm tra pixel.' : 'Bản thử không vượt kiểm tra pixel.'}</p>` : ''}</details></div></article>`;
+      const target = f.target === 'improved' && r.improved ? 'improved' : 'original';
+      const selectedUrl = target === 'improved' ? r.improved : r.original;
+      return `<article class="quality-result${r.id === activeResultId ? ' is-active' : ''}" data-quality-result="${esc(r.id)}" data-quality-index="${index}" ${r.id === activeResultId ? '' : 'hidden'}>
+        <section class="quality-preview"><div class="quality-preview-heading"><span>Kết quả ${index + 1}/${data.results.length}</span><strong>${target === 'improved' ? 'Bản hoàn thiện' : 'Ảnh ban đầu'}</strong></div><a href="${esc(selectedUrl)}" target="_blank" rel="noopener" aria-label="Mở ảnh kích thước đầy đủ"><img loading="lazy" data-quality-preview-image src="${esc(selectedUrl)}" alt="${target === 'improved' ? 'Bản hoàn thiện' : 'Ảnh ban đầu'}"></a><a class="quality-fullscreen" href="${esc(selectedUrl)}" target="_blank" rel="noopener">Xem toàn màn hình</a></section>
+        <section class="quality-review-panel"><div class="quality-result-heading"><div><strong>${esc(names[r.task])}</strong><span>Seed ${esc(r.seed ?? '—')}</span></div><span class="quality-state">${r.status === 'improved' ? 'Có bản hoàn thiện' : r.status === 'retained' ? 'Giữ bản ban đầu' : 'Cần đánh giá'}</span></div><p class="quality-result-message">${esc(r.message)}</p>
+        <div class="quality-feedback"><label>Ảnh đang đánh giá<select data-quality-target><option value="original">Ảnh ban đầu</option>${r.improved ? `<option value="improved" ${target === 'improved' ? 'selected' : ''}>Bản hoàn thiện</option>` : ''}</select></label>
+        <fieldset class="quality-rating"><legend>Kết quả này thế nào?</legend><div class="quality-rating-options"><button type="button" data-quality-choice="good" aria-pressed="${f.rating === 'good'}" class="${f.rating === 'good' ? 'is-selected' : ''}"><strong>Hài lòng</strong><small>Đạt yêu cầu</small></button><button type="button" data-quality-choice="needs-work" aria-pressed="${f.rating === 'needs-work'}" class="${f.rating === 'needs-work' ? 'is-selected' : ''}"><strong>Cần sửa</strong><small>Chọn lỗi cụ thể</small></button></div></fieldset>
+        <label>Điểm cần sửa <span>Tùy chọn</span><select data-quality-defect ${f.rating === 'good' ? 'disabled' : ''}><option value="">Chọn nếu có</option>${Object.entries(defects).map(([id,label]) => `<option value="${id}" ${f.defects?.includes(id) ? 'selected' : ''}>${label}</option>`).join('')}</select></label>
+        ${r.improved ? `<fieldset class="quality-preference"><legend>Sau khi xem cả hai ảnh, bạn ưu tiên:</legend><div class="button-row"><button data-quality-prefer="improved" class="${f.preference === 'improved' ? 'is-selected' : ''}">Bản hoàn thiện</button><button data-quality-prefer="original" class="${f.preference === 'original' ? 'is-selected' : ''}">Ảnh ban đầu</button><button data-quality-prefer="tie" class="${f.preference === 'tie' ? 'is-selected' : ''}">Tương đương</button></div></fieldset>` : ''}
+        <p class="quality-feedback-saved">${f.rating ? `Đã lưu: ${f.rating === 'good' ? 'Hài lòng' : 'Cần sửa'} · ${target === 'improved' ? 'bản hoàn thiện' : 'ảnh ban đầu'}. ` : 'Chưa có đánh giá. '}${f.preference ? `Ưu tiên: ${{original:'ảnh ban đầu',improved:'bản hoàn thiện',tie:'tương đương'}[f.preference]}.` : ''}</p>
+        <div class="quality-primary-actions"><button type="button" data-quality-save>Lưu & tiếp theo</button></div><div class="quality-secondary-actions"><a data-quality-download href="${esc(selectedUrl)}" download>Tải ảnh</a><button data-quality-continue>Dùng để chỉnh sửa tiếp</button>${f.rating ? '<button data-quality-clear>Xóa đánh giá</button>' : ''}</div>
+        <details><summary>Thông tin kỹ thuật</summary><p>${esc(r.model)} · ${r.width} × ${r.height} px. ${r.technical.passed ? 'Không phát hiện vi phạm trong các kiểm tra hiện có.' : esc(r.technical.reasons.join(' '))} Nội dung và thẩm mỹ cần được xem trực tiếp.</p>${r.comparison ? `<p>Thay đổi lớn nhất: ${r.comparison.maxDelta}/255. Ngoài vùng cho phép: ${r.comparison.outsideMaxDelta}/255. ${r.comparison.passed ? 'Bản thử vượt kiểm tra pixel.' : 'Bản thử không vượt kiểm tra pixel.'}</p>` : ''}</details></div></section></article>`;
     }).join('');
   }
   async function refreshDialog() {
     const currentDialog = dialog; if (!currentDialog?.open) return;
     const data = await api('state', {jobId:dialogJob}); if (dialog !== currentDialog) return;
     cache = data;
+    if (!data.results.some(result => result.id === activeResultId)) activeResultId = data.results[0]?.id || '';
     const list = currentDialog.querySelector('[data-quality-list]');
     list.innerHTML = cards(data) || `<p>${data.settings.mode === 'off' ? 'Tính năng đang tắt. Bật trong Cài đặt để ghi nhận các tác vụ tiếp theo.' : dialogJob ? 'Chưa có đánh giá cho tác vụ này. Bộ kiểm tra đọc kết quả sau khi tác vụ hoàn tất.' : 'Chưa có kết quả được ghi nhận. Các tác vụ mới sẽ xuất hiện ở đây sau khi hoàn tất.'}</p>`;
+    const activeIndex = Math.max(0, data.results.findIndex(result => result.id === activeResultId));
+    const navText = currentDialog.querySelector('[data-quality-position]');
+    if (navText) navText.textContent = data.results.length ? `${activeIndex + 1} / ${data.results.length}` : '0 / 0';
+    const previous = currentDialog.querySelector('[data-quality-previous]'), next = currentDialog.querySelector('[data-quality-next]');
+    if (previous) previous.disabled = activeIndex <= 0;
+    if (next) next.disabled = !data.results.length || activeIndex >= data.results.length - 1;
     status(summary(data) + (data.jobs.processing ? ' · Đang kiểm tra kết quả…' : '') + (data.errors.length || data.workerError ? ' · Có lượt kiểm tra chưa hoàn tất; ảnh đã tạo vẫn được giữ.' : ''));
     if (data.errors.length) {
       const details = document.createElement('details');
@@ -111,32 +123,53 @@ window.QualityLearning = (() => {
     }
   }
   async function open(jobId = latestJob) {
-    dialog?.close(); dialogJob = jobId; emptyPolls = 0;
+    dialog?.close(); dialogJob = jobId; emptyPolls = 0; activeResultId = '';
     dialog = document.createElement('dialog'); dialog.className = 'quality-dialog';
     dialog.setAttribute('aria-label', 'Đánh giá và cải thiện chất lượng');
-    dialog.innerHTML = '<header><h2>Đánh giá và cải thiện chất lượng</h2><button data-quality-close aria-label="Đóng đánh giá">Đóng</button></header><p data-quality-status role="status">Đang đọc kết quả…</p><div class="button-row"><button data-quality-all>Tất cả kết quả gần đây</button><button data-quality-refresh>Làm mới</button></div><div data-quality-list></div>';
+    dialog.innerHTML = '<header><div><h2>Đánh giá chất lượng</h2><p>Kiểm tra kết quả và ghi nhận điểm cần cải thiện</p></div><button data-quality-close aria-label="Đóng đánh giá">Đóng</button></header><div class="quality-dialog-toolbar"><p data-quality-status role="status">Đang đọc kết quả…</p><div class="quality-dialog-actions"><button data-quality-all>Tất cả kết quả</button><button data-quality-refresh>Làm mới</button></div></div><div class="quality-result-navigation" aria-label="Điều hướng kết quả"><button data-quality-previous aria-label="Kết quả trước">← Trước</button><strong data-quality-position>0 / 0</strong><button data-quality-next aria-label="Kết quả tiếp theo">Tiếp →</button></div><div data-quality-list></div>';
     const currentDialog = dialog;
     currentDialog.addEventListener('close', () => { clearTimeout(refreshTimer); currentDialog.remove(); if (dialog === currentDialog) dialog = null; });
     currentDialog.querySelector('[data-quality-close]').onclick = () => currentDialog.close();
     currentDialog.querySelector('[data-quality-all]').onclick = () => { dialogJob = ''; refreshDialog().catch(error => status(error.message, true)); };
     currentDialog.querySelector('[data-quality-refresh]').onclick = () => refreshDialog().catch(error => status(error.message, true));
+    const move = offset => {
+      const index = cache?.results.findIndex(result => result.id === activeResultId) ?? -1;
+      const next = cache?.results[index + offset]; if (!next) return;
+      activeResultId = next.id; refreshDialog().catch(error => status(error.message, true));
+    };
+    currentDialog.querySelector('[data-quality-previous]').onclick = () => move(-1);
+    currentDialog.querySelector('[data-quality-next]').onclick = () => move(1);
     currentDialog.addEventListener('change', event => {
       const card = event.target.closest('[data-quality-result]'); if (!card) return;
       const result = cache.results.find(r => r.id === card.dataset.qualityResult);
-      card.querySelector('[data-quality-download]').href = card.querySelector('[data-quality-target]').value === 'improved' ? result.improved : result.original;
+      const improved = card.querySelector('[data-quality-target]').value === 'improved';
+      const url = improved ? result.improved : result.original;
+      const image = card.querySelector('[data-quality-preview-image]'); image.src = url; image.alt = improved ? 'Bản hoàn thiện' : 'Ảnh ban đầu';
+      card.querySelector('.quality-preview-heading strong').textContent = improved ? 'Bản hoàn thiện' : 'Ảnh ban đầu';
+      card.querySelector('.quality-preview>a').href = url; card.querySelector('.quality-fullscreen').href = url; card.querySelector('[data-quality-download]').href = url;
     });
     currentDialog.addEventListener('click', async event => {
       const card = event.target.closest('[data-quality-result]'), button = event.target.closest('button');
       if (!card || !button) return;
       const result = cache.results.find(r => r.id === card.dataset.qualityResult), target = card.querySelector('[data-quality-target]').value;
       const request = {resultId:result.id, target};
+      if (button.hasAttribute('data-quality-choice')) {
+        card.querySelectorAll('[data-quality-choice]').forEach(choice => { const selected = choice === button; choice.classList.toggle('is-selected', selected); choice.setAttribute('aria-pressed', String(selected)); });
+        card.querySelector('[data-quality-defect]').disabled = button.dataset.qualityChoice === 'good';
+        return;
+      }
       button.disabled = true;
       try {
-        if (button.hasAttribute('data-quality-rate')) {
-          request.rating = button.dataset.qualityRate;
+        if (button.hasAttribute('data-quality-save')) {
+          request.rating = card.querySelector('[data-quality-choice].is-selected')?.dataset.qualityChoice;
+          if (!request.rating) throw new Error('Hãy chọn Hài lòng hoặc Cần sửa trước khi lưu.');
           const defect = card.querySelector('[data-quality-defect]').value;
           request.defects = request.rating === 'needs-work' && defect ? [defect] : [];
-          await api('feedback', request); await refreshDialog();
+          const index = cache.results.findIndex(item => item.id === result.id), next = cache.results[index + 1];
+          await api('feedback', request); if (next) activeResultId = next.id; await refreshDialog();
+          await refreshReport(document.querySelector('.quality-settings'));
+        } else if (button.hasAttribute('data-quality-clear')) {
+          await api('feedback', {...request, rating:'clear', defects:[]}); await refreshDialog();
           await refreshReport(document.querySelector('.quality-settings'));
         } else if (button.hasAttribute('data-quality-prefer')) {
           await api('feedback', {...request, preference:button.dataset.qualityPrefer}); await refreshDialog();

@@ -27,9 +27,11 @@
   <link rel="stylesheet" href="/styles/character.css">
   <link rel="stylesheet" href="/styles/manual-editor.css">
   <link rel="stylesheet" href="/styles/workflow.css">
-  <link rel="stylesheet" href="/quality-learning.css">
+  <link rel="stylesheet" href="/styles/quality-learning.css">
   <link rel="stylesheet" href="/acceptance.css">
+  <link rel="stylesheet" href="/styles/components/toggles.css">
 </head>
+
 <body>
   <header class="app-header">
     <a class="brand" href="#" aria-label="AI Atelier">
@@ -48,7 +50,8 @@
     <div class="header-actions">
       <button id="helpButton" class="icon-button" aria-label="Hướng dẫn">?</button>
       <button class="icon-button settings-nav" data-view="settings" aria-label="Cài đặt và quản trị" title="Cài đặt và quản trị">⚙</button>
-      <div class="status"><span></span><strong>Offline</strong><small>Dữ liệu ở trên máy</small></div>
+      <button id="safeExitButton" class="icon-button safe-exit-button" type="button" aria-label="Đóng ứng dụng an toàn" title="Đóng ứng dụng an toàn">⏻</button>
+      <div class="status"><span></span><strong>Offline</strong></div>
     </div>
   </header>
 
@@ -60,6 +63,7 @@
         <li data-step-target="addTool" role="button" tabindex="0"><span>2</span><div><strong>Chọn vùng</strong><small>Vẽ hoặc dùng AI</small></div></li>
         <li data-step-target="garmentFile" role="button" tabindex="0"><span>3</span><div><strong>Tham chiếu</strong><small>Trang phục hoặc mẫu</small></div></li>
         <li data-step-target="studioPrimaryAction" role="button" tabindex="0"><span>4</span><div><strong>Tạo</strong><small>Sinh phương án</small></div></li>
+        <li data-step-target="studioPrimaryAction" role="button" tabindex="0" hidden><span>5</span><div><strong>Kiểm tra &amp; tạo</strong><small>Xem vùng tác động</small></div></li>
       </ol>
       <div id="journeyContent" class="journey-content"></div>
     </aside>
@@ -124,21 +128,48 @@
 
       <button id="saveButton" class="primary">Lưu mask và metadata</button>
 
-      <section id="studioCharacterPanel" class="studio-task-panel character-panel" hidden aria-label="Tư thế và biểu cảm">
-        <h3>Tư thế &amp; biểu cảm</h3>
-        <label>Phạm vi thay đổi<select id="characterMode"><option value="face">1 · Khuôn mặt &amp; hướng nhìn</option><option value="body">2 · Tư thế, cử chỉ &amp; hành động</option><option value="interaction">3 · Tương tác nhiều nhân vật</option></select></label>
-        <div class="button-row"><button id="characterDetect" type="button">Nhận diện nhân vật</button><button id="characterRefresh" type="button">Kiểm tra dịch vụ</button></div>
-        <div id="characterPeople" class="character-people" role="group" aria-label="Chọn nhân vật"></div>
+	  <!-- Khuôn mặt -->
+      <section id="studioCharacterPanel" class="studio-task-panel character-panel" hidden aria-label="Khuôn mặt và hướng nhìn">
+		<div id="characterTaskContent" class="character-workflow">
+        <details id="anatomyInpaintPanel" class="anatomy-inpaint" hidden>
+          <summary>Sửa chi tiết cơ thể theo giải phẫu</summary>
+          <p>Chọn riêng tay, cánh tay, chân hoặc bàn chân. Màu cam là vùng được tạo lại; màu xanh được giữ nguyên.</p>
+          <label>Nhân vật<select id="anatomyPerson"><option value="0">Người 1</option></select></label>
+          <label>Bộ phận<select id="anatomyBodyPart"><option value="">Đang tải danh sách…</option></select></label>
+          <button id="anatomyManageParts" type="button">Quản lý phạm vi bộ phận</button>
+          <label>Mục tiêu<select id="anatomyIntent"><option value="repair">Sửa lỗi giải phẫu</option><option value="restore">Khôi phục phần bị thiếu</option><option value="reshape">Điều chỉnh hình dáng nhẹ</option><option value="pose">Điều chỉnh tư thế bộ phận</option><option value="custom">Mô tả tùy chỉnh</option></select></label>
+          <label>Mức kiểm tra<select id="anatomyMode"><option value="safe">An toàn</option><option value="balanced">Cân bằng</option><option value="strict" selected>Nghiêm ngặt</option></select></label>
+          <label>Mô tả bổ sung<textarea id="anatomyPrompt" rows="2" maxlength="600"></textarea></label>
+          <label>Số phương án<select id="anatomyCount"><option value="1">1 phương án</option><option value="2" selected>2 phương án</option><option value="3">3 phương án</option><option value="4">4 phương án</option></select></label>
+          <div class="button-row"><button id="anatomyPreview" type="button">1. Kiểm tra vùng sửa</button><button id="anatomyRun" class="primary" type="button" disabled>2. Tạo phương án</button></div>
+          <img id="anatomyOverlay" alt="Vùng giải phẫu màu cam và vùng bảo vệ màu xanh" hidden>
+          <p id="anatomyStatus" role="status" aria-live="polite"></p>
+        </details>
+        <label hidden>Phạm vi thay đổi<select id="characterMode"><option value="face">Khuôn mặt &amp; hướng nhìn</option><option value="body">Tư thế &amp; cơ thể</option><option value="interaction">Tương tác nhiều người</option></select></label>
+        <section class="character-step-card" aria-labelledby="characterFaceHeading">
+          <div class="character-step-heading"><span>2</span><div><strong id="characterFaceHeading">Chọn khuôn mặt</strong><small id="characterFaceHint">Nhận diện khuôn mặt trong ảnh để tiếp tục.</small></div></div>
+          <button id="characterDetect" type="button">Nhận diện khuôn mặt</button><button id="characterRefresh" type="button" hidden>Kiểm tra dịch vụ</button>
+          <div id="characterPeople" class="character-people" role="group" aria-label="Chọn khuôn mặt"></div>
+        </section>
+        <section class="character-step-card" aria-labelledby="characterChangeHeading">
+        <div class="character-step-heading"><span>3</span><div><strong id="characterChangeHeading">Chọn thay đổi</strong><small>Chỉ những thiết lập khác ảnh gốc mới được áp dụng.</small></div></div>
         <label id="characterPoseLabel">Tư thế / hành động<select id="characterPose"><option value="keep">Giữ tư thế</option></select></label>
-        <label>Biểu cảm<select id="characterExpression"><option value="keep">Giữ biểu cảm</option></select></label>
-        <label>Mức biểu cảm · <output id="characterIntensityValue">60%</output><input id="characterIntensity" type="range" min="0" max="1" step="0.05" value="0.6"></label>
-        <details><summary>Hướng nhìn &amp; góc đầu</summary>
+        <label class="face-only">Biểu cảm<select id="characterExpression"><option value="keep">Giữ biểu cảm</option></select></label>
+        <label id="characterIntensityLabel" class="face-only">Mức biểu cảm · <output id="characterIntensityValue">60%</output><input id="characterIntensity" type="range" min="0" max="1" step="0.05" value="0.6"></label>
+        <fieldset class="character-gaze-presets face-only"><legend>Hướng nhìn</legend><div role="group" aria-label="Chọn nhanh hướng nhìn">
+          <button type="button" data-gaze-x="-0.7" data-gaze-y="-0.7" aria-label="Nhìn lên trái">↖</button><button type="button" data-gaze-x="0" data-gaze-y="-0.7" aria-label="Nhìn lên">↑</button><button type="button" data-gaze-x="0.7" data-gaze-y="-0.7" aria-label="Nhìn lên phải">↗</button>
+          <button type="button" data-gaze-x="-0.7" data-gaze-y="0" aria-label="Nhìn trái">←</button><button type="button" data-gaze-x="0" data-gaze-y="0" aria-label="Nhìn chính diện">•</button><button type="button" data-gaze-x="0.7" data-gaze-y="0" aria-label="Nhìn phải">→</button>
+          <button type="button" data-gaze-x="-0.7" data-gaze-y="0.7" aria-label="Nhìn xuống trái">↙</button><button type="button" data-gaze-x="0" data-gaze-y="0.7" aria-label="Nhìn xuống">↓</button><button type="button" data-gaze-x="0.7" data-gaze-y="0.7" aria-label="Nhìn xuống phải">↘</button>
+        </div></fieldset>
+        <details class="character-angle-details face-only"><summary>Góc đầu &amp; tinh chỉnh hướng nhìn</summary>
           <label>Xoay đầu · <output id="characterYawValue">0°</output><input id="characterYaw" type="range" min="-20" max="20" value="0"></label>
           <label>Cúi / ngẩng · <output id="characterPitchValue">0°</output><input id="characterPitch" type="range" min="-15" max="15" value="0"></label>
           <label>Nghiêng đầu · <output id="characterRollValue">0°</output><input id="characterRoll" type="range" min="-15" max="15" value="0"></label>
           <label>Nhìn trái / phải<input id="characterGazeX" type="range" min="-1" max="1" step="0.1" value="0"></label>
           <label>Nhìn lên / xuống<input id="characterGazeY" type="range" min="-1" max="1" step="0.1" value="0"></label>
         </details>
+        <p id="characterChangeSummary" class="character-change-summary">Chưa chọn thay đổi.</p>
+        </section>
         <details><summary>Theo ảnh tham chiếu</summary>
           <label>Ảnh tham chiếu<select id="characterReference"><option value="">Chọn ảnh trong thư viện…</option></select></label>
           <div class="button-row"><button id="characterReferenceRefresh" type="button">Làm mới</button><button id="characterReferenceUpload" type="button">Tải ảnh mẫu</button></div><input id="characterReferenceFile" type="file" accept="image/png,image/jpeg,image/webp" hidden>
@@ -150,31 +181,39 @@
         </details>
         <label>Mô tả thêm<textarea id="characterDescription" rows="2" maxlength="1000" ></textarea></label>
         <button id="characterRead" type="button">Đọc mô tả thành thiết lập</button><p id="characterSummary" role="status"></p>
-        <details id="characterEditor"><summary>Chỉnh khung xương</summary>
+        <details id="characterEditor" hidden><summary>Chỉnh khung xương</summary>
           <p>Kéo khớp trên ảnh, hoặc chọn khớp rồi dùng phím mũi tên. Giữ Shift để di chuyển nhanh hơn.</p>
           <label>Nhân vật<select id="characterEditPerson"></select></label><label>Khớp<select id="characterJoint"></select></label>
           <canvas id="characterSkeleton" width="360" height="360" tabindex="0" aria-label="Khung xương đích; dùng phím mũi tên để dời khớp đã chọn"></canvas>
           <div class="button-row"><button id="characterResetPose" type="button">Về tư thế nguồn</button><button id="characterMirrorPose" type="button">Lật tư thế</button></div>
           <details><summary>Tư thế của tôi</summary><label>Mẫu đã lưu<select id="characterSavedPose"><option value="">Chọn mẫu…</option></select></label><button id="characterLoadPose" type="button">Áp dụng mẫu</button><label>Tên mẫu<input id="characterPoseName" maxlength="80" ></label><button id="characterSavePose" type="button">Lưu khung xương hiện tại</button></details>
         </details>
-        <details><summary>Giữ diện mạo, trang phục &amp; chất lượng</summary>
-          <p>Diện mạo và trang phục là ưu tiên khi tạo lại nhân vật. Kiểm tra kết quả trước khi chọn.</p>
-          <label>Ưu tiên diện mạo<input id="characterIdentity" type="range" min="0" max="1" step="0.05" value="0.65"></label><label>Ưu tiên trang phục<input id="characterClothing" type="range" min="0" max="1" step="0.05" value="0.45"></label>
-          <label class="character-check"><input id="characterKeepFace" type="checkbox" checked>Giữ nguyên mặt khi chỉ di chuyển tay/chân</label>
+        <details class="character-quality"><summary>Giữ diện mạo &amp; chất lượng</summary>
+          <p>Ưu tiên giữ đặc điểm khuôn mặt khi tạo lại vùng đã chọn.</p>
+          <label>Ưu tiên diện mạo<input id="characterIdentity" type="range" min="0" max="1" step="0.05" value="0.65"></label><label hidden>Ưu tiên trang phục<input id="characterClothing" type="range" min="0" max="1" step="0.05" value="0.45"></label>
+          <label class="character-check body-only"><input id="characterKeepFace" type="checkbox" checked>Giữ khuôn mặt</label>
           <label class="character-check"><input id="characterLimit" type="checkbox">Chỉ sửa trong vùng đỏ tôi đã tô</label>
+          <label hidden>Pipeline<select id="characterPipeline"><option value="disabled">Không dùng CLIP</option></select></label>
           <label>Độ chi tiết<select id="characterQuality"><option value="preview">Nhanh · 512 px</option><option value="balanced" selected>Cân bằng · 768 px</option><option value="quality">Chi tiết · 1024 px</option></select></label>
+          <label hidden>Kiểm tra giải phẫu<select id="characterAnatomyQuality"><option value="balanced">Cân bằng · tối đa 1 lượt sửa</option><option value="enhanced" selected>Ưu tiên giải phẫu · tối đa 2 lượt</option><option value="strict">Nghiêm ngặt · tối đa 3 lượt</option></select></label>
           <label>Seed<input id="characterSeed" type="number" min="0" max="2147483643" value="42"></label>
         </details>
         <label>Số phương án<select id="characterCount"><option value="1">1 phương án</option><option value="2" selected>2 phương án</option><option value="3">3 phương án</option><option value="4">4 phương án</option></select></label>
-        <button id="characterPreview" type="button">1. Kiểm tra vùng tác động</button>
+        <section class="character-step-card character-review" aria-labelledby="characterReviewHeading"><div class="character-step-heading"><span>4</span><div><strong id="characterReviewHeading">Kiểm tra &amp; tạo</strong><small>Vùng cam sẽ được tạo lại; vùng xanh được bảo vệ.</small></div></div>
+        <button id="characterPreview" type="button" class="primary">Xem trước vùng tác động</button>
         <img id="characterPlanImage" alt="Vùng màu cam sẽ được thay đổi cùng khung xương đích" hidden><p id="characterPlanStatus" role="status"></p>
         <p id="characterStatus" role="status" aria-live="polite"></p>
-        <div class="button-row"><button id="characterTry" type="button">Xem thử nhanh</button><button id="characterRun" type="button" class="primary">2. Tạo phương án</button></div>
+        <div class="button-row"><button id="characterTry" type="button">Tạo bản xem thử nhanh</button><button id="characterRun" type="button" class="primary">Tạo phương án</button></div></section>
+		</div>
       </section>
 
+	  <!-- Tư thế và cơ thể -->
+      <section id="studioBodyPanel" class="studio-task-panel character-panel body-panel" hidden aria-label="Tư thế và cơ thể">
+
+      </section>
+
+	  <!-- Trang điểm AI -->
       <section id="studioMakeupPanel" class="studio-task-panel makeup-panel" hidden aria-label="Trang điểm AI">
-        <h3>Trang điểm AI</h3>
-        <p>Chọn một khuôn mặt, phối màu hoặc mô tả phong cách riêng. Xem thử hai phương án trước khi áp dụng.</p>
         <button id="makeupDetect" type="button">Nhận diện khuôn mặt</button>
         <div id="makeupFaces" role="group" aria-label="Chọn khuôn mặt"></div>
         <label for="makeupStyle">Phong cách</label>
@@ -217,7 +256,7 @@
           <label>Chân mày · <output id="makeupStrengthBrowsValue">100%</output><input id="makeupStrengthBrows" data-makeup-strength="brows" type="range" min="0" max="100" value="100"></label>
           <label>Nền da · <output id="makeupStrengthBaseValue">100%</output><input id="makeupStrengthBase" data-makeup-strength="base" type="range" min="0" max="100" value="100"></label>
         </details>
-        <label>Mức độ<select id="makeupIntensity"><option value="light">Nhẹ</option><option value="medium">Vừa</option><option value="bold">Đậm</option></select></label>
+        <label>Mức độ<select id="makeupIntensity"><option value="light">Nhẹ</option><option value="medium" selected>Tự nhiên</option><option value="bold">Đậm</option></select></label>
         <label>Kẻ mắt<select id="makeupEyeliner"><option value="none">Không</option><option value="thin" selected>Mảnh</option><option value="defined">Rõ nét</option></select></label>
         <label>Chất son<select id="makeupFinish"><option value="matte">Lì</option><option value="satin" selected>Mịn nhẹ</option><option value="gloss">Bóng</option></select></label>
         <label>Cách trang điểm<select id="makeupRenderer"><option value="color">Phủ màu giữ chi tiết</option><option value="ai">AI tạo họa tiết và hiệu ứng</option></select></label>
@@ -242,12 +281,14 @@
           <div id="makeupCompareGrid" class="makeup-compare-grid"></div>
         </section>
       </section>
+
+	  <!-- Cải thiện ảnh -->
       <section id="studioEnhancePanel" class="studio-task-panel enhance-panel" hidden aria-label="Cải thiện ảnh">
         <h3>Cải thiện ảnh</h3>
-        <p>Giảm nhiễu, phóng lớn ảnh hoặc sửa vùng da đã chọn. Bản gốc luôn được giữ lại.</p>
+        <p class="character-intro">Giảm nhiễu, phóng lớn ảnh hoặc sửa vùng da đã chọn. Bản gốc luôn được giữ lại.</p>
         <label>Cách cải thiện<select id="enhanceMethod"><optgroup label="Cải thiện ảnh"><option value="light">Cải thiện nhẹ · giữ kích thước</option><option value="ai2x">Phóng lớn AI 2×</option></optgroup><optgroup label="Làm mịn &amp; sửa da"><option value="skin-smooth">Làm mịn da tự nhiên</option><option value="skin-heal">Xóa khuyết điểm nhỏ</option><option value="skin-ai">Sửa vùng da bằng AI</option><option value="skin-edge">Làm rõ viền da</option></optgroup></select></label>
         <label id="enhanceProfileRow">Loại ảnh<select id="enhanceProfile"><option value="product">Ảnh sản phẩm · ưu tiên màu và chất liệu</option><option value="portrait">Ảnh người mẫu · xử lý nhẹ</option><option value="general">Ảnh tổng thể</option></select></label>
-        <label id="enhanceLevelRow"><span id="enhanceLevelLabel">Mức độ</span><select id="enhanceLevel"><option value="light">Nhẹ</option><option value="balanced">Vừa</option><option value="strong">Mạnh</option></select></label>
+        <label id="enhanceLevelRow"><span id="enhanceLevelLabel">Mức độ</span><select id="enhanceLevel"><option value="light">Nhẹ</option><option value="balanced" selected>Cân bằng</option><option value="strong">Mạnh</option></select></label>
         <div id="skinRetouchControls" hidden>
           <label for="skinSmooth">Mức làm mịn <output id="skinSmoothValue">35%</output><input id="skinSmooth" type="range" min="0" max="100" value="35" step="1"></label>
           <label class="skin-texture-toggle"><input id="skinPreserveTexture" type="checkbox" checked>Giữ vân da tự nhiên</label>
@@ -271,11 +312,13 @@
         <div class="button-row"><button id="enhancePreview" type="button">Xem thử một vùng</button><button id="enhanceRun" class="primary" type="button">Cải thiện toàn ảnh</button></div>
         <button id="enhanceRefresh" type="button">Kiểm tra lại dịch vụ</button>
       </section>
+
+      <!-- Mở rộng ảnh -->
       <details class="inpaint-panel studio-task-panel" id="studioOutpaintPanel" hidden open>
         <summary>Mở rộng ảnh · Outpainting</summary>
         <label>Model<select id="outpaintModel"><option value="">Đang tải model…</option></select></label>
         <label>Chất lượng<select id="outpaintPreset"><option value="fast">Nhanh</option><option value="balanced">Cân bằng</option><option value="detail" selected>Chi tiết</option><option value="custom">Tùy chỉnh</option></select></label>
-        <label>Tỷ lệ khung mới<select id="outpaintRatio"><option value="custom">Tùy chỉnh</option><option>1:1</option><option>4:5</option><option>3:2</option><option>16:9</option></select></label>
+        <label>Tỷ lệ khung mới<select id="outpaintRatio"><option value="custom">Tùy chỉnh</option><option>1:1</option><option>4:5</option><option>3:2</option><option>16:9</option><option>9:16</option></select></label>
         <div class="outpaint-fields">
           <label>Chiều rộng (px)<input id="outpaintWidth" type="number" min="1" max="8192" step="1"></label>
           <label>Chiều cao (px)<input id="outpaintHeight" type="number" min="1" max="8192" step="1"></label>
@@ -286,7 +329,7 @@
         </div>
         <button id="outpaintCenter" type="button">Đặt ảnh vào giữa</button>
         <small id="outpaintGeometryHint" role="status">Chọn ảnh nguồn để thiết lập khung.</small>
-        <label>Mô tả phần mở rộng<textarea id="outpaintPrompt" rows="3" maxlength="16000"></textarea></label>
+        <label>Bạn muốn xuất hiện gì trong phần mở rộng? <small>Không bắt buộc</small><textarea id="outpaintPrompt" rows="3" maxlength="16000"></textarea></label>
         <small>Mô tả nền, chất liệu, hoa văn và các chi tiết cần nối tiếp ở mép ảnh.</small>
         <label class="checkbox"><input id="outpaintSeamRepair" type="checkbox" checked> Sửa đường nối trước khi tăng chi tiết</label>
         <label class="checkbox"><input id="outpaintBackgroundContinuity" type="checkbox"> Đồng bộ chất liệu nền hẹp từ ảnh gốc</label>
@@ -318,6 +361,8 @@
         <small id="outpaintEstimate" role="status">Thời gian được ước tính khi có lịch sử chạy phù hợp.</small>
         <button id="outpaintRun" type="button" class="primary">Tạo ảnh mở rộng</button>
       </details>
+
+      <!-- Xóa vật thể -->
       <details class="inpaint-panel studio-task-panel" id="studioInpaintPanel" open>
         <summary>Xóa vật thể</summary>
         <label class="inpaint-model-field">Model Inpainting<select id="inpaintModelSelect"><option value="">Đang tải model…</option></select><small id="inpaintModelHint">Chỉ hiển thị model đã đăng ký và sẵn sàng.</small></label>
@@ -345,9 +390,9 @@
           </details>
           </div>
         </details>
-        <div class="studio-prompt-group" role="group" aria-label="Đối tượng cần xóa">
-        <strong>Đối tượng cần xóa</strong>
-        <label>Preset
+        <div class="studio-prompt-group inpaint-target-group" role="group" aria-label="Đối tượng cần xóa">
+        <strong>Vật thể cần xóa</strong>
+        <label>Loại vật thể
           <select id="accessoryPreset">
 			<option value="outfit">Trang phục</option>
 			<option value="shirt">Áo / thân trên</option>
@@ -361,9 +406,9 @@
             <option value="custom">Tùy chỉnh</option>
           </select>
         </label>
-        <label>Mô tả yêu cầu xóa
+        <label>Mô tả kết quả mong muốn <small>Không bắt buộc</small>
           <textarea id="inpaintPrompt" rows="3"></textarea>
-          <small>Mô tả vật thể cần xóa và nền hoặc bề mặt cần phục hồi. Tô thêm bóng đổ, phản chiếu hoặc dây nối nếu cần xóa chúng.</small>
+          <small>Mô tả nền hoặc bề mặt cần phục hồi. Hãy chọn cả bóng đổ, phản chiếu hoặc dây nối nếu muốn xóa chúng.</small>
           <span class="llm-assist-row"><button id="suggestInpaintPromptButton" type="button" class="llm-assist-button">✦ Gợi ý bằng AI</button><small id="inpaintPromptAssistStatus">Phân tích ảnh và mask hiện tại.</small></span>
         </label>
         <label>Tên vật thể để kiểm tra (tùy chọn)
@@ -371,14 +416,15 @@
           <small>Dùng tên tiếng Anh khi chọn Tùy chỉnh. Không nhận diện được vật thể trong ảnh gốc thì kết quả cần kiểm tra trực quan.</small>
         </label>
         </div>
-        <div class="studio-prompt-group" role="group" aria-label="Kết quả sau khi xóa">
-        <label>Kết quả sau khi xóa
+        <div class="studio-prompt-group inpaint-fill-group" role="group" aria-label="Kết quả sau khi xóa">
+        <strong>Sau khi xóa, bạn muốn thấy gì?</strong>
+        <label>Cách lấp vùng xóa
           <select id="inpaintFillMode">
-            <option value="base_layer">Nóng bỏng / Quyến rũ</option>
-            <option value="reconstruct_body" selected>Khỏa thân toàn bộ</option>
-            <option value="background">Bối cảnh / Môi trường</option>
+            <option value="background" selected>Phục hồi nền</option>
+            <option value="base_layer">Tiếp tục bề mặt / lớp nền</option>
+            <option value="reconstruct_body">Tái tạo vùng người</option>
           </select>
-          <small id="inpaintFillModeHint">Mặc định tái tạo cơ thể; kết quả phụ thuộc khả năng của model.</small>
+          <small id="inpaintFillModeHint">Khôi phục nội dung xung quanh vào vùng đã chọn.</small>
         </label>
         <div class="studio-result-instructions">
           <label>Hướng dẫn cho kết quả đã chọn<textarea id="inpaintFillModePrompt" rows="5" maxlength="16000" disabled></textarea></label>
@@ -428,12 +474,13 @@
         </details>
       </details>
 
+      <!-- Thay trang phục -->
       <details class="inpaint-panel studio-task-panel" id="studioTryonPanel" open>
         <summary>Thay trang phục</summary>
         <label>Cách thay trang phục<select id="tryonInputMode"><option value="reference">Theo ảnh mẫu</option><option value="description">Theo mô tả</option></select></label>
-        <div id="tryonDescriptionFields" hidden>
+        <div id="tryonDescriptionFields" class="tryon-description-main" hidden>
           <label>Model tạo trang phục<select id="tryonDescriptionModel" disabled><option value="">Đang kiểm tra model…</option></select></label>
-          <label>Mô tả trang phục hoặc phụ kiện mới<textarea id="tryonDescription" rows="4" maxlength="16000"></textarea></label>
+          <label>Bạn muốn nhân vật mặc gì?<textarea id="tryonDescription" rows="4" maxlength="16000"></textarea></label>
           <label>Điều cần tránh<textarea id="tryonDescriptionNegative" rows="2" maxlength="16000"></textarea></label>
           <small id="descriptionNegativeHint"></small>
           <details><summary>Thông số tạo trang phục</summary><div class="compact-grid">
@@ -455,7 +502,7 @@
         <div id="referenceReadiness" class="model-list">Đang kiểm tra reference…</div>
         <div class="button-row">
           <button id="preprocessGarmentButton">Tách nền trang phục</button>
-          <button id="autoMaskButton">Tạo mask theo loại</button>
+          <button id="autoMaskButton">Tạo vùng tự động</button>
         </div>
         <label>Nhân vật
           <select id="personSelect"><option value="0">Nhân vật chính</option></select>
@@ -469,9 +516,9 @@
             <option value="overall">Váy liền / toàn thân</option>
           </select>
         </label>
-        <label>Mô tả chính xác cho IDM-VTON
+        <label>Chi tiết cần giữ <small>Không bắt buộc</small>
           <textarea id="garmentDescription" rows="2" maxlength="400"></textarea>
-          <small>Tùy chọn. Nêu màu, kiểu dáng, tay áo và chất liệu cần giữ từ ảnh mẫu.</small>
+          <small>Nêu màu, kiểu dáng, tay áo hoặc chất liệu cần giữ từ ảnh mẫu.</small>
         </label>
         <label>Loại ảnh mẫu<select id="referenceType"><option value="auto">Tự nhận diện</option><option value="product">Ảnh sản phẩm, không có người</option><option value="model">Ảnh có người mặc mẫu</option></select></label>
         <details id="targetGarmentFields"><summary>Phạm vi thay và chi tiết cần đối chiếu</summary>
@@ -491,7 +538,7 @@
           <label>Guidance<input id="tryonGuidance" type="number" min="0.5" max="7.5" step="0.5" value="2.5"></label>
         </div>
         <label class="check-row"><input id="autoMaskToggle" type="checkbox"> Tự tạo mask khi chạy</label>
-        <label class="check-row"><input id="reconstructExposedBodyToggle" type="checkbox" checked> Tái tạo phần cơ thể mới lộ ra</label>
+        <label class="check-row body-reconstruction-toggle"><span>Tái tạo phần cơ thể mới lộ ra</span><input id="reconstructExposedBodyToggle" type="checkbox" role="switch" checked></label>
         <label>Sửa phần tay mới lộ ra (thử nghiệm)<select id="bodyRepairMode"><option value="off">Không sửa bổ sung</option><option value="auto">Tự động với áo hai dây rõ ràng</option><option value="arms">Tái tạo tay trần, xóa tay áo cũ</option></select></label>
         <small id="tryonReferenceBodyHint">Bổ sung vùng quần áo cũ vào vùng xử lý khi đổi sang đồ ít che phủ hơn. Phần cơ thể bị che được AI ước lượng từ ảnh; vùng đánh dấu bảo vệ vẫn giữ nguyên.</small>
         <label class="check-row"><input id="cropPersonToggle" type="checkbox" checked> Crop từng người rồi ghép lại</label>
@@ -562,6 +609,8 @@
         <label>Khôi phục bản sao lưu<select id="backupSelect"><option value="">Chưa tải danh sách</option></select></label>
         <button id="restoreBackupButton" class="danger">Khôi phục bản sao lưu đã chọn</button>
       </details>
+
+      <!-- Tạo ảnh mới -->
       <details class="inpaint-panel" id="chromaGeneratorPanel">
         <summary>Tạo ảnh từ mô tả</summary>
         <label>Model tạo ảnh
@@ -571,10 +620,7 @@
         <label>Pipeline mở rộng
           <select id="textToImagePipeline">
             <option value="generate">Tạo ảnh trực tiếp</option>
-            <option value="inpaint">Inpainting SD3.5</option>
             <option value="catvton">CatVTON · thay trang phục</option>
-            <option value="lora">LoRA SD3.5 · theo phong cách</option>
-            <option value="control">Giữ bố cục · ControlNet SD 3.5</option>
           </select>
           <small id="textToImagePipelineHint">Tạo ảnh mới hoàn toàn từ prompt.</small>
         </label>
@@ -584,14 +630,35 @@
         </div>
         <div id="textToImagePipelineReadiness" class="model-item">Tạo ảnh trực tiếp không cần ảnh đầu vào.</div>
         <label>Mô tả ảnh
-          <textarea id="chromaPrompt" rows="4"></textarea>
-          <span class="llm-assist-row"><span class="llm-assist-actions"><button id="suggestChromaPromptButton" type="button" class="llm-assist-button">✦ Gợi ý</button><button id="optimizeChromaPromptButton" type="button" class="llm-assist-button">Tối ưu prompt</button><button id="analyzeChromaPromptButton" type="button" class="llm-assist-button">Kiểm tra</button></span><small id="chromaPromptAssistStatus">Tạo mới, tối ưu hoặc kiểm tra prompt hiện có.</small></span>
+          <textarea id="chromaPrompt" rows="5"></textarea>
+          <span class="llm-assist-row"><span class="llm-assist-actions"><button id="suggestChromaPromptButton" type="button" class="llm-assist-button">✦ Gợi ý</button><button id="optimizeChromaPromptButton" type="button" class="llm-assist-button">Viết rõ hơn</button><button id="analyzeChromaPromptButton" type="button" class="llm-assist-button">Kiểm tra</button></span><small id="chromaPromptAssistStatus">Có thể bắt đầu bằng một câu ngắn; trợ lý sẽ giúp hoàn thiện.</small></span>
         </label>
+        <details id="promptBuilder" class="prompt-builder">
+          <summary><span>✦ Trợ lý mô tả ảnh</span><small>Ý tưởng, ảnh tham khảo và Prompt Builder</small></summary>
+          <div class="prompt-builder-toolbar"><label>Nội dung preset<select id="promptBuilderPresetVersion"><option value="quality-v2">Bản mở rộng · đang kiểm chứng</option><option value="quality-v1">Bản gốc</option></select></label><label>Preset<select id="promptBuilderPreset"><option value="">Tự thiết lập</option><option value="portrait">Chân dung</option><option value="product">Sản phẩm</option><option value="cinematic">Điện ảnh</option><option value="illustration">Minh họa</option><option value="architecture">Kiến trúc</option></select></label><button id="promptBuilderAi" type="button">AI hoàn thiện</button></div>
+          <section class="prompt-reference"><label>Ảnh tham khảo · tối đa 4<input id="promptReferenceImage" type="file" multiple accept="image/png,image/jpeg,image/webp"></label><label>Chế độ<select id="promptReferenceMode"><option value="faithful description">Mô tả trung thực</option><option value="style only, replace the subject">Học phong cách</option><option value="creative variation preserving key visual traits">Tạo biến thể</option></select></label><div id="promptReferenceList" class="prompt-reference-list"></div><button id="promptBuilderAnalyzeImage" type="button" disabled>Phân tích ảnh thành prompt</button></section>
+          <div class="prompt-blocks">
+            <label>Chủ thể <span><input id="promptLock-subject" type="checkbox"> Khóa</span><textarea id="promptBlock-subject" rows="2" aria-description="Nhân vật, sản phẩm hoặc đối tượng chính"></textarea></label>
+            <label>Bối cảnh <span><input id="promptLock-environment" type="checkbox"> Khóa</span><textarea id="promptBlock-environment" rows="2" aria-description="Không gian, thời điểm, thời tiết"></textarea></label>
+            <label>Hành động <span><input id="promptLock-action" type="checkbox"> Khóa</span><textarea id="promptBlock-action" rows="2" aria-description="Tư thế, chuyển động, tương tác"></textarea></label>
+            <label>Bố cục <span><input id="promptLock-composition" type="checkbox"> Khóa</span><textarea id="promptBlock-composition" rows="2" aria-description="Góc máy, cỡ cảnh, điểm nhìn"></textarea></label>
+            <label>Phong cách <span><input id="promptLock-style" type="checkbox"> Khóa</span><textarea id="promptBlock-style" rows="2" aria-description="Ảnh thật, minh họa hoặc 3D"></textarea></label>
+            <label>Ánh sáng <span><input id="promptLock-lighting" type="checkbox"> Khóa</span><textarea id="promptBlock-lighting" rows="2" aria-description="Nguồn sáng, độ tương phản"></textarea></label>
+            <label>Màu sắc <span><input id="promptLock-color" type="checkbox"> Khóa</span><textarea id="promptBlock-color" rows="2" aria-description="Bảng màu, sắc độ"></textarea></label>
+            <label>Chất liệu <span><input id="promptLock-materials" type="checkbox"> Khóa</span><textarea id="promptBlock-materials" rows="2" aria-description="Bề mặt, vật liệu, chi tiết"></textarea></label>
+            <label>Ràng buộc <span><input id="promptLock-constraints" type="checkbox"> Khóa</span><textarea id="promptBlock-constraints" rows="2" aria-description="Nội dung bắt buộc phải giữ"></textarea></label>
+          </div>
+          <div class="prompt-builder-preview"><strong>Prompt tổng hợp</strong><p id="promptBuilderPreview"></p></div>
+          <section id="promptBuilderConflicts" class="prompt-builder-conflicts" hidden aria-live="polite"></section>
+          <small id="promptBuilderAdapter">Prompt sẽ được điều chỉnh theo model đang chọn.</small>
+          <div class="button-row"><button id="promptBuilderApply" type="button" class="primary">Dùng prompt này</button><button id="promptBuilderVariants" type="button">Tạo 3 biến thể</button></div>
+          <div id="promptBuilderVariantList" class="prompt-variant-list"></div><small id="promptBuilderStatus" role="status">Mọi thay đổi đều được xem trước trước khi áp dụng.</small>
+        </details>
         <label>Điều cần tránh
           <textarea id="chromaNegativePrompt" rows="2"></textarea>
           <span class="llm-assist-row"><span class="llm-assist-actions"><button id="suggestNegativePromptButton" type="button" class="llm-assist-button">✦ Gợi ý</button><button id="optimizeNegativePromptButton" type="button" class="llm-assist-button">Tối ưu negative</button></span><small id="negativePromptAssistStatus">Loại trùng lặp và mâu thuẫn với prompt.</small></span>
         </label>
-        <fieldset class="text-quality-options"><legend>Chất lượng</legend><div id="textToImagePreset" class="button-row" role="group" aria-label="Chất lượng tạo ảnh"><button type="button" data-text-quality="fast" aria-pressed="false">Nhanh</button><button type="button" data-text-quality="balanced" aria-pressed="false">Cân bằng</button><button type="button" data-text-quality="quality" aria-pressed="true" class="active">Chi tiết</button></div><small id="textToImagePresetHint">Chọn mức phù hợp, sau đó hoàn thiện phương án bạn muốn giữ.</small></fieldset>
+        <fieldset class="text-quality-options"><legend>Chất lượng</legend><div id="textToImagePreset" class="button-row" role="group" aria-label="Chất lượng tạo ảnh"><button type="button" data-text-quality="fast" aria-pressed="false">Nhanh</button><button type="button" data-text-quality="balanced" aria-pressed="true" class="active">Cân bằng</button><button type="button" data-text-quality="quality" aria-pressed="false">Chi tiết</button></div><small id="textToImagePresetHint">Cân bằng phù hợp cho phần lớn lượt tạo.</small></fieldset>
         <details class="advanced-panel"><summary>Thiết lập nâng cao</summary>
         <div class="compact-grid">
           <label class="seed-field">Seed<div class="seed-control"><select id="chromaSeedMode" aria-label="Chế độ seed"><option value="default">Seed cố định 433</option><option value="random" selected>Ngẫu nhiên mỗi lượt</option><option value="custom">Tùy chỉnh</option></select><div><input id="chromaSeed" type="number" min="0" max="2147483647" value="433" data-default-seed="433"><button id="chromaSeedRandom" type="button" title="Tạo seed tùy chỉnh ngẫu nhiên" aria-label="Tạo seed tùy chỉnh ngẫu nhiên">🎲</button><button id="chromaSeedReset" type="button" title="Đặt lại seed mặc định" aria-label="Đặt lại seed mặc định">↺</button></div></div></label>
@@ -601,22 +668,15 @@
         </div>
         </details>
         <label>Mức bám mô tả<input id="chromaGuidance" type="number" min="1" max="8" step="0.1" value="4.5"></label>
-        <label id="chromaSlgLabel"><input id="chromaSlg" type="checkbox"> Hỗ trợ cấu trúc cơ thể (thử nghiệm, SD3.5)</label>
+        <label id="chromaSlgLabel" hidden><input id="chromaSlg" type="checkbox"> Hỗ trợ cấu trúc cơ thể</label>
         <section id="newImageComposition" class="new-image-composition">
           <label class="new-image-framing">Khung hình<select id="chromaFraming"><option value="as-described">Theo mô tả</option><option value="full-body-hands">Toàn thân, thấy rõ bàn tay</option></select><small>Thêm hướng dẫn bố cục khi chọn toàn thân. Xem nội dung gửi vào model ở phần kiểm tra.</small></label>
           <label>Tỷ lệ ảnh<select id="chromaAspect"><option>1:1</option><option>4:5</option><option>2:3</option><option>3:2</option><option>16:9</option><option>9:16</option></select></label>
           <small id="newImageDimensions">Chọn tỷ lệ trước khi tạo bố cục.</small>
         </section>
-        <details id="newImageClipFields"><summary>Mô tả ngắn cho CLIP khi nội dung dài</summary>
-          <p>SD3.5 giữ mô tả đầy đủ trong T5. Hai bộ CLIP cần bản ngắn tối đa 77 token; để trống để dùng mô tả chính.</p>
-          <label>Mô tả ngắn cho CLIP<textarea id="chromaClipPrompt" rows="2"></textarea></label>
-          <button id="suggestClipPrompt" type="button">Gợi ý bản ngắn để xem trước</button>
-          <small id="clipPromptAssistStatus"></small>
-          <label>Điều cần tránh ngắn cho CLIP<textarea id="chromaClipNegative" rows="2"></textarea></label>
-        </details>
         <button id="newImageCheck" type="button">Kiểm tra trước khi tạo</button>
         <div id="newImagePlan" class="new-image-plan" aria-live="polite">Kiểm tra mô tả trước khi nạp model; không tự cắt nội dung.</div>
-        <button id="chromaGenerateButton" class="primary">Tạo ảnh</button>
+        <button id="chromaGenerateButton" class="primary">Tạo ảnh mới</button>
       </details>
       <details class="inpaint-panel" id="offlineModelPanel">
         <summary>Quản lý model offline</summary>
@@ -683,6 +743,7 @@
           <label>Tên hiển thị<input id="urlModelName"></label>
           <label>Loại<select id="urlModelKind"><option value="text-to-image">Tạo ảnh từ mô tả</option><option value="inpaint">Inpainting</option><option value="checkpoint">Checkpoint</option><option value="adapter">Adapter / LoRA</option><option value="controlnet">ControlNet</option><option value="vae">VAE</option><option value="custom">Khác</option></select></label>
           <label>Kiến trúc<select id="urlModelArchitecture"><option value="auto">Tự nhận diện</option><option value="sd35">SD3 / SD3.5</option><option value="sdxl">SDXL</option><option value="sd15">SD1.5</option><option value="sd2">SD2</option></select></label>
+          <label>Bộ mã hóa prompt<select id="urlModelTextEncoder"><option value="t5">T5</option><option value="qwen">Qwen</option><option value="none">Không dùng prompt</option><option value="unknown">Chưa xác định</option></select></label>
           <label class="url-wide">Thư mục cài đặt<input id="urlModelTarget"></label>
           <label class="check-row"><input id="urlModelAutoConvert" type="checkbox"> Đánh dấu chuyển đổi sang Diffusers khi cần</label>
           <label class="check-row"><input id="urlModelLicenseAccepted" type="checkbox"> Tôi đã đọc và chấp nhận giấy phép model</label>
@@ -692,7 +753,8 @@
         <label>ID model<input id="modelId"></label>
         <label>Tên model<input id="modelName"></label>
         <label>Loại<select id="modelKind"><option value="text-to-image">Tạo ảnh từ mô tả</option><option value="inpaint">Inpainting</option><option value="tryon">Try-on</option><option value="segmentation">Phân đoạn</option><option value="pose">Pose</option><option value="vae">VAE</option><option value="custom">Khác</option></select></label>
-        <label>Kiến trúc Inpainting<select id="modelArchitecture"><option value="auto">Tự nhận diện</option><option value="sd35">SD3 / SD3.5</option><option value="sdxl">SDXL</option><option value="sd15">SD1.5</option><option value="sd2">SD2</option></select></label>
+        <label>Kiến trúc<select id="modelArchitecture"><option value="auto">Tự nhận diện</option><option value="flux">FLUX</option><option value="flux2">FLUX.2</option><option value="sd35">SD3 / SD3.5</option><option value="sdxl">SDXL</option><option value="sd15">SD1.5</option><option value="sd2">SD2</option></select></label>
+        <label>Bộ mã hóa prompt<select id="modelTextEncoder"><option value="t5">T5</option><option value="qwen">Qwen</option><option value="none">Không dùng prompt</option><option value="unknown">Chưa xác định</option></select></label>
         <label>Đường dẫn nội bộ hoặc tuyệt đối<input id="modelPath"></label>
         <label>Khóa cấu hình<input id="modelConfigKey"></label>
         <label>Giấy phép<input id="modelLicense"></label>
@@ -846,7 +908,7 @@
   </dialog>
 
   <dialog id="imageViewerDialog" class="image-viewer-dialog" aria-labelledby="imageViewerTitle">
-    <header class="image-viewer-header"><div><strong id="imageViewerTitle">Ảnh ở kích thước 100%</strong><small id="imageViewerMeta">Nhấp đúp vào ảnh bất kỳ để mở.</small></div><div class="button-row"><button id="toggleViewerFitButton" type="button" aria-pressed="false">Xem toàn ảnh</button><button id="saveViewerImageButton" type="button" disabled>Lưu ảnh kích thước gốc</button><button id="closeImageViewer" type="button">Đóng</button></div></header>
+    <header class="image-viewer-header"><div><strong id="imageViewerTitle">Ảnh ở kích thước 100%</strong><small id="imageViewerMeta">Nhấp đúp vào ảnh bất kỳ để mở.</small></div><div class="button-row"><button id="sendViewerImageToStudioButton" class="primary" type="button" disabled>Dùng trong Studio</button><button id="toggleViewerFitButton" type="button" aria-pressed="false">Xem toàn ảnh</button><button id="saveViewerImageButton" type="button" disabled>Lưu ảnh kích thước gốc</button><button id="closeImageViewer" class="image-viewer-close" type="button" aria-label="Đóng trình xem ảnh" title="Đóng trình xem ảnh"><span aria-hidden="true">×</span></button></div></header>
     <div id="imagePromptTrace" hidden></div>
     <div class="image-viewer-canvas"><img id="imageViewerImage" alt="Ảnh phóng to"></div>
   </dialog>
@@ -880,15 +942,48 @@
     <div class="button-row"><button id="applyPromptAssistButton" class="primary">Áp dụng bản nháp</button><button id="copyPromptAssistButton">Sao chép</button><button id="keepPromptAssistButton">Giữ nội dung hiện tại</button></div>
   </dialog>
 
+  <dialog id="safeExitDialog" class="safe-exit-dialog" aria-labelledby="safeExitTitle">
+    <form method="dialog">
+      <div class="safe-exit-icon" aria-hidden="true">⏻</div>
+      <h2 id="safeExitTitle">Đóng AI Atelier?</h2>
+      <p id="safeExitSummary">Các thay đổi đã lưu sẽ được giữ trên máy.</p>
+      <div id="safeExitNotice" class="safe-exit-notice" role="status"></div>
+      <div class="button-row">
+        <button id="confirmSafeExit" class="primary" type="button">Đóng ứng dụng</button>
+        <button type="submit" value="cancel">Ở lại</button>
+      </div>
+      <small>Trình duyệt có thể yêu cầu bạn xác nhận nếu còn bản nháp chưa lưu.</small>
+    </form>
+  </dialog>
+
   <dialog id="jsonEditorDialog" class="json-editor-dialog" aria-labelledby="jsonEditorTitle">
     <header class="json-editor-header"><div><h2 id="jsonEditorTitle">Chỉnh sửa cấu hình JSON</h2><span id="jsonEditorDirty" class="json-editor-dirty"></span></div><button id="jsonEditorClose" type="button">Đóng</button></header>
     <p>Chỉnh sửa toàn bộ trường, thêm/xóa phần tử hoặc dùng JSON trực tiếp. Thay đổi được giữ trong bản nháp cho đến khi bấm Lưu; mỗi lần lưu đều sao lưu bản trước.</p>
     <div class="json-editor-toolbar"><label class="json-editor-file">Tệp<select id="jsonEditorFile"></select></label><label>Nhóm<select id="jsonEditorGroup"></select></label><label>Chế độ<select id="jsonEditorMode"><option value="form">Biểu mẫu</option><option value="raw">JSON</option></select></label><label>Tìm trường<input id="jsonEditorSearch" type="search"></label></div>
     <small id="jsonEditorPath" class="json-editor-path"></small>
+    <div class="json-editor-toolbar"><label>Tính năng<select id="jsonEditorFeature"></select></label></div>
+    <details id="jsonEditorTaskPanel"><summary>Xem trước prompt theo tác vụ và kiểm tra token</summary><div class="json-editor-toolbar"><label>Tác vụ<select id="jsonEditorTask"></select></label><label>ID model kiểm tra token (tùy chọn)<input id="jsonEditorTokenModel"></label></div><label>Dữ liệu thay biến (JSON)<textarea id="jsonEditorVariables" rows="3" spellcheck="false">{}</textarea></label><button id="jsonEditorPreview" type="button">Ghép bản xem trước</button><pre id="jsonEditorPreviewOutput" style="white-space:pre-wrap;overflow-wrap:anywhere" aria-live="polite"></pre></details>
     <div id="jsonEditorForm"></div><textarea id="jsonEditorRaw" class="json-editor-raw" aria-label="Nội dung JSON của nhóm đang chọn" spellcheck="false" hidden></textarea>
     <div class="json-editor-toolbar"><button id="jsonEditorFormat" type="button">Định dạng</button><button id="jsonEditorValidate" type="button">Kiểm tra thay đổi</button><button id="jsonEditorSave" type="button" class="primary">Lưu cấu hình</button><button id="jsonEditorReload" type="button">Bỏ bản nháp / tải lại</button><button id="jsonEditorExport" type="button">Xuất toàn bộ tệp</button><label>Nhập tệp vào bản nháp<input id="jsonEditorImport" type="file" accept=".json,application/json"></label></div>
     <div class="json-editor-toolbar"><label>Bản sao lưu<select id="jsonEditorBackup"></select></label><button id="jsonEditorRestore" type="button">Khôi phục bản đã chọn</button></div>
     <p id="jsonEditorStatus" class="json-editor-status" role="status" aria-live="polite"></p>
+  </dialog>
+  <dialog id="anatomyPartsDialog" class="json-editor-dialog" aria-labelledby="anatomyPartsTitle">
+    <header class="json-editor-header"><div><h2 id="anatomyPartsTitle">Quản lý phạm vi bộ phận</h2><span id="anatomyPartsDirty" class="json-editor-dirty"></span></div><button id="anatomyPartsClose" type="button">Đóng</button></header>
+    <p>Các chỉ số khớp dùng chuẩn COCO 0–16. Thay đổi chỉ có hiệu lực sau khi lưu và kiểm tra lại vùng sửa.</p>
+    <div class="json-editor-toolbar"><label>Danh sách bộ phận<select id="anatomyPartsList" size="10"></select></label><div class="button-row"><button id="anatomyPartAdd" type="button">Thêm</button><button id="anatomyPartDelete" class="danger" type="button">Xóa</button></div></div>
+    <section class="anatomy-part-form">
+      <label>ID kỹ thuật<input id="anatomyPartId" maxlength="64" pattern="[a-z][a-z0-9_-]+"></label>
+      <label>Tên hiển thị<input id="anatomyPartLabel" maxlength="80"></label>
+      <label>Phía cơ thể<select id="anatomyPartSide"><option value="left">Trái</option><option value="right">Phải</option><option value="center">Giữa</option></select></label>
+      <label>Loại hình học<select id="anatomyPartKind"><option value="hand">Bàn tay</option><option value="foot">Bàn chân</option><option value="limb">Chi</option><option value="region">Vùng</option></select></label>
+      <label>Khớp, cách nhau bằng dấu phẩy<input id="anatomyPartJoints"></label>
+      <label>Đoạn xương, mỗi đoạn một dòng<textarea id="anatomyPartSegments" rows="3"></textarea></label>
+      <fieldset><legend>Độ rộng mask theo vai</legend><label>An toàn<input id="anatomyMaskSafe" type="number" min="0.05" max="1.5" step="0.01"></label><label>Cân bằng<input id="anatomyMaskBalanced" type="number" min="0.05" max="1.5" step="0.01"></label><label>Nghiêm ngặt<input id="anatomyMaskStrict" type="number" min="0.05" max="1.5" step="0.01"></label><label>Hệ số đầu mút<input id="anatomyEndpointScale" type="number" min="0.5" max="4" step="0.05"></label><label>Bán kính tối thiểu<input id="anatomyMinimumRadius" type="number" min="4" max="128" step="1"></label><label id="anatomyEllipseRatioLabel">Tỷ lệ ellipse bàn chân<input id="anatomyEllipseRatio" type="number" min="1" max="4" step="0.1"></label></fieldset>
+      <fieldset><legend>Điểm tối thiểu để được chọn</legend><label>An toàn<input id="anatomyQualitySafe" type="number" min="0" max="100"></label><label>Cân bằng<input id="anatomyQualityBalanced" type="number" min="0" max="100"></label><label>Nghiêm ngặt<input id="anatomyQualityStrict" type="number" min="0" max="100"></label></fieldset>
+    </section>
+    <div class="button-row"><button id="anatomyPartsSave" class="primary" type="button">Lưu danh sách</button><button id="anatomyPartsReset" type="button">Khôi phục mặc định</button></div>
+    <p id="anatomyPartsStatus" role="status" aria-live="polite"></p>
   </dialog>
   <script src="/json-editor.js"></script>
   <script src="/ui-state.js"></script>
@@ -904,6 +999,8 @@
   <script src="/image-enhancement.js"></script>
   <script src="/makeup.js"></script>
   <script src="/character.js"></script>
+  <script src="/anatomy-inpaint.js"></script>
+  <script src="/anatomy-parts-manager.js"></script>
   <script src="/character-extra.js"></script>
   <script src="/makeup-library.js"></script>
   <script src="/makeup-compare.js"></script>
@@ -913,6 +1010,8 @@
   <script src="/creative-review.js"></script>
   <script src="/backup-ui.js"></script>
   <script src="/app.js"></script>
+  <script src="/prompt-quality.js"></script>
+  <script src="/prompt-builder.js"></script>
   <script src="/new-image.js"></script>
   <script src="/manual-core.js"></script>
   <script src="/export-core.js"></script>
@@ -921,5 +1020,6 @@
   <script src="/manual-workflow.js"></script>
   <script src="/manual-editor.js"></script>
   <script src="/shared-regions.js"></script>
+  <script src="/safe-exit.js"></script>
 </body>
 </html>

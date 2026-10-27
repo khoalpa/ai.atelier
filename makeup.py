@@ -1,3 +1,4 @@
+from prompt_catalog import prompt_text, prompt_template, catalog_value, CatalogMap, read_catalog
 """Offline face landmarks, localized cosmetics and optional SDXL makeup refinement."""
 import base64
 import hashlib
@@ -29,7 +30,7 @@ BROWS = [[70,63,105,66,107,55,65,52,53,46], [300,293,334,296,336,285,295,282,283
 
 
 def styles(root):
-    return json.loads((Path(root) / 'app/makeup-styles.json').read_text(encoding='utf-8'))
+    return read_catalog(Path(root) / 'workspace/prompts.json')['featurePresets']['makeup.styles']
 
 
 def configuration(root):
@@ -262,8 +263,8 @@ def ai_candidates(source, masks, allowed, box, settings, env, active, progress):
         if not torch.cuda.is_available():pipe.to(dtype=torch.float32)
         strength={'light':.28,'medium':.4,'bold':.52}[settings['intensity']]
         steps=math.ceil(16/strength); effective=int(steps*strength)
-        prompt=settings['prompt']+', same person, unchanged facial features, original skin tone, realistic skin texture, original lighting'
-        negative='different face, changed expression, changed eye color, plastic skin, blur, deformed, text, watermark'
+        prompt=settings['prompt']+prompt_text('makeup.preserve')
+        negative=prompt_text('makeup.negative')
         for variant in range(env.get('makeup_variant_count',2)):
             active()
             conditioned=color_candidate(source,masks,settings,variant)

@@ -1,3 +1,4 @@
+from prompt_catalog import prompt_text, prompt_template, catalog_value, CatalogMap, read_catalog
 """Local object-removal geometry and conservative quality checks; no model loading."""
 import math
 
@@ -10,9 +11,10 @@ def model_settings(body, profile, architecture):
     """Explicit values win over defaults, including deliberately low strength."""
     limits = {"guidance": (1.0, 50.0 if architecture == "flux" else 12.0),
               "strength": (0.2, 1.0), "steps": (4, 60), "maxSide": (512, 1024)}
-    defaults = dict(guidance=profile.get("guidance", 30 if architecture == "flux" else 6),
-                    strength=profile.get("strength", 1.0), steps=profile.get("steps", 40),
-                    maxSide=profile.get("nativeResolution", 1024))
+    baseline = catalog_value('runtimePresets', 'objectRemovalDefaults')
+    defaults = dict(guidance=profile.get("guidance", baseline["guidance"]["flux" if architecture == "flux" else "standard"]),
+                    strength=profile.get("strength", baseline["strength"]), steps=profile.get("steps", baseline["steps"]),
+                    maxSide=profile.get("nativeResolution", baseline["maxSide"]))
     values = {}
     for key, (low, high) in limits.items():
         value = float(body.get(key, defaults[key]))

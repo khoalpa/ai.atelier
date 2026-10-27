@@ -73,7 +73,7 @@
   function init(){
     referenceGuide();
     for(const id of ['inpaintModelSelect','tryonModelSelect','textToImageModel'])document.getElementById(id)?.closest('label')?.classList.add('expert-only');
-    const preview=document.createElement('button');preview.type='button';preview.textContent='Xem trước vùng xử lý';preview.id='scopePreviewButton';preview.onclick=showPreview;document.getElementById('journeyContent').append(preview);
+    const preview=document.createElement('button');preview.type='button';preview.textContent='Kiểm tra vùng xóa';preview.id='scopePreviewButton';preview.onclick=showPreview;document.getElementById('journeyContent').append(preview);
     const history=document.createElement('details');history.id='editHistory';history.className='studio-guidance';document.getElementById('journeyContent').append(history);renderHistory();
     document.addEventListener('change',event=>{if(event.target.matches('[data-benchmark-labels]'))attachRepairHint(event.target);});
   }

@@ -52,9 +52,9 @@ class NewImageTests(unittest.TestCase):
         self.run_image(negativePrompt='')
         self.assertEqual(self.infer.call_args.kwargs['negative_prompt'],[''])
         self.assertGreater(len(result['prompt']),600)
-    def test_preflight_blocks_before_model_load(self):
+    def test_clip_text_models_are_permanently_blocked_before_model_load(self):
         self.set_model('StableDiffusion3Pipeline')
-        with self.assertRaisesRegex(ValueError,'CLIP'):
+        with self.assertRaisesRegex(ValueError,'CLIP.*loại vĩnh viễn'):
             self.run_image(prompt='word '*100)
         self.env['load_text_to_image_pipe'].assert_not_called()
     def test_framing_is_explicit_traced_and_not_duplicated_on_refine(self):
@@ -69,11 +69,10 @@ class NewImageTests(unittest.TestCase):
         again=ni.plan(saved['request'],self.model,'model')
         self.assertEqual(again['inputs']['prompt'],[ni.FRAMING['full-body-hands']+original])
         with self.assertRaises(ValueError):self.plan(framing='invalid')
-    def test_separate_clip_preserves_full_t5(self):
-        self.set_model('StableDiffusion3Pipeline');full='word '*100
-        result=self.plan(prompt=full,clipPrompt='blue shirt')
-        self.assertTrue(result['valid']);self.assertEqual(result['inputs']['prompt_3'],[full])
-        self.assertEqual(result['inputs']['prompt'],['blue shirt'])
+    def test_legacy_clip_fields_do_not_change_t5_prompt(self):
+        full='word '*100
+        result=self.plan(prompt=full,clipPrompt='ignored legacy value',clipNegativePrompt='ignored')
+        self.assertTrue(result['valid']);self.assertEqual(result['inputs']['prompt'],[full])
     def test_klein_controls_and_wrapper_budget(self):
         self.set_model('Flux2KleinPipeline')
         result=self.run_image(steps=45,guidance=7,negativePrompt='blur')

@@ -57,7 +57,7 @@ async function requestPromptSuggestion({task,targetId,buttonId,statusId,includeI
   status.parentElement.classList.remove('is-success','is-error');status.textContent='LLM đang chuẩn bị bản nháp để bạn xem trước…';
   try {
     const payload={task,currentText:previous,context};
-    if(['chromaPrompt','chromaNegativePrompt','chromaClipPrompt'].includes(targetId)){payload.imageModelId=deps.$('textToImageModel').value;payload.shortClip=targetId==='chromaClipPrompt';if(targetId==='chromaClipPrompt'&&!previous)payload.currentText=deps.$('chromaPrompt').value;}
+    if(['chromaPrompt','chromaNegativePrompt'].includes(targetId))payload.imageModelId=deps.$('textToImageModel').value;
     if(includeImage&&deps.current)payload.sampleId=deps.current.id;if(includeMask&&deps.current)payload.mask=deps.binaryMaskDataUrl(false);
     const response=await fetch('/api/prompt-assist',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     const result=await response.json().catch(()=>({}));if(!response.ok||!result.ok)throw new Error(result.error||'Không thể tạo gợi ý');

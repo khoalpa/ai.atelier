@@ -3,20 +3,24 @@ from services.ai.runtime import metadata
 from services.ai.runtime.configuration import JOBS_DIR
 from services.ai.runtime.factory import task_context
 from services.ai.runtime.jobs import update_job
-from services.ai.tasks.generate import chroma_generate, sd35_conditioned_generate, sdxl_conditioned_generate
+from services.ai.tasks.generate import chroma_generate, qwen_depth_generate, sd35_conditioned_generate, sdxl_conditioned_generate
 from services.ai.tasks.inpaint import inpaint
 from services.ai.tasks.outpaint import outpaint
 from services.ai.tasks.tryon import batch_tryon, tryon
 
 
 def dispatch_generation(route, body):
+    if route == '/anatomy-inpaint':
+        from services.ai.tasks.anatomy_inpaint import run
+        return run(body, task_context())
     if route == '/tryon': return tryon(body)
     if route == '/batch-tryon': return batch_tryon(body)
     if route == '/inpaint': return inpaint(body)
     if route == '/outpaint': return outpaint(body)
     if route == '/chroma-generate': return chroma_generate(body)
-    if route == '/sd35-conditioned-generate': return sd35_conditioned_generate(body)
-    if route == '/sdxl-conditioned-generate': return sdxl_conditioned_generate(body)
+    if route in ('/sd35-conditioned-generate','/sdxl-conditioned-generate'):
+        raise ValueError('Tác vụ ControlNet dùng token CLIP đã bị loại vĩnh viễn.')
+    if route == '/qwen-depth-generate': return qwen_depth_generate(body)
     if route == '/enhance':
         from image_enhancement import enhance
         return enhance(body, task_context())
@@ -39,6 +43,8 @@ def resume_job(body: dict) -> dict:
     if not safe_job_id or not metadata.exists(request_file):
         raise ValueError("Tác vụ không có điểm kiểm tra để tiếp tục")
     request = metadata.read(request_file)
+    if request.get('replayAllowed') is False or request.get('replayBlockedReason') == 'clip-text-policy':
+        raise ValueError('Tác vụ lịch sử dùng token CLIP chỉ được xem, không thể chạy lại.')
     request.update(jobId=job_id, resume=True)
     if request.get('_route'):
         update_job(job_id, cancelRequested=False, status='running', error=None, response=None)
@@ -62,12 +68,15 @@ def resume_job(body: dict) -> dict:
     if task_type == "outpaint":
         update_job(job_id, cancelRequested=False, status="running", error=None)
         return outpaint(request)
-    if task_type == "inpaint":
+    if task_type in ("inpaint", "anatomy-inpaint"):
         # Diffusion schedulers cannot safely resume from an arbitrary latent step.
         # Replay the saved request with the same seed instead.
         update_job(job_id, cancelRequested=False, status="running", stage="inpaint-validating",
                    resumable=True, error=None,
                    _event={"type":"job.resumed", "message":"Đang chạy lại Inpainting từ đầu với cùng cấu hình và seed"})
+        if task_type == "anatomy-inpaint":
+            from services.ai.tasks.anatomy_inpaint import run
+            return run(request, task_context())
         return inpaint(request)
     update_job(job_id, cancelRequested=False, status="running", error=None)
     return batch_tryon(request)

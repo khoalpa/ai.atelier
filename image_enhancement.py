@@ -1,3 +1,4 @@
+from prompt_catalog import prompt_text, prompt_template, catalog_value, CatalogMap, read_catalog
 """Offline enhancement and explicitly selected skin retouching; no runtime downloads."""
 import base64
 import hashlib
@@ -21,8 +22,8 @@ MAX_PIXELS = 16_777_216
 MAX_SIDE = 8192
 MODEL_NAME = 'RealESRGAN_x2plus'
 MODEL_SHA = '49fafd45f8fd7aa8d31ab2a22d14d91b536c34494a5cfe31eb5d89c2fa266abb'
-LEVELS = {'light': .35, 'balanced': .65, 'strong': 1.0}
-PROFILES = {'product': (.85, 0.0), 'portrait': (.55, .10), 'general': (1.0, .25)}
+LEVELS = CatalogMap("featurePresets", 'enhancement.levels')
+PROFILES = CatalogMap("featurePresets", 'enhancement.profiles')
 
 
 def model_path(root):
