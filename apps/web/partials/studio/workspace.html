@@ -1,0 +1,78 @@
+    <section class="workspace" aria-label="Không gian chỉnh sửa">
+      <div class="canvas-toolbar">
+        <div class="canvas-image-actions"><span id="imageInfo">—</span><button id="saveFullSizeImageButton" type="button" title="Tải tệp ảnh gốc, giữ nguyên số pixel và chất lượng" disabled>Lưu ảnh kích thước gốc</button><button id="deselectImageButton" disabled>Bỏ chọn ảnh</button></div>
+        <span>Đỏ: vùng sẽ chỉnh · Ngoài vùng: được bảo vệ</span>
+      </div>
+      <div id="canvasWrap" class="canvas-wrap">
+        <div class="editor-zoom-controls" role="group" aria-label="Thu phóng khi sửa mask">
+          <button id="editorZoomOut" type="button" aria-label="Thu nhỏ ảnh">−</button>
+          <output id="editorZoomValue" aria-live="polite" title="Tỷ lệ so với chế độ vừa khung">100%</output>
+          <button id="editorZoomIn" type="button" aria-label="Phóng to ảnh">+</button>
+          <button id="editorZoomFit" type="button">Vừa khung</button>
+          <button id="editorPanToggle" type="button" aria-pressed="false">Di chuyển ảnh</button>
+          <small>Cuộn để zoom · Alt + kéo để di chuyển</small>
+        </div>
+        <section id="outpaintStage" class="outpaint-stage" hidden>
+          <p>Vùng ô caro sẽ được AI tạo thêm. Kéo ảnh để đặt bố cục, hoặc nhập vị trí ở bảng thiết lập.</p>
+          <canvas id="outpaintPreview" aria-label="Xem trước khung ảnh mở rộng; dùng các ô vị trí để điều chỉnh bằng bàn phím"></canvas>
+        </section>
+        <canvas id="editorCanvas" title="Nhấp đôi để mở ảnh gốc ở kích thước 100%"></canvas>
+        <section id="editorLiveProgress" class="generation-live" hidden aria-live="polite"></section>
+        <div id="emptyCanvasState" class="canvas-empty-state" hidden><strong>Chưa chọn ảnh</strong><p>Chọn ảnh nguồn trong bảng Thiết lập để bắt đầu.</p></div>
+        <div id="loading" class="loading">Đang tải ảnh…</div>
+      </div>
+      <section id="studioResultsTray" class="studio-results-tray" hidden aria-label="Kết quả mới">
+        <header class="studio-results-head">
+          <div><span class="studio-result-status" aria-hidden="true"></span><strong>Kết quả mới</strong><small id="studioResultsMeta">Chọn một phương án để xem.</small></div>
+          <button id="studioCloseResults" class="studio-results-close" type="button" aria-label="Đóng kết quả">Đóng</button>
+        </header>
+        <div class="studio-results-layout">
+          <aside class="studio-results-options" aria-label="Danh sách phương án">
+            <div id="studioResultsFilmstrip" class="studio-results-filmstrip"></div>
+            <button id="studioRetryResults" type="button">＋ Tạo thêm phương án</button>
+          </aside>
+          <div id="studioCompareStage" class="studio-inline-compare" hidden>
+            <div class="studio-compare-images"><img id="studioCompareBefore" alt="Ảnh trước khi chỉnh sửa"><div id="studioCompareAfterWrap"><img id="studioCompareAfter" alt="Ảnh sau khi chỉnh sửa"></div></div>
+            <div class="studio-focus-meta">
+              <div><strong id="studioFocusTitle">Phương án đang xem</strong><small id="studioFocusDescription">Kết quả chỉnh sửa mới</small></div>
+              <span id="studioFocusStatus">Đang xem · Chưa chọn</span>
+            </div>
+            <div class="studio-focus-actions">
+              <button id="studioChooseResult" class="primary" type="button">Chọn làm kết quả cuối</button>
+              <span id="studioOutpaintContextActions"></span>
+              <span id="studioCharacterContextActions" class="character-result-actions" hidden></span>
+            </div>
+            <label>Trước / Sau <input id="studioCompareSlider" type="range" min="0" max="100" value="100"></label>
+          </div>
+          <aside class="studio-result-actions" aria-label="Hành động với kết quả">
+            <div><p class="eyebrow">PHƯƠNG ÁN ĐANG XEM</p><h3 id="studioActionTitle">Kết quả chỉnh sửa</h3><p id="studioActionDescription">Chọn một phương án ở bên trái để xem chi tiết.</p></div>
+            <div id="studioSelectionSummary" class="studio-selection-summary" aria-live="polite">
+              <span id="studioSelectionState">CHƯA CHỌN KẾT QUẢ CUỐI</span>
+              <strong id="studioSelectionTitle">Hãy chọn phương án phù hợp</strong>
+              <small id="studioSelectionHint">Bạn có thể xem các ảnh khác mà không làm mất lựa chọn.</small>
+              <button id="studioConfirmResult" class="primary" type="button" disabled>Xác nhận kết quả cuối</button>
+              <div class="studio-next-task" aria-label="Tiếp tục từ phương án đã chọn">
+                <strong>Tác vụ tiếp theo</strong>
+                <small>Dùng phương án đã chọn làm ảnh nguồn mới.</small>
+                <button id="studioContinueInpaint" type="button" disabled>Xóa vật thể tiếp →</button>
+                <button id="studioContinueTryon" type="button" disabled>Thay trang phục tiếp →</button>
+                <button id="studioContinueEnhance" type="button" disabled>Cải thiện ảnh này →</button>
+                <button id="studioContinueOutpaint" type="button" disabled>Mở rộng ảnh tiếp →</button>
+                <button id="studioContinueCharacter" type="button" disabled>Đổi tư thế & biểu cảm tiếp →</button>
+                <button id="studioManualResult" type="button" disabled>Chỉnh sửa thủ công →</button>
+              </div>
+            </div>
+            <div class="studio-result-action-buttons">
+              <button id="studioSendToReview" type="button" disabled>Gửi sang Duyệt</button>
+              <a id="studioDownloadResult" class="button-link" href="#" download>Tải ảnh</a>
+              <button id="studioShowAllResults" type="button">Xem tất cả kết quả</button>
+            </div>
+          </aside>
+        </div>
+      </section>
+      <footer id="studioCommandBar" class="studio-command-bar" aria-label="Hành động Studio">
+        <button id="studioCommandToggle" class="studio-command-toggle" type="button" aria-expanded="true" aria-label="Thu gọn thanh tác vụ" title="Thu gọn thanh tác vụ"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g class="command-icon-collapse"><path d="M4 4l6 6M10 5v5H5M20 20l-6-6M14 19v-5h5"/></g><g class="command-icon-expand"><path d="M10 10 4 4M4 9V4h5M14 14l6 6M20 15v5h-5"/></g></svg></button>
+        <div class="studio-command-state"><span id="studioCommandDot"></span><div><strong id="studioCommandTitle">Thay trang phục</strong><small id="studioCommandHint">Chọn ảnh để bắt đầu · Tự động lưu</small></div></div>
+        <div class="studio-command-actions"><button id="studioPrimaryAction" class="primary" type="button">Chọn ảnh</button></div>
+      </footer>
+    </section>

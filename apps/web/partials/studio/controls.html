@@ -1,0 +1,78 @@
+    <aside class="panel controls settings-panel">
+      <div class="panel-heading"><div><p class="eyebrow">THIẾT LẬP</p><h2>Chỉnh sửa ảnh</h2></div><div class="panel-heading-actions"><button id="resetEditorButton" title="Khôi phục các thiết lập của phiên hiện tại" disabled>↻ Đặt lại</button><span class="panel-badge">Tự lưu</span></div></div>
+      <div class="experience-switch" role="group" aria-label="Mức độ thiết lập"><button id="simpleExperienceButton" class="active" type="button" aria-pressed="true">Đơn giản</button><button id="expertExperienceButton" type="button" aria-pressed="false">Chuyên gia</button></div>
+      <p id="experienceHint" class="simple-help">Chỉ hiển thị những lựa chọn cần thiết để tạo kết quả.</p>
+      <label>Nguồn ảnh
+        <select id="imageSelect"></select>
+      </label>
+
+      <label class="source-upload">Ảnh cần chỉnh sửa
+        <input id="sourceImageFile" type="file" accept="image/png,image/jpeg,image/webp">
+        <small>PNG, JPG hoặc WebP · tối đa 20 MB · chỉ lưu trên máy</small>
+      </label>
+
+      <label>Nhãn vùng
+        <select id="labelSelect">
+          <option value="full_body">Trang phục</option>
+          <option value="upper_body">Áo / thân trên</option>
+          <option value="lower_body">Quần / váy</option>
+          <option value="accessory">Phụ kiện</option>
+          <option value="shoes">Giày dép</option>
+          <option value="custom">Tùy chỉnh</option>
+        </select>
+      </label>
+
+      <div class="tool-group">
+        <span>Công cụ</span>
+        <div class="segmented">
+          <button id="addTool" class="active">Thêm vùng</button>
+          <button id="eraseTool">Xóa vùng</button>
+          <button id="protectTool">Bảo vệ</button>
+          <button id="aiTool">Điểm AI</button>
+          <button id="personTool">Chọn người</button>
+        </div>
+        <small id="aiHint" hidden>Nhấp vào vật thể; giữ Shift và nhấp để đánh dấu vùng loại trừ.</small>
+      </div>
+
+      <div id="aiActions" class="button-row" hidden>
+        <button id="segmentButton" class="mask-ai-button">Tạo mask tự động</button>
+        <button id="clearPointsButton">Xóa điểm</button>
+      </div>
+
+      <label>Cỡ cọ <strong id="brushValue">48 px</strong>
+        <input id="brushSize" type="range" min="6" max="180" value="48">
+      </label>
+
+      <label>Độ mờ lớp phủ <strong id="opacityValue">45%</strong>
+        <input id="overlayOpacity" type="range" min="10" max="80" value="45">
+      </label>
+
+      <div class="button-row">
+        <button id="undoButton">Hoàn tác</button>
+        <button id="clearButton" class="danger">Xóa mask</button>
+      </div>
+
+      <label>Ghi chú
+        <textarea id="notes" rows="4"></textarea>
+        <span class="llm-assist-row"><button id="suggestNotesButton" type="button" class="llm-assist-button">✦ Gợi ý bằng AI</button><small id="notesAssistStatus">AI sẽ dựa trên ảnh và vùng đã chọn.</small></span>
+      </label>
+
+      <button id="saveButton" class="primary">Lưu mask và metadata</button>
+
+<!-- @include features/new-image.html -->
+
+<!-- @include features/outpaint.html -->
+
+<!-- @include features/removal.html -->
+
+<!-- @include features/tryon.html -->
+
+<!-- @include features/enhancement.html -->
+
+<!-- @include features/makeup.html -->
+
+<!-- @include features/character.html -->
+
+<!-- @include features/body.html -->
+
+    </aside>

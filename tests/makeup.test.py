@@ -1,10 +1,12 @@
+import contextlib
 import hashlib
 import json
 import sys
 import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import Mock
+from types import SimpleNamespace
+from unittest.mock import Mock, patch
 
 import numpy as np
 from PIL import Image, ImageDraw
@@ -107,6 +109,26 @@ class MakeupTests(unittest.TestCase):
         self.env['makeup_ai']=lambda *a:iter([self.image.resize((40,40))])
         with self.assertRaisesRegex(RuntimeError,'Kích thước'):self.run_image(renderer='ai')
         self.assertFalse((self.root/'outputs').exists())
+    def test_qwen_ai_uses_controlnet_inpaint_arguments(self):
+        masks,protected,box=m.region_masks(self.points,self.image.size)
+        allowed=Image.new('L',self.image.size,255)
+        pipe=Mock(_atelier_architecture='qwen-image-controlnet-inpaint')
+        self.env.update(INPAINT_MODEL=self.root/'qwen-inpaint',load_inpaint_pipe=Mock(return_value=pipe),
+            release_inpaint=Mock(),release_tryon=Mock(),release_text_to_image=Mock(),
+            torch=SimpleNamespace(cuda=SimpleNamespace(is_available=lambda:False),float32='float32',
+                inference_mode=contextlib.nullcontext,Generator=lambda _:SimpleNamespace(manual_seed=lambda seed:seed)))
+        def generate(loaded,**kwargs):
+            kwargs['callback_on_step_end'](loaded,0,0,{})
+            return SimpleNamespace(images=[kwargs['control_image']])
+        self.env['traced_pipeline_call']=Mock(side_effect=generate)
+        settings=m.options(dict(faceIndex=0,style='artistic',renderer='ai'),self.root)
+        with patch.object(m.skin_retouch,'configuration',return_value={'modelReady':True}):
+            result=next(m.ai_candidates(self.image,masks,allowed,box,settings,self.env,lambda:None,lambda *args:None))
+        kwargs=self.env['traced_pipeline_call'].call_args.kwargs
+        self.assertEqual(result.size,self.image.size)
+        self.assertIn('control_image',kwargs);self.assertIn('control_mask',kwargs)
+        self.assertNotIn('image',kwargs);self.assertNotIn('mask_image',kwargs)
+        self.assertEqual(kwargs['true_cfg_scale'],4.5)
     def test_faces_sorted_selection_and_unselected_untouched(self):
         other=self.points+np.array([400,0],np.float32)
         wider=Image.new('RGB',(1200,1024));wider.paste(self.image,(0,0));wider.save(self.path);self.image=wider

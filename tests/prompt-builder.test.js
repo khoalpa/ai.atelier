@@ -1,7 +1,7 @@
 'use strict';
 const assert=require('node:assert'),fs=require('node:fs'),path=require('node:path');
 const root=path.resolve(__dirname,'..');
-const html=fs.readFileSync(path.join(root,'apps/web/index.html'),'utf8');
+const html=require('./helpers/web-html')();
 const source=fs.readFileSync(path.join(root,'apps/web/features/prompt-builder.js'),'utf8');
 new (require('node:vm').Script)(source);
 const catalog=JSON.parse(fs.readFileSync(path.join(root,'workspace/prompts.json'),'utf8'));

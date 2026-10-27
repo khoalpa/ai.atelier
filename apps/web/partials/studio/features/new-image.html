@@ -1,0 +1,153 @@
+      <!-- Tạo ảnh mới -->
+      <details class="inpaint-panel" id="chromaGeneratorPanel">
+        <summary>Tạo ảnh từ mô tả</summary>
+        <label>Model tạo ảnh
+          <select id="textToImageModel"><option value="sdxl-base-1.0">Đang tải danh sách model…</option></select>
+          <small id="textToImageModelHint">Đang kiểm tra model trên máy.</small>
+        </label>
+        <label>Pipeline mở rộng
+          <select id="textToImagePipeline">
+            <option value="generate">Tạo ảnh trực tiếp</option>
+            <option value="catvton">CatVTON · thay trang phục</option>
+          </select>
+          <small id="textToImagePipelineHint">Tạo ảnh mới hoàn toàn từ prompt.</small>
+        </label>
+        <div id="textToImageLoraOptions" hidden>
+          <label>LoRA áp dụng<select id="textToImageLora"><option value="">Đang đọc LoRA…</option></select></label>
+          <label>Trọng số LoRA <strong id="textToImageLoraWeightValue">0.75</strong><input id="textToImageLoraWeight" type="range" min="0" max="1.5" step="0.05" value="0.75"></label>
+        </div>
+        <div id="textToImagePipelineReadiness" class="model-item">Tạo ảnh trực tiếp không cần ảnh đầu vào.</div>
+        <label>Mô tả ảnh
+          <textarea id="chromaPrompt" rows="5"></textarea>
+          <span class="llm-assist-row"><span class="llm-assist-actions"><button id="suggestChromaPromptButton" type="button" class="llm-assist-button">✦ Gợi ý</button><button id="optimizeChromaPromptButton" type="button" class="llm-assist-button">Viết rõ hơn</button><button id="analyzeChromaPromptButton" type="button" class="llm-assist-button">Kiểm tra</button></span><small id="chromaPromptAssistStatus">Có thể bắt đầu bằng một câu ngắn; trợ lý sẽ giúp hoàn thiện.</small></span>
+        </label>
+        <details id="promptBuilder" class="prompt-builder">
+          <summary><span>✦ Trợ lý mô tả ảnh</span><small>Ý tưởng, ảnh tham khảo và Prompt Builder</small></summary>
+          <div class="prompt-builder-toolbar"><label>Nội dung preset<select id="promptBuilderPresetVersion"><option value="quality-v2">Bản mở rộng · đang kiểm chứng</option><option value="quality-v1">Bản gốc</option></select></label><label>Preset<select id="promptBuilderPreset"><option value="">Tự thiết lập</option><option value="portrait">Chân dung</option><option value="product">Sản phẩm</option><option value="cinematic">Điện ảnh</option><option value="illustration">Minh họa</option><option value="architecture">Kiến trúc</option></select></label><button id="promptBuilderAi" type="button">AI hoàn thiện</button></div>
+          <section class="prompt-reference"><label>Ảnh tham khảo · tối đa 4<input id="promptReferenceImage" type="file" multiple accept="image/png,image/jpeg,image/webp"></label><label>Chế độ<select id="promptReferenceMode"><option value="faithful description">Mô tả trung thực</option><option value="style only, replace the subject">Học phong cách</option><option value="creative variation preserving key visual traits">Tạo biến thể</option></select></label><div id="promptReferenceList" class="prompt-reference-list"></div><button id="promptBuilderAnalyzeImage" type="button" disabled>Phân tích ảnh thành prompt</button></section>
+          <div class="prompt-blocks">
+            <label>Chủ thể <span><input id="promptLock-subject" type="checkbox"> Khóa</span><textarea id="promptBlock-subject" rows="2" aria-description="Nhân vật, sản phẩm hoặc đối tượng chính"></textarea></label>
+            <label>Bối cảnh <span><input id="promptLock-environment" type="checkbox"> Khóa</span><textarea id="promptBlock-environment" rows="2" aria-description="Không gian, thời điểm, thời tiết"></textarea></label>
+            <label>Hành động <span><input id="promptLock-action" type="checkbox"> Khóa</span><textarea id="promptBlock-action" rows="2" aria-description="Tư thế, chuyển động, tương tác"></textarea></label>
+            <label>Bố cục <span><input id="promptLock-composition" type="checkbox"> Khóa</span><textarea id="promptBlock-composition" rows="2" aria-description="Góc máy, cỡ cảnh, điểm nhìn"></textarea></label>
+            <label>Phong cách <span><input id="promptLock-style" type="checkbox"> Khóa</span><textarea id="promptBlock-style" rows="2" aria-description="Ảnh thật, minh họa hoặc 3D"></textarea></label>
+            <label>Ánh sáng <span><input id="promptLock-lighting" type="checkbox"> Khóa</span><textarea id="promptBlock-lighting" rows="2" aria-description="Nguồn sáng, độ tương phản"></textarea></label>
+            <label>Màu sắc <span><input id="promptLock-color" type="checkbox"> Khóa</span><textarea id="promptBlock-color" rows="2" aria-description="Bảng màu, sắc độ"></textarea></label>
+            <label>Chất liệu <span><input id="promptLock-materials" type="checkbox"> Khóa</span><textarea id="promptBlock-materials" rows="2" aria-description="Bề mặt, vật liệu, chi tiết"></textarea></label>
+            <label>Ràng buộc <span><input id="promptLock-constraints" type="checkbox"> Khóa</span><textarea id="promptBlock-constraints" rows="2" aria-description="Nội dung bắt buộc phải giữ"></textarea></label>
+          </div>
+          <div class="prompt-builder-preview"><strong>Prompt tổng hợp</strong><p id="promptBuilderPreview"></p></div>
+          <section id="promptBuilderConflicts" class="prompt-builder-conflicts" hidden aria-live="polite"></section>
+          <small id="promptBuilderAdapter">Prompt sẽ được điều chỉnh theo model đang chọn.</small>
+          <div class="button-row"><button id="promptBuilderApply" type="button" class="primary">Dùng prompt này</button><button id="promptBuilderVariants" type="button">Tạo 3 biến thể</button></div>
+          <div id="promptBuilderVariantList" class="prompt-variant-list"></div><small id="promptBuilderStatus" role="status">Mọi thay đổi đều được xem trước trước khi áp dụng.</small>
+        </details>
+        <label>Điều cần tránh
+          <textarea id="chromaNegativePrompt" rows="2"></textarea>
+          <span class="llm-assist-row"><span class="llm-assist-actions"><button id="suggestNegativePromptButton" type="button" class="llm-assist-button">✦ Gợi ý</button><button id="optimizeNegativePromptButton" type="button" class="llm-assist-button">Tối ưu negative</button></span><small id="negativePromptAssistStatus">Loại trùng lặp và mâu thuẫn với prompt.</small></span>
+        </label>
+        <fieldset class="text-quality-options"><legend>Chất lượng</legend><div id="textToImagePreset" class="button-row" role="group" aria-label="Chất lượng tạo ảnh"><button type="button" data-text-quality="fast" aria-pressed="false">Nhanh</button><button type="button" data-text-quality="balanced" aria-pressed="true" class="active">Cân bằng</button><button type="button" data-text-quality="quality" aria-pressed="false">Chi tiết</button></div><small id="textToImagePresetHint">Cân bằng phù hợp cho phần lớn lượt tạo.</small></fieldset>
+        <details class="advanced-panel"><summary>Thiết lập nâng cao</summary>
+        <div class="compact-grid">
+          <label class="seed-field">Seed<div class="seed-control"><select id="chromaSeedMode" aria-label="Chế độ seed"><option value="default">Seed cố định 433</option><option value="random" selected>Ngẫu nhiên mỗi lượt</option><option value="custom">Tùy chỉnh</option></select><div><input id="chromaSeed" type="number" min="0" max="2147483647" value="433" data-default-seed="433"><button id="chromaSeedRandom" type="button" title="Tạo seed tùy chỉnh ngẫu nhiên" aria-label="Tạo seed tùy chỉnh ngẫu nhiên">🎲</button><button id="chromaSeedReset" type="button" title="Đặt lại seed mặc định" aria-label="Đặt lại seed mặc định">↺</button></div></div></label>
+          <label class="variant-count-field">Số phương án<select id="chromaCount"><option>1</option><option selected>2</option><option>4</option></select></label>
+          <label>Độ phân giải AI<select id="chromaSize"><option value="512">512 px tương đương</option><option value="640">640 px tương đương</option><option value="768" selected>768 px tương đương</option><option value="1024">1024 px tương đương</option></select></label>
+          <label>Số bước<input id="chromaQuality" type="number" min="4" max="50" value="30"></label>
+        </div>
+        </details>
+        <label>Mức bám mô tả<input id="chromaGuidance" type="number" min="1" max="8" step="0.1" value="4.5"></label>
+        <label id="chromaSlgLabel" hidden><input id="chromaSlg" type="checkbox"> Hỗ trợ cấu trúc cơ thể</label>
+        <section id="newImageComposition" class="new-image-composition">
+          <label class="new-image-framing">Khung hình<select id="chromaFraming"><option value="as-described">Theo mô tả</option><option value="full-body-hands">Toàn thân, thấy rõ bàn tay</option></select><small>Thêm hướng dẫn bố cục khi chọn toàn thân. Xem nội dung gửi vào model ở phần kiểm tra.</small></label>
+          <label>Tỷ lệ ảnh<select id="chromaAspect"><option>1:1</option><option>4:5</option><option>2:3</option><option>3:2</option><option>16:9</option><option>9:16</option></select></label>
+          <small id="newImageDimensions">Chọn tỷ lệ trước khi tạo bố cục.</small>
+        </section>
+        <button id="newImageCheck" type="button">Kiểm tra trước khi tạo</button>
+        <div id="newImagePlan" class="new-image-plan" aria-live="polite">Kiểm tra mô tả trước khi nạp model; không tự cắt nội dung.</div>
+        <button id="chromaGenerateButton" class="primary">Tạo ảnh mới</button>
+      </details>
+      <details class="inpaint-panel" id="offlineModelPanel">
+        <summary>Quản lý model offline</summary>
+        <section class="model-manager-command-center" aria-label="Tổng quan quản lý model">
+          <div id="modelSummary">Chưa quét model.</div>
+          <div class="model-manager-actions" aria-label="Hành động model">
+            <button id="refreshModelsButton" class="model-manager-scan"><span aria-hidden="true">↻</span><span><strong>Quét model</strong><small>Kiểm tra trạng thái</small></span></button>
+            <button id="exportModelsButton" class="model-manager-export"><span aria-hidden="true">⇩</span><span><strong>Xuất manifest</strong><small>Lưu cấu hình hiện tại</small></span></button>
+          </div>
+        </section>
+        <section class="model-manager-workspace" aria-label="Danh mục model">
+          <nav class="model-manager-tabs" aria-label="Khu vực quản lý model" role="tablist">
+            <button class="active" data-model-tab="capabilities" role="tab"><span aria-hidden="true">◫</span>Theo chức năng</button>
+            <button data-model-tab="inventory" role="tab"><span aria-hidden="true">▦</span>Thư viện model</button>
+            <button data-model-tab="registered" role="tab"><span aria-hidden="true">✓</span>Đã đăng ký</button>
+            <button data-model-tab="register" role="tab"><span aria-hidden="true">＋</span>Thêm model</button>
+          </nav>
+        <section class="model-manager-pane" data-model-pane="inventory" hidden>
+        <h3>Toàn bộ model</h3>
+        <p class="model-candidate-note">Bao gồm model đã tải, đang chờ tải và model phụ thuộc. Nút Tải về thực hiện tải nền vào thư mục model; Xem nguồn mở trang thông tin.</p>
+        <div id="modelInventorySummary">Đang kiểm tra danh mục…</div>
+        <div class="model-library-bulk-actions">
+          <button id="downloadAllModelsButton" class="primary" type="button">Tải về tất cả</button>
+          <div id="downloadAllModelsStatus" class="bulk-download-status" aria-live="polite">Đang xác định các model có thể tải tự động…</div>
+        </div>
+        <div class="model-filters">
+          <input id="modelInventorySearch" type="search">
+          <select id="modelInventoryStatus"><option value="all">Mọi trạng thái tải</option><option value="downloaded">Đã tải</option><option value="waiting">Chưa tải</option></select>
+          <select id="modelInventoryKind"><option value="all">Mọi chức năng</option><option value="llm">Trợ lý LLM</option><option value="text-to-image">Tạo ảnh từ mô tả</option><option value="inpaint">Inpainting</option><option value="dependency">Model phụ thuộc</option><option value="tryon">Try-on</option><option value="segmentation">Phân đoạn</option><option value="background-removal">Tách nền</option><option value="vision">Hiểu ảnh</option><option value="adapter">Adapter</option><option value="controlnet">ControlNet</option><option value="detection">Detection</option></select>
+          <select id="modelInventoryArchitecture"><option value="all">Mọi kiến trúc</option><option value="sd35">SD3 / SD3.5</option><option value="sdxl">SDXL</option><option value="sd15">SD1.5</option><option value="flux">FLUX</option><option value="transformer">Vision Transformer</option></select>
+          <select id="modelInventoryCompatibility"><option value="all">Mọi mức tương thích</option><option value="ready">Dùng ngay</option><option value="dependency">Cần model nền</option><option value="integration">Cần tích hợp</option><option value="restricted">Cần xử lý giấy phép</option></select>
+          <select id="modelInventorySort" aria-label="Sắp xếp thư viện model"><option value="status">Sẵn sàng trước</option><option value="name-asc">Tên A–Z</option><option value="name-desc">Tên Z–A</option><option value="newest">Mới bổ sung nhất</option><option value="size-asc">Dung lượng nhỏ → lớn</option><option value="size-desc">Dung lượng lớn → nhỏ</option><option value="vram-asc">VRAM thấp → cao</option><option value="downloaded">Đã tải trước</option><option value="architecture">Theo kiến trúc</option><option value="kind">Theo chức năng</option></select>
+          <button id="resetModelInventoryView" type="button">Đặt lại lọc &amp; sắp xếp</button>
+        </div>
+        <div id="modelCandidateList" class="model-list">Đang tải toàn bộ model…</div>
+        </section>
+        <section class="model-manager-pane active" data-model-pane="capabilities">
+        <h3>Model theo chức năng</h3>
+        <div class="model-sort-toolbar"><select id="modelCapabilitySort" aria-label="Sắp xếp model theo chức năng"><option value="workflow">Theo thứ tự chức năng</option><option value="ready">Sẵn sàng trước</option><option value="attention">Cần xử lý trước</option><option value="compatible">Nhiều model tương thích nhất</option><option value="name-asc">Tên chức năng A–Z</option><option value="name-desc">Tên chức năng Z–A</option></select><button id="resetModelCapabilitySort" type="button">Đặt lại</button><small id="modelCapabilitySortSummary"></small></div>
+        <div id="modelCapabilityList" class="model-list">Đang tải danh sách tương thích…</div>
+        <div id="chromaStatus">Chưa kiểm tra Chroma.</div>
+        <div class="button-row"><button id="refreshChromaButton">Kiểm tra Chroma</button><button id="smokeChromaButton">Smoke test Chroma 512 px</button></div>
+        </section>
+        <section class="model-manager-pane" data-model-pane="registered" hidden>
+        <h3>Model đã đăng ký</h3>
+        <p class="model-candidate-note">Quản lý model đã có trên máy, lựa chọn model hoạt động hoặc đưa model không dùng vào vùng cách ly có thể phục hồi.</p>
+        <div id="registeredModelSummary" class="registered-model-summary">Đang kiểm tra model…</div>
+        <div class="registered-model-filters">
+          <input id="registeredModelSearch" type="search">
+          <select id="registeredModelStatus"><option value="all">Mọi trạng thái</option><option value="active">Đang dùng</option><option value="ready">Sẵn sàng</option><option value="attention">Cần xử lý</option><option value="quarantine">Cách ly</option></select>
+          <select id="registeredModelSort" aria-label="Sắp xếp model đã đăng ký"><option value="active">Đang dùng trước</option><option value="attention">Cần xử lý trước</option><option value="name-asc">Tên A–Z</option><option value="name-desc">Tên Z–A</option><option value="newest">Mới đăng ký nhất</option><option value="size-asc">Dung lượng nhỏ → lớn</option><option value="size-desc">Dung lượng lớn → nhỏ</option><option value="kind">Theo loại model</option><option value="path">Theo đường dẫn</option><option value="quarantine">Cách ly trước</option></select>
+          <button id="resetRegisteredModelView" type="button">Đặt lại lọc &amp; sắp xếp</button>
+        </div>
+        <div id="modelList" class="model-list"></div>
+        <div id="quarantineList" class="model-list"></div>
+        </section>
+        <section class="model-manager-pane" data-model-pane="register" hidden>
+        <h3>Đăng ký model bằng URL</h3>
+        <div class="model-url-register">
+          <label class="url-wide">URL Hugging Face hoặc Civitai<input id="modelUrl" type="url"></label>
+          <button id="analyzeModelUrlButton">Phân tích URL</button>
+          <div id="modelUrlPreview" class="model-url-preview" hidden></div>
+          <label>ID nội bộ<input id="urlModelId"></label>
+          <label>Tên hiển thị<input id="urlModelName"></label>
+          <label>Loại<select id="urlModelKind"><option value="text-to-image">Tạo ảnh từ mô tả</option><option value="inpaint">Inpainting</option><option value="checkpoint">Checkpoint</option><option value="adapter">Adapter / LoRA</option><option value="controlnet">ControlNet</option><option value="vae">VAE</option><option value="custom">Khác</option></select></label>
+          <label>Kiến trúc<select id="urlModelArchitecture"><option value="auto">Tự nhận diện</option><option value="sd35">SD3 / SD3.5</option><option value="sdxl">SDXL</option><option value="sd15">SD1.5</option><option value="sd2">SD2</option></select></label>
+          <label>Bộ mã hóa prompt<select id="urlModelTextEncoder"><option value="t5">T5</option><option value="qwen">Qwen</option><option value="none">Không dùng prompt</option><option value="unknown">Chưa xác định</option></select></label>
+          <label class="url-wide">Thư mục cài đặt<input id="urlModelTarget"></label>
+          <label class="check-row"><input id="urlModelAutoConvert" type="checkbox"> Đánh dấu chuyển đổi sang Diffusers khi cần</label>
+          <label class="check-row"><input id="urlModelLicenseAccepted" type="checkbox"> Tôi đã đọc và chấp nhận giấy phép model</label>
+          <button id="downloadRegisterModelButton" disabled>Tải và đăng ký</button>
+        </div>
+        <h3>Đăng ký model đã có trên máy</h3>
+        <label>ID model<input id="modelId"></label>
+        <label>Tên model<input id="modelName"></label>
+        <label>Loại<select id="modelKind"><option value="text-to-image">Tạo ảnh từ mô tả</option><option value="inpaint">Inpainting</option><option value="tryon">Try-on</option><option value="segmentation">Phân đoạn</option><option value="pose">Pose</option><option value="vae">VAE</option><option value="custom">Khác</option></select></label>
+        <label>Kiến trúc<select id="modelArchitecture"><option value="auto">Tự nhận diện</option><option value="flux">FLUX</option><option value="flux2">FLUX.2</option><option value="sd35">SD3 / SD3.5</option><option value="sdxl">SDXL</option><option value="sd15">SD1.5</option><option value="sd2">SD2</option></select></label>
+        <label>Bộ mã hóa prompt<select id="modelTextEncoder"><option value="t5">T5</option><option value="qwen">Qwen</option><option value="none">Không dùng prompt</option><option value="unknown">Chưa xác định</option></select></label>
+        <label>Đường dẫn nội bộ hoặc tuyệt đối<input id="modelPath"></label>
+        <label>Khóa cấu hình<input id="modelConfigKey"></label>
+        <label>Giấy phép<input id="modelLicense"></label>
+        <button id="registerModelButton">Đăng ký đường dẫn model</button>
+        </section>
+        </section>
+      </details>
+      <p id="message" class="message" hidden aria-live="polite"></p>

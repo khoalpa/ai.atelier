@@ -1,0 +1,78 @@
+	  <!-- Khuôn mặt -->
+      <section id="studioCharacterPanel" class="studio-task-panel character-panel" hidden aria-label="Khuôn mặt và hướng nhìn">
+		<div id="characterTaskContent" class="character-workflow">
+        <details id="anatomyInpaintPanel" class="anatomy-inpaint" hidden>
+          <summary>Sửa chi tiết cơ thể theo giải phẫu</summary>
+          <p>Chọn riêng tay, cánh tay, chân hoặc bàn chân. Màu cam là vùng được tạo lại; màu xanh được giữ nguyên.</p>
+          <label>Nhân vật<select id="anatomyPerson"><option value="0">Người 1</option></select></label>
+          <label>Bộ phận<select id="anatomyBodyPart"><option value="">Đang tải danh sách…</option></select></label>
+          <button id="anatomyManageParts" type="button">Quản lý phạm vi bộ phận</button>
+          <label>Mục tiêu<select id="anatomyIntent"><option value="repair">Sửa lỗi giải phẫu</option><option value="restore">Khôi phục phần bị thiếu</option><option value="reshape">Điều chỉnh hình dáng nhẹ</option><option value="pose">Điều chỉnh tư thế bộ phận</option><option value="custom">Mô tả tùy chỉnh</option></select></label>
+          <label>Mức kiểm tra<select id="anatomyMode"><option value="safe">An toàn</option><option value="balanced">Cân bằng</option><option value="strict" selected>Nghiêm ngặt</option></select></label>
+          <label>Mô tả bổ sung<textarea id="anatomyPrompt" rows="2" maxlength="600"></textarea></label>
+          <label>Số phương án<select id="anatomyCount"><option value="1">1 phương án</option><option value="2" selected>2 phương án</option><option value="3">3 phương án</option><option value="4">4 phương án</option></select></label>
+          <div class="button-row"><button id="anatomyPreview" type="button">1. Kiểm tra vùng sửa</button><button id="anatomyRun" class="primary" type="button" disabled>2. Tạo phương án</button></div>
+          <img id="anatomyOverlay" alt="Vùng giải phẫu màu cam và vùng bảo vệ màu xanh" hidden>
+          <p id="anatomyStatus" role="status" aria-live="polite"></p>
+        </details>
+        <label hidden>Phạm vi thay đổi<select id="characterMode"><option value="face">Khuôn mặt &amp; hướng nhìn</option><option value="body">Tư thế &amp; cơ thể</option><option value="interaction">Tương tác nhiều người</option></select></label>
+        <section class="character-step-card" aria-labelledby="characterFaceHeading">
+          <div class="character-step-heading"><span>2</span><div><strong id="characterFaceHeading">Chọn khuôn mặt</strong><small id="characterFaceHint">Nhận diện khuôn mặt trong ảnh để tiếp tục.</small></div></div>
+          <button id="characterDetect" type="button">Nhận diện khuôn mặt</button><button id="characterRefresh" type="button" hidden>Kiểm tra dịch vụ</button>
+          <div id="characterPeople" class="character-people" role="group" aria-label="Chọn khuôn mặt"></div>
+        </section>
+        <section class="character-step-card" aria-labelledby="characterChangeHeading">
+        <div class="character-step-heading"><span>3</span><div><strong id="characterChangeHeading">Chọn thay đổi</strong><small>Chỉ những thiết lập khác ảnh gốc mới được áp dụng.</small></div></div>
+        <label id="characterPoseLabel">Tư thế / hành động<select id="characterPose"><option value="keep">Giữ tư thế</option></select></label>
+        <label class="face-only">Biểu cảm<select id="characterExpression"><option value="keep">Giữ biểu cảm</option></select></label>
+        <label id="characterIntensityLabel" class="face-only">Mức biểu cảm · <output id="characterIntensityValue">60%</output><input id="characterIntensity" type="range" min="0" max="1" step="0.05" value="0.6"></label>
+        <fieldset class="character-gaze-presets face-only"><legend>Hướng nhìn</legend><div role="group" aria-label="Chọn nhanh hướng nhìn">
+          <button type="button" data-gaze-x="-0.7" data-gaze-y="-0.7" aria-label="Nhìn lên trái">↖</button><button type="button" data-gaze-x="0" data-gaze-y="-0.7" aria-label="Nhìn lên">↑</button><button type="button" data-gaze-x="0.7" data-gaze-y="-0.7" aria-label="Nhìn lên phải">↗</button>
+          <button type="button" data-gaze-x="-0.7" data-gaze-y="0" aria-label="Nhìn trái">←</button><button type="button" data-gaze-x="0" data-gaze-y="0" aria-label="Nhìn chính diện">•</button><button type="button" data-gaze-x="0.7" data-gaze-y="0" aria-label="Nhìn phải">→</button>
+          <button type="button" data-gaze-x="-0.7" data-gaze-y="0.7" aria-label="Nhìn xuống trái">↙</button><button type="button" data-gaze-x="0" data-gaze-y="0.7" aria-label="Nhìn xuống">↓</button><button type="button" data-gaze-x="0.7" data-gaze-y="0.7" aria-label="Nhìn xuống phải">↘</button>
+        </div></fieldset>
+        <details class="character-angle-details face-only"><summary>Góc đầu &amp; tinh chỉnh hướng nhìn</summary>
+          <label>Xoay đầu · <output id="characterYawValue">0°</output><input id="characterYaw" type="range" min="-20" max="20" value="0"></label>
+          <label>Cúi / ngẩng · <output id="characterPitchValue">0°</output><input id="characterPitch" type="range" min="-15" max="15" value="0"></label>
+          <label>Nghiêng đầu · <output id="characterRollValue">0°</output><input id="characterRoll" type="range" min="-15" max="15" value="0"></label>
+          <label>Nhìn trái / phải<input id="characterGazeX" type="range" min="-1" max="1" step="0.1" value="0"></label>
+          <label>Nhìn lên / xuống<input id="characterGazeY" type="range" min="-1" max="1" step="0.1" value="0"></label>
+        </details>
+        <p id="characterChangeSummary" class="character-change-summary">Chưa chọn thay đổi.</p>
+        </section>
+        <details><summary>Theo ảnh tham chiếu</summary>
+          <label>Ảnh tham chiếu<select id="characterReference"><option value="">Chọn ảnh trong thư viện…</option></select></label>
+          <div class="button-row"><button id="characterReferenceRefresh" type="button">Làm mới</button><button id="characterReferenceUpload" type="button">Tải ảnh mẫu</button></div><input id="characterReferenceFile" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+          <button id="characterReferenceDetect" type="button">Nhận diện ảnh mẫu</button>
+          <label>Nhân vật mẫu<select id="characterReferencePerson"><option value="">Chưa nhận diện</option></select></label>
+          <label class="character-check"><input id="characterUseReferencePose" type="checkbox">Lấy tư thế từ ảnh mẫu</label>
+          <label class="character-check"><input id="characterUseReferenceExpression" type="checkbox">Lấy biểu cảm từ ảnh mẫu</label>
+          <p id="characterReferenceStatus" role="status"></p>
+        </details>
+        <label>Mô tả thêm<textarea id="characterDescription" rows="2" maxlength="1000" ></textarea></label>
+        <button id="characterRead" type="button">Đọc mô tả thành thiết lập</button><p id="characterSummary" role="status"></p>
+        <details id="characterEditor" hidden><summary>Chỉnh khung xương</summary>
+          <p>Kéo khớp trên ảnh, hoặc chọn khớp rồi dùng phím mũi tên. Giữ Shift để di chuyển nhanh hơn.</p>
+          <label>Nhân vật<select id="characterEditPerson"></select></label><label>Khớp<select id="characterJoint"></select></label>
+          <canvas id="characterSkeleton" width="360" height="360" tabindex="0" aria-label="Khung xương đích; dùng phím mũi tên để dời khớp đã chọn"></canvas>
+          <div class="button-row"><button id="characterResetPose" type="button">Về tư thế nguồn</button><button id="characterMirrorPose" type="button">Lật tư thế</button></div>
+          <details><summary>Tư thế của tôi</summary><label>Mẫu đã lưu<select id="characterSavedPose"><option value="">Chọn mẫu…</option></select></label><button id="characterLoadPose" type="button">Áp dụng mẫu</button><label>Tên mẫu<input id="characterPoseName" maxlength="80" ></label><button id="characterSavePose" type="button">Lưu khung xương hiện tại</button></details>
+        </details>
+        <details class="character-quality"><summary>Giữ diện mạo &amp; chất lượng</summary>
+          <p>Ưu tiên giữ đặc điểm khuôn mặt khi tạo lại vùng đã chọn.</p>
+          <label>Ưu tiên diện mạo<input id="characterIdentity" type="range" min="0" max="1" step="0.05" value="0.65"></label><label hidden>Ưu tiên trang phục<input id="characterClothing" type="range" min="0" max="1" step="0.05" value="0.45"></label>
+          <label class="character-check body-only"><input id="characterKeepFace" type="checkbox" checked>Giữ khuôn mặt</label>
+          <label class="character-check"><input id="characterLimit" type="checkbox">Chỉ sửa trong vùng đỏ tôi đã tô</label>
+          <label hidden>Pipeline<select id="characterPipeline"><option value="disabled">Không dùng CLIP</option></select></label>
+          <label>Độ chi tiết<select id="characterQuality"><option value="preview">Nhanh · 512 px</option><option value="balanced" selected>Cân bằng · 768 px</option><option value="quality">Chi tiết · 1024 px</option></select></label>
+          <label hidden>Kiểm tra giải phẫu<select id="characterAnatomyQuality"><option value="balanced">Cân bằng · tối đa 1 lượt sửa</option><option value="enhanced" selected>Ưu tiên giải phẫu · tối đa 2 lượt</option><option value="strict">Nghiêm ngặt · tối đa 3 lượt</option></select></label>
+          <label>Seed<input id="characterSeed" type="number" min="0" max="2147483643" value="42"></label>
+        </details>
+        <label>Số phương án<select id="characterCount"><option value="1">1 phương án</option><option value="2" selected>2 phương án</option><option value="3">3 phương án</option><option value="4">4 phương án</option></select></label>
+        <section class="character-step-card character-review" aria-labelledby="characterReviewHeading"><div class="character-step-heading"><span>4</span><div><strong id="characterReviewHeading">Kiểm tra &amp; tạo</strong><small>Vùng cam sẽ được tạo lại; vùng xanh được bảo vệ.</small></div></div>
+        <button id="characterPreview" type="button" class="primary">Xem trước vùng tác động</button>
+        <img id="characterPlanImage" alt="Vùng màu cam sẽ được thay đổi cùng khung xương đích" hidden><p id="characterPlanStatus" role="status"></p>
+        <p id="characterStatus" role="status" aria-live="polite"></p>
+        <div class="button-row"><button id="characterTry" type="button">Tạo bản xem thử nhanh</button><button id="characterRun" type="button" class="primary">Tạo phương án</button></div></section>
+		</div>
+      </section>

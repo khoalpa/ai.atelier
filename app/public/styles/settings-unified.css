@@ -1,0 +1,293 @@
+/* Shared visual language for every task in the Settings panel. */
+.settings-panel {
+  --settings-gap:12px;
+  --settings-radius:12px;
+  --settings-control-height:40px;
+  --settings-group-bg:var(--palette-0e151c);
+  --settings-control-bg:var(--palette-090e14);
+  --settings-border:var(--palette-3b4653);
+  overflow-x:hidden;
+  overflow-y:auto;
+}
+
+.settings-panel *,
+.settings-panel *::before,
+.settings-panel *::after { box-sizing:border-box; }
+.settings-panel>* { min-width:0; max-width:100%; }
+.settings-panel :is(
+  .studio-task-panel,
+  #chromaGeneratorPanel,
+  .character-workflow,
+  .compact-grid,
+  .button-row,
+  .segmented,
+  fieldset,
+  details,
+  section,
+  label,
+  .llm-assist-row,
+  .llm-assist-actions
+) { min-width:0; max-width:100%; }
+.settings-panel :is(input,select,textarea,button,img,canvas,progress) { max-width:100%; }
+.settings-panel :is(p,small,strong,span,label,summary,button) { overflow-wrap:anywhere; }
+.settings-panel pre { max-width:100%; overflow-x:auto; white-space:pre-wrap; }
+
+.settings-panel>.panel-heading {
+  min-height:82px;
+  margin-bottom:16px;
+}
+.settings-panel>.panel-heading h2 { font-size:18px; }
+.settings-panel>.panel-heading-actions { flex-wrap:nowrap; }
+.settings-panel>.panel-heading-actions button,
+.settings-panel>.panel-heading-actions .panel-badge {
+  min-height:34px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.settings-panel>.experience-switch {
+  gap:4px;
+  margin:0 0 10px;
+  padding:4px;
+  border:1px solid var(--line);
+  border-radius:var(--settings-radius);
+  background:var(--settings-control-bg);
+}
+.settings-panel>.experience-switch button {
+  min-height:40px;
+  padding:7px 10px;
+  border-color:transparent;
+  border-radius:9px;
+  background:transparent;
+}
+.settings-panel>.experience-switch button.active {
+  color:var(--accent-ink);
+  border-color:var(--accent);
+  background:var(--accent);
+}
+.settings-panel>.simple-help {
+  margin:0 0 14px;
+  padding:0 2px;
+  color:var(--muted);
+  background:transparent;
+  font-size:11px;
+}
+
+.settings-panel .studio-readiness {
+  min-width:0;
+  margin:0 0 var(--settings-gap);
+  padding:12px;
+  border-radius:var(--settings-radius);
+}
+.settings-panel .studio-readiness>div,
+.settings-panel .studio-readiness>div>div { min-width:0; }
+.settings-panel .studio-readiness strong { font-size:11px; }
+.settings-panel .studio-readiness small {
+  overflow:hidden;
+  max-width:100%;
+  font-size:9px;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.settings-panel .studio-readiness button {
+  min-height:36px;
+  padding:6px 10px;
+  white-space:nowrap;
+}
+.settings-panel .llm-assist-row,
+.settings-panel .llm-assist-actions {
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+}
+.settings-panel .llm-assist-row>small { flex:1 1 100%; }
+
+.settings-panel>.studio-task-panel:not([hidden]),
+.settings-panel>#chromaGeneratorPanel:not([hidden]) {
+  gap:var(--settings-gap);
+  min-width:0;
+}
+.settings-panel>.studio-task-panel:not([hidden]) { display:grid; }
+.settings-panel>#chromaGeneratorPanel[open]:not([hidden]) { display:grid; }
+.settings-panel>.studio-task-panel>:not(summary),
+.settings-panel>#chromaGeneratorPanel>:not(summary) {
+  min-width:0;
+  margin-top:0;
+  margin-bottom:0;
+}
+
+/* Every task group uses the same surface, border and spacing. */
+.settings-panel :is(
+  .outpaint-main-section,
+  .outpaint-quality-main,
+  .outpaint-run-mode,
+  .inpaint-target-group,
+  .inpaint-fill-group,
+  .tryon-method-main,
+  .tryon-quality-main,
+  .tryon-description-main,
+  .enhance-choice-main,
+  #enhanceScopeMain,
+  .makeup-main-section,
+  .makeup-source-panel,
+  .character-step-card,
+  .new-image-composition,
+  .text-quality-options,
+  .prompt-builder,
+  .batch-command-card
+) {
+  min-width:0;
+  margin:0;
+  padding:12px;
+  border:1px solid var(--settings-border);
+  border-radius:var(--settings-radius);
+  background:var(--settings-group-bg);
+  box-shadow:none;
+}
+.settings-panel :is(fieldset,.character-panel fieldset) {
+  min-width:0;
+  margin:0;
+  padding:12px;
+  border:1px solid var(--settings-border);
+  border-radius:var(--settings-radius);
+  background:var(--settings-group-bg);
+}
+.settings-panel :is(fieldset,.character-panel fieldset)>legend {
+  padding:0 6px;
+  color:var(--text);
+  font-size:13px;
+  font-weight:750;
+}
+.settings-panel :is(
+  .outpaint-main-section,
+  .inpaint-target-group,
+  .inpaint-fill-group,
+  .enhance-choice-main,
+  #enhanceScopeMain,
+  .makeup-main-section,
+  .character-step-card
+) > :is(h3,strong):first-child {
+  margin:0;
+  color:var(--text);
+  font-size:13px;
+  line-height:1.35;
+}
+
+/* Labels, helper copy and fields keep one density across tasks. */
+.settings-panel .studio-task-panel label,
+.settings-panel #chromaGeneratorPanel label {
+  gap:6px;
+  min-width:0;
+  margin:0;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:650;
+}
+.settings-panel .studio-task-panel :is(small,p[role="status"]),
+.settings-panel #chromaGeneratorPanel :is(small,p[role="status"]) {
+  color:var(--muted);
+  font-size:10px;
+  line-height:1.45;
+}
+.settings-panel .studio-task-panel :is(select,textarea,input[type="text"],input[type="number"],input:not([type])),
+.settings-panel #chromaGeneratorPanel :is(select,textarea,input[type="text"],input[type="number"],input:not([type])) {
+  min-width:0;
+  min-height:var(--settings-control-height);
+  border-color:var(--settings-border);
+  border-radius:9px;
+  background:var(--settings-control-bg);
+}
+.settings-panel .studio-task-panel textarea,
+.settings-panel #chromaGeneratorPanel textarea {
+  min-height:76px;
+  line-height:1.5;
+}
+
+/* Choice grids and selected states follow the same component treatment. */
+.settings-panel :is(
+  .segmented,
+  .button-row,
+  .outpaint-ratio-buttons,
+  .outpaint-direction-buttons,
+  .outpaint-align-buttons,
+  .makeup-parts,
+  .body-change-types,
+  .character-source-tabs,
+  .character-gaze-presets>div
+) {
+  gap:7px;
+}
+.settings-panel :is(
+  .segmented,
+  .button-row,
+  .outpaint-ratio-buttons,
+  .outpaint-direction-buttons,
+  .outpaint-align-buttons,
+  .makeup-parts,
+  .body-change-types,
+  .character-source-tabs,
+  .character-gaze-presets>div
+) button {
+  min-width:0;
+  min-height:40px;
+  padding:7px 9px;
+  border-color:var(--settings-border);
+  border-radius:9px;
+  background:var(--surface-3);
+  font-size:11px;
+  line-height:1.25;
+  white-space:normal;
+}
+.settings-panel button:is(.active,[aria-pressed="true"],.is-selected) {
+  color:var(--accent-ink);
+  border-color:var(--accent);
+  background:var(--accent);
+  box-shadow:none;
+}
+
+/* Disclosures use one compact header instead of bespoke cards. */
+.settings-panel .studio-task-panel details,
+.settings-panel #chromaGeneratorPanel details {
+  min-width:0;
+  overflow:hidden;
+  border:1px solid var(--settings-border);
+  border-radius:var(--settings-radius);
+  background:var(--settings-group-bg);
+}
+.settings-panel .studio-task-panel details>summary,
+.settings-panel #chromaGeneratorPanel details>summary {
+  min-height:40px;
+  padding:10px 12px;
+  color:var(--text);
+  font-size:11px;
+  font-weight:750;
+}
+.settings-panel .studio-task-panel details[open]>summary,
+.settings-panel #chromaGeneratorPanel details[open]>summary {
+  margin-bottom:10px;
+  border-bottom:1px solid var(--line-soft);
+  background:var(--surface-2);
+}
+.settings-panel .studio-task-panel details[open]>:not(summary),
+.settings-panel #chromaGeneratorPanel details[open]>:not(summary) {
+  margin-right:10px;
+  margin-left:10px;
+}
+.settings-panel .studio-task-panel details[open]>:last-child,
+.settings-panel #chromaGeneratorPanel details[open]>:last-child { margin-bottom:10px; }
+
+/* Step numbers belong to the shared journey above the canvas. Task-specific
+   cards use headings only, so every Settings workflow follows one hierarchy. */
+.settings-panel .character-step-heading { gap:10px; }
+.settings-panel .character-step-heading>span {
+  display:none;
+}
+.settings-panel .character-step-heading strong { font-size:13px; }
+.settings-panel .character-step-heading small { font-size:10px; }
+
+@media(max-width:920px) {
+  .settings-panel>.panel-heading { min-height:64px; }
+  .settings-panel .studio-readiness { align-items:stretch; }
+  .settings-panel .studio-readiness small { white-space:normal; }
+}

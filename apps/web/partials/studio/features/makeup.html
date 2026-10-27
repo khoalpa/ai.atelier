@@ -1,0 +1,69 @@
+	  <!-- Trang điểm AI -->
+      <section id="studioMakeupPanel" class="studio-task-panel makeup-panel" hidden aria-label="Trang điểm AI">
+        <button id="makeupDetect" type="button">Nhận diện khuôn mặt</button>
+        <div id="makeupFaces" role="group" aria-label="Chọn khuôn mặt"></div>
+        <label for="makeupStyle">Phong cách</label>
+        <select id="makeupStyle"><option value="natural">Tự nhiên</option><option value="office">Công sở</option><option value="peach">Tông đào</option><option value="evening">Tiệc tối</option><option value="classic">Cổ điển</option><option value="artistic">Nghệ thuật</option><option value="custom">Tùy chỉnh</option></select>
+        <details class="makeup-reference" open><summary>Trang điểm theo ảnh tham chiếu</summary>
+          <p>Chọn ảnh có kiểu trang điểm bạn thích, rồi chọn khuôn mặt cần lấy màu.</p>
+          <label for="makeupReferenceSelect">Ảnh tham chiếu trong thư viện</label><select id="makeupReferenceSelect"><option value="">Chọn ảnh tham chiếu…</option></select>
+          <div class="button-row"><button id="makeupReferenceRefresh" type="button">Làm mới danh sách ảnh</button><button id="makeupReferenceUpload" type="button">Tải ảnh tham chiếu</button></div>
+          <input id="makeupReferenceFile" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+          <img id="makeupReferenceImage" alt="Ảnh tham chiếu đã chọn" hidden>
+          <button id="makeupReferenceDetect" type="button" disabled>Nhận diện mặt tham chiếu</button>
+          <div id="makeupReferenceFaces" class="makeup-face-list" role="group" aria-label="Chọn khuôn mặt tham chiếu"></div>
+          <button id="makeupReferenceApply" type="button" disabled>Lấy gợi ý từ khuôn mặt này</button>
+          <p id="makeupReferenceStatus" role="status">Màu tham chiếu là gợi ý; ánh sáng và màu da ảnh hưởng đến kết quả.</p>
+        </details>
+        <details class="makeup-library"><summary>Phong cách của tôi</summary>
+          <label for="makeupSavedStyle">Phong cách đã lưu</label><select id="makeupSavedStyle"><option value="">Chọn phong cách…</option></select>
+          <button id="makeupLoadStyle" type="button" disabled>Áp dụng phong cách đã lưu</button>
+          <label for="makeupStyleName">Tên phong cách</label><input id="makeupStyleName" type="text" maxlength="80" >
+          <div class="button-row"><button id="makeupSaveStyle" type="button">Lưu thành phong cách mới</button><button id="makeupUpdateStyle" type="button" disabled>Cập nhật phong cách đã chọn</button></div>
+          <small id="makeupLibraryStatus" role="status">Chỉ lưu màu và thiết lập. Vùng áp dụng được nhận diện lại trên từng ảnh.</small>
+        </details>
+        <label for="makeupDescription">Mô tả thêm</label>
+        <textarea id="makeupDescription" rows="3" maxlength="1000" ></textarea>
+        <button id="makeupReadDescription" type="button">Đọc mô tả và cập nhật thiết lập</button>
+        <small id="makeupReaderStatus" role="status"></small>
+        <p id="makeupSummary" aria-live="polite"></p>
+        <fieldset><legend>Vùng trang điểm</legend><div class="makeup-parts">
+          <label class="makeup-check"><input type="checkbox" data-makeup-part="lips" checked>Môi</label>
+          <label class="makeup-check"><input type="checkbox" data-makeup-part="eyes" checked>Mí mắt</label>
+          <label class="makeup-check"><input type="checkbox" data-makeup-part="brows" checked>Chân mày</label>
+          <label class="makeup-check"><input type="checkbox" data-makeup-part="cheeks" checked>Má</label>
+          <label class="makeup-check"><input type="checkbox" data-makeup-part="base" checked>Nền da</label>
+        </div><small>Đổi khuôn mặt hoặc vùng trang điểm sẽ vẽ lại vùng đỏ. Dùng cọ xóa để thu hẹp và cọ xanh để bảo vệ chi tiết.</small></fieldset>
+        <div class="makeup-colors"><label>Son<input id="makeupLip" type="color" value="#ad626c"></label><label>Phấn mắt<input id="makeupEyeshadow" type="color" value="#a47e70"></label><label>Má hồng<input id="makeupBlush" type="color" value="#ce8d87"></label><label>Chân mày<input id="makeupBrow" type="color" value="#59443b"></label></div>
+        <details class="makeup-strengths"><summary>Điều chỉnh độ đậm từng vùng</summary>
+          <label>Môi · <output id="makeupStrengthLipsValue">100%</output><input id="makeupStrengthLips" data-makeup-strength="lips" type="range" min="0" max="100" value="100"></label>
+          <label>Mí mắt · <output id="makeupStrengthEyesValue">100%</output><input id="makeupStrengthEyes" data-makeup-strength="eyes" type="range" min="0" max="100" value="100"></label>
+          <label>Má · <output id="makeupStrengthCheeksValue">100%</output><input id="makeupStrengthCheeks" data-makeup-strength="cheeks" type="range" min="0" max="100" value="100"></label>
+          <label>Chân mày · <output id="makeupStrengthBrowsValue">100%</output><input id="makeupStrengthBrows" data-makeup-strength="brows" type="range" min="0" max="100" value="100"></label>
+          <label>Nền da · <output id="makeupStrengthBaseValue">100%</output><input id="makeupStrengthBase" data-makeup-strength="base" type="range" min="0" max="100" value="100"></label>
+        </details>
+        <label>Mức độ<select id="makeupIntensity"><option value="light">Nhẹ</option><option value="medium" selected>Tự nhiên</option><option value="bold">Đậm</option></select></label>
+        <label>Kẻ mắt<select id="makeupEyeliner"><option value="none">Không</option><option value="thin" selected>Mảnh</option><option value="defined">Rõ nét</option></select></label>
+        <label>Chất son<select id="makeupFinish"><option value="matte">Lì</option><option value="satin" selected>Mịn nhẹ</option><option value="gloss">Bóng</option></select></label>
+        <label>Cách trang điểm<select id="makeupRenderer"><option value="color">Phủ màu giữ chi tiết</option><option value="ai">AI tạo họa tiết và hiệu ứng</option></select></label>
+        <label class="makeup-check"><input id="makeupPreserve" type="checkbox" checked>Giữ dấu da nhỏ và tàn nhang nhận diện được</label>
+        <label for="makeupSmooth">Làm mịn nền da · <output id="makeupSmoothValue">0%</output></label><input id="makeupSmooth" type="range" min="0" max="50" value="0">
+        <p>AI có thể thay đổi chi tiết trong vùng tô. Dùng cọ xanh để giữ chính xác nốt ruồi, tàn nhang hoặc họa tiết quan trọng. Ảnh gốc luôn được giữ lại.</p>
+        <p id="makeupStatus" role="status"></p>
+        <div class="button-row"><button id="makeupPreview" type="button">Xem thử khuôn mặt</button><button id="makeupRun" class="primary" type="button">Áp dụng · 2 phương án</button></div>
+        <button id="makeupRefresh" type="button">Kiểm tra lại dịch vụ</button>
+        <details id="makeupComparePanel" class="makeup-multi" open><summary>Thử và so sánh nhiều phong cách</summary>
+          <p id="makeupCompareHint">Chọn 2–4 phong cách. Mọi phương án dùng chung vùng đỏ và vùng bảo vệ hiện tại.</p>
+          <div id="makeupCompareChoices" role="group" aria-label="Chọn các phong cách để so sánh"></div>
+          <p id="makeupCompareCount" role="status">0 / 4 phong cách</p>
+          <div class="button-row"><button id="makeupCompareRefresh" type="button">Làm mới danh sách phong cách</button><button id="makeupCompareStart" type="button" class="primary" disabled>Tạo bảng so sánh</button></div>
+        </details>
+        <section id="makeupCompareBoard" class="makeup-compare-board" aria-label="Bảng so sánh phong cách" hidden>
+          <h3>So sánh trên cùng ảnh gốc</h3><p id="makeupCompareNotice" role="status"></p>
+          <div class="makeup-compare-tools"><label>Phóng to đồng bộ<select id="makeupCompareZoom"><option value="fit">Vừa khung</option><option value="1">100% · kích thước thật</option><option value="2">200%</option></select></label>
+            <label class="makeup-check"><input id="makeupCompareOriginal" type="checkbox">Xem ảnh gốc ở mọi ô</label>
+            <button id="makeupCompareCancel" type="button" disabled>Dừng so sánh</button></div>
+          <small>Cuộn hoặc kéo ảnh để xem cùng vị trí ở các ô. Những bản đã xong vẫn được giữ nếu dừng hoặc có lỗi.</small>
+          <div id="makeupCompareGrid" class="makeup-compare-grid"></div>
+        </section>
+      </section>

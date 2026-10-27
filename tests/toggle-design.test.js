@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const root = path.resolve(__dirname, '..');
-const html = fs.readFileSync(path.join(root, 'apps/web/index.html'), 'utf8');
+const html = require('./helpers/web-html')();
 const css = fs.readFileSync(path.join(root, 'apps/web/styles/components/toggles.css'), 'utf8');
 
 assert.match(html, /styles\/components\/toggles\.css/);

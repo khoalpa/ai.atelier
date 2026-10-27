@@ -1,0 +1,48 @@
+      <!-- Mở rộng ảnh -->
+      <details class="inpaint-panel studio-task-panel" id="studioOutpaintPanel" hidden open>
+        <summary>Mở rộng ảnh · Outpainting</summary>
+        <label>Model<select id="outpaintModel"><option value="">Đang tải model…</option></select></label>
+        <label>Chất lượng<select id="outpaintPreset"><option value="fast">Nhanh</option><option value="balanced">Cân bằng</option><option value="detail" selected>Chi tiết</option><option value="custom">Tùy chỉnh</option></select></label>
+        <label>Tỷ lệ khung mới<select id="outpaintRatio"><option value="custom">Tùy chỉnh</option><option>1:1</option><option>4:5</option><option>3:2</option><option>16:9</option><option>9:16</option></select></label>
+        <div class="outpaint-fields">
+          <label>Chiều rộng (px)<input id="outpaintWidth" type="number" min="1" max="8192" step="1"></label>
+          <label>Chiều cao (px)<input id="outpaintHeight" type="number" min="1" max="8192" step="1"></label>
+          <label>Cách mép trái (px)<input id="outpaintLeft" type="number" min="0" max="8192" value="0"></label>
+          <label>Cách mép trên (px)<input id="outpaintTop" type="number" min="0" max="8192" value="0"></label>
+          <label>Mở rộng bên phải (px)<input id="outpaintRight" type="number" min="0" max="8192" value="0"></label>
+          <label>Mở rộng bên dưới (px)<input id="outpaintBottom" type="number" min="0" max="8192" value="0"></label>
+        </div>
+        <button id="outpaintCenter" type="button">Đặt ảnh vào giữa</button>
+        <small id="outpaintGeometryHint" role="status">Chọn ảnh nguồn để thiết lập khung.</small>
+        <label>Bạn muốn xuất hiện gì trong phần mở rộng? <small>Không bắt buộc</small><textarea id="outpaintPrompt" rows="3" maxlength="16000"></textarea></label>
+        <small>Mô tả nền, chất liệu, hoa văn và các chi tiết cần nối tiếp ở mép ảnh.</small>
+        <label class="checkbox"><input id="outpaintSeamRepair" type="checkbox" checked> Sửa đường nối trước khi tăng chi tiết</label>
+        <label class="checkbox"><input id="outpaintBackgroundContinuity" type="checkbox"> Đồng bộ chất liệu nền hẹp từ ảnh gốc</label>
+        <small>Cho một cạnh mở thêm 16–128 px và giữ nguyên ảnh gốc. Lấy màu, chi tiết từ dải nền khác trong ảnh; bỏ qua nếu có chủ thể hoặc thiếu nền phù hợp.</small>
+        <label>Dải sửa đường nối (px)<input id="outpaintSeamWidth" type="number" min="8" max="128" value="48"></label>
+        <small>Tách nền và trang phục để xử lý riêng; bảo vệ tự động mặt, tóc, da và bàn tay. Nếu không tách được vùng đáng tin cậy, phần đó sẽ được bỏ qua.</small>
+        <label>Điều cần tránh<textarea id="outpaintNegative" rows="2" maxlength="16000"></textarea></label>
+        <label class="checkbox"><input id="outpaintPreserve" type="checkbox" checked> Giữ nguyên ảnh gốc</label>
+        <small>Tắt để cho phép sửa dải mép bên trong ảnh gốc. Khi bật sửa đường nối, độ rộng do “Dải sửa đường nối” quyết định; vùng giữa ảnh và vùng bảo vệ vẫn giữ nguyên.</small>
+        <div class="outpaint-fields">
+          <label>Dải hòa trộn (px)<input id="outpaintOverlap" type="number" min="0" max="128" value="16"></label>
+          <label>Phương án<select id="outpaintCount"><option>1</option><option>2</option><option>4</option></select></label>
+          <label>Seed<input id="outpaintSeed" type="number" min="0" max="2147483647" value="42"></label>
+          <label>Số bước<input id="outpaintSteps" type="number" min="4" max="80" value="30"></label>
+          <label>Guidance<input id="outpaintGuidance" type="number" min="1" max="30" step="0.5" value="5"></label>
+          <label>Độ phân giải AI<select id="outpaintResolution"><option value="512">Nhanh · 512 px</option><option value="640">Cân bằng · 640 px</option><option value="768" selected>Chi tiết · 768 px</option><option value="1024">Tối đa · 1024 px</option></select></label>
+        </div>
+        <label class="checkbox"><input id="outpaintDetail" type="checkbox" checked> Tăng chi tiết vùng mở rộng</label>
+        <small>Xử lý riêng nền và trang phục trên toàn bộ phần mở rộng, kể cả vùng xa ảnh gốc. Giữ kết quả trước nếu bước mới không đạt kiểm tra.</small>
+        <label class="checkbox"><input id="outpaintMaterialRefine" type="checkbox" checked> Phục hồi riêng hoa văn vải</label>
+        <small>Phục hồi vải theo vùng nhận diện; nền vẫn được tăng chi tiết riêng. Vùng không đủ tin cậy sẽ được bỏ qua và báo rõ.</small>
+        <label class="checkbox"><input id="outpaintSourceEnhance" type="checkbox"> Hoàn thiện ảnh gốc</label>
+        <small>Tăng chi tiết vải và giảm nhiễu nền nhẹ, bảo vệ mặt, tóc, da và bàn tay. Bật tùy chọn này sẽ tắt “Giữ nguyên ảnh gốc”. Ảnh nguồn vẫn được lưu riêng.</small>
+        <button id="outpaintQuality" type="button">Áp dụng chất lượng chi tiết</button>
+        <small id="outpaintQualityHint" role="status"></small>
+        <small>Kích thước xuất theo khung đã chọn. Độ phân giải AI là ngân sách pixel tương đương khung vuông; hệ thống tự chọn khung chữ nhật phù hợp.</small>
+        <label class="checkbox"><input id="outpaintChooseLayout" type="checkbox" checked> Chọn bố cục trước khi hoàn thiện</label>
+        <small>Tạo các bố cục trước, sau đó bấm “Hoàn thiện ảnh này” trên phương án muốn giữ. Số phương án được chọn riêng với chất lượng.</small>
+        <small id="outpaintEstimate" role="status">Thời gian được ước tính khi có lịch sử chạy phù hợp.</small>
+        <button id="outpaintRun" type="button" class="primary">Tạo ảnh mở rộng</button>
+      </details>

@@ -7,6 +7,21 @@
   .workspace>* { flex-shrink:0; }
   .workspace>.canvas-wrap { flex:1 1 auto; min-height:180px; }
   .workspace-compact-header { display:flex; align-items:center; gap:8px; min-width:0; padding:4px 8px; overflow-x:auto; border-bottom:1px solid var(--line); background:var(--surface); }
+  .workspace>.workspace-journey { position:relative; z-index:6; display:grid; grid-template-columns:repeat(var(--journey-step-count,5),minmax(72px,1fr)); flex:0 0 auto; gap:0; width:100%; margin:0; padding:8px 16px 9px; overflow-x:auto; border:0; border-bottom:1px solid var(--line-soft); background:var(--palette-0b1017f2); list-style:none; backdrop-filter:blur(14px); }
+  .workspace>.workspace-journey li { position:relative; display:grid; justify-items:center; gap:4px; min-width:72px; padding:2px 8px; border:0; border-radius:0; color:var(--muted); text-align:center; background:transparent; }
+  .workspace>.workspace-journey li::after { content:""; position:absolute; top:15px; left:calc(50% + 18px); width:calc(100% - 36px); height:1px; background:var(--line); pointer-events:none; }
+  .workspace>.workspace-journey li:last-child::after,.workspace>.workspace-journey li[hidden]::after { display:none; }
+  .workspace>.workspace-journey li>span { position:relative; z-index:1; display:grid; place-items:center; width:28px; height:28px; flex-basis:28px; border:1px solid var(--line); border-radius:50%; color:var(--muted); background:var(--palette-0b1017); font-size:11px; font-weight:800; }
+  .workspace>.workspace-journey li strong { display:block; max-width:130px; overflow:hidden; color:inherit; font-size:10px; line-height:1.2; text-overflow:ellipsis; white-space:nowrap; }
+  .workspace>.workspace-journey li small { display:none; }
+  .workspace>.workspace-journey li:hover { color:var(--text); background:transparent; }
+  .workspace>.workspace-journey li.active { color:var(--text); background:transparent; }
+  .workspace>.workspace-journey li.active>span { color:var(--accent-ink); border-color:var(--accent); background:var(--accent); box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 12%,transparent); }
+  .workspace>.workspace-journey li.complete>span { color:var(--palette-122018); border-color:var(--green); background:var(--green); }
+  body[data-studio-task="chroma"] .workspace>.workspace-journey { display:grid; }
+  .journey-panel>.journey-heading { padding-bottom:10px; }
+  .journey-panel>.journey-heading h2 { font-size:0; }
+  .journey-panel>.journey-heading h2::after { content:'Công cụ tác vụ'; font-size:16px; }
   .workspace-layout-controls { display:flex; flex:0 0 auto; flex-wrap:nowrap; align-items:center; gap:4px; margin-left:auto; padding:0; background:transparent; }
   .workspace-layout-controls button { display:inline-flex; flex:0 0 32px; align-items:center; justify-content:center; width:32px; height:32px; min-width:32px; min-height:32px; padding:0; border-radius:6px; }
   .app-header .workspace-layout-controls { margin:0 4px 0 0; padding-right:8px; border-right:1px solid var(--line-soft); }
@@ -21,6 +36,9 @@
   .panel-heading { flex-wrap:wrap; }
   .workspace-compact-header>.studio-mode-card { display:block; flex:0 0 auto; margin:0; padding:0; border:0; border-radius:6px; background:transparent; }
   .workspace-compact-header>.studio-mode-card>div:first-child { display:none; }
+  .workspace-compact-header>.journey-progress-toggle { flex:0 0 auto; min-height:28px; margin-left:auto; padding:4px 9px; border-radius:6px; color:var(--muted); background:transparent; font-size:11px; white-space:nowrap; }
+  .workspace-compact-header>.journey-progress-toggle[aria-expanded="true"] { color:var(--accent); border-color:var(--accent); }
+  .workspace>.workspace-journey.is-collapsed { display:none!important; }
   .workspace .studio-mode-switch { display:flex; flex-wrap:nowrap; gap:4px; max-width:100%; padding:2px; overflow-x:auto; }
   .workspace .studio-mode-switch button { flex:0 0 auto; min-height:28px; padding:4px 8px; font-size:12px; white-space:nowrap; border-radius:6px; }
   .canvas-tools { padding:3px 8px; border-bottom:1px solid var(--line); background:var(--surface); }
@@ -106,6 +124,7 @@
     .app-header .header-actions>:not(.workspace-layout-controls) { display:none; }
     #appMain { display:flex; }
     .journey-panel.panel-collapsed,.settings-panel.panel-collapsed { display:none; }
+    .workspace>.workspace-journey { position:sticky; top:60px; padding-inline:8px; }
     .workspace { height:calc(100dvh - 130px); min-height:560px; width:100%; }
     .workspace-compact-header { position:sticky; top:60px; z-index:9; }
     .studio-results-tray { inset:var(--studio-results-top,180px) 0 64px; }
@@ -116,6 +135,12 @@
     .primary-nav { grid-template-columns:repeat(6,minmax(64px,1fr)); overflow-x:auto; }
     .studio-command-state>div { display:block; }
     .studio-command-state small { display:block; }
+  }
+  @media(max-width:560px) {
+    .workspace>.workspace-journey { grid-template-columns:repeat(var(--journey-step-count,5),minmax(52px,1fr)); padding-inline:4px; }
+    .workspace>.workspace-journey li { min-width:52px; padding-inline:3px; }
+    .workspace>.workspace-journey li strong { max-width:64px; font-size:9px; }
+    .workspace>.workspace-journey li::after { left:calc(50% + 16px); width:calc(100% - 32px); }
   }
   @media(prefers-reduced-motion:reduce) { .compare-image-pair { transition:none; } }
 }
@@ -129,6 +154,44 @@
 .editor-zoom-controls button[aria-pressed=true]{border-color:var(--accent);color:var(--accent);}
 #canvasWrap:has(>#editorCanvas[hidden])>.editor-zoom-controls{display:none;}
 @media(max-width:560px){.editor-zoom-controls small{display:none;}}
+
+/* Keep the shared task journey to one compact row. This must stay unlayered so
+   it overrides the legacy four-column journey rule in studio-guidance.css. */
+.workspace>.journey-steps.workspace-journey {
+  display:grid;
+  grid-template-columns:repeat(var(--journey-step-count,5),minmax(0,1fr));
+  gap:0;
+  min-height:0;
+  padding:5px 8px 6px;
+  overflow:hidden;
+}
+.workspace>.journey-steps.workspace-journey li {
+  min-width:0;
+  gap:2px;
+  padding:0 4px;
+}
+.workspace>.journey-steps.workspace-journey li::after {
+  top:12px;
+  left:calc(50% + 15px);
+  width:calc(100% - 30px);
+}
+.workspace>.journey-steps.workspace-journey li>span {
+  width:24px;
+  height:24px;
+  flex-basis:24px;
+}
+.workspace>.journey-steps.workspace-journey li strong {
+  width:100%;
+  max-width:none;
+  font-size:9px;
+}
+@media(max-width:560px) {
+  .workspace>.journey-steps.workspace-journey { padding-inline:2px; }
+  .workspace>.journey-steps.workspace-journey li { padding-inline:1px; }
+  .workspace>.journey-steps.workspace-journey li strong { font-size:0; }
+  .workspace>.journey-steps.workspace-journey li>span { width:22px; height:22px; flex-basis:22px; }
+  .workspace>.journey-steps.workspace-journey li::after { top:11px; left:calc(50% + 13px); width:calc(100% - 26px); }
+}
 
 /* AI region tools remain usable inside narrow studio sidebars. */
 .ai-region-panel { min-width: 0; }

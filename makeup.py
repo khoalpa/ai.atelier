@@ -258,8 +258,12 @@ def ai_candidates(source, masks, allowed, box, settings, env, active, progress):
     for name in ('release_inpaint','release_tryon','release_text_to_image'):env[name]()
     pipe=None
     try:
-        path=Path(env['ROOT'])/'models/inpainting/stable-diffusion-xl-1.0-inpainting-0.1'
-        pipe=env['load_inpaint_pipe'](lambda *_:active(),path,'sdxl');pipe.unload_lora_weights()
+        # Follow the same operator-selected inpainting model as the other image
+        # workflows. Current offline installations no longer include the old,
+        # hard-coded SDXL directory.
+        path=Path(env['INPAINT_MODEL'])
+        pipe=env['load_inpaint_pipe'](lambda *_:active(),path)
+        if callable(getattr(pipe,'unload_lora_weights',None)):pipe.unload_lora_weights()
         if not torch.cuda.is_available():pipe.to(dtype=torch.float32)
         strength={'light':.28,'medium':.4,'bold':.52}[settings['intensity']]
         steps=math.ceil(16/strength); effective=int(steps*strength)
@@ -271,11 +275,16 @@ def ai_candidates(source, masks, allowed, box, settings, env, active, progress):
             patch,selection,size=prepare_region(conditioned,allowed,box,768,erase_conditioning=False)
             def step(pipeline,index,timestep,kwargs):
                 active();progress(variant*effective+index+1,env.get('makeup_variant_count',2)*effective);return kwargs
+            call_kwargs=dict(prompt=prompt,negative_prompt=negative,width=patch.width,height=patch.height,
+                num_inference_steps=steps,generator=torch.Generator('cpu').manual_seed(settings['seed']+variant),
+                callback_on_step_end=step,callback_on_step_end_tensor_inputs=['latents'])
+            if getattr(pipe,'_atelier_architecture','')=='qwen-image-controlnet-inpaint':
+                call_kwargs.update(control_image=patch,control_mask=selection,true_cfg_scale=4.5,
+                    controlnet_conditioning_scale=1.0)
+            else:
+                call_kwargs.update(image=patch,mask_image=selection,strength=strength,guidance_scale=4.5)
             with torch.inference_mode():
-                output=env['traced_pipeline_call'](pipe,prompt=prompt,negative_prompt=negative,image=patch,mask_image=selection,
-                    width=patch.width,height=patch.height,strength=strength,num_inference_steps=steps,guidance_scale=4.5,
-                    generator=torch.Generator('cpu').manual_seed(settings['seed']+variant),
-                    callback_on_step_end=step,callback_on_step_end_tensor_inputs=['latents']).images[0]
+                output=env['traced_pipeline_call'](pipe,**call_kwargs).images[0]
             active()
             if output.size!=patch.size:raise RuntimeError('Kích thước ảnh trang điểm AI không đúng.')
             candidate=source.copy();candidate.paste(restore_region(output,box,size),box[:2])

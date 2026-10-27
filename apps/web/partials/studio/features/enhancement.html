@@ -1,0 +1,28 @@
+	  <!-- Cải thiện ảnh -->
+      <section id="studioEnhancePanel" class="studio-task-panel enhance-panel" hidden aria-label="Cải thiện ảnh">
+        <label>Cách cải thiện<select id="enhanceMethod"><optgroup label="Cải thiện ảnh"><option value="light">Cải thiện nhẹ · giữ kích thước</option><option value="ai2x">Phóng lớn AI 2×</option></optgroup><optgroup label="Làm mịn &amp; sửa da"><option value="skin-smooth">Làm mịn da tự nhiên</option><option value="skin-heal">Xóa khuyết điểm nhỏ</option><option value="skin-ai">Sửa vùng da bằng AI</option><option value="skin-edge">Làm rõ viền da</option></optgroup></select></label>
+        <label id="enhanceProfileRow">Loại ảnh<select id="enhanceProfile"><option value="product">Ảnh sản phẩm · ưu tiên màu và chất liệu</option><option value="portrait">Ảnh người mẫu · xử lý nhẹ</option><option value="general">Ảnh tổng thể</option></select></label>
+        <label id="enhanceLevelRow"><span id="enhanceLevelLabel">Mức độ</span><select id="enhanceLevel"><option value="light">Nhẹ</option><option value="balanced" selected>Cân bằng</option><option value="strong">Mạnh</option></select></label>
+        <div id="skinRetouchControls" hidden>
+          <label for="skinSmooth">Mức làm mịn <output id="skinSmoothValue">35%</output><input id="skinSmooth" type="range" min="0" max="100" value="35" step="1"></label>
+          <label class="skin-texture-toggle"><input id="skinPreserveTexture" type="checkbox" checked>Giữ vân da tự nhiên</label>
+          <p id="skinRetouchHint">Tô vùng da cần sửa. Dùng cọ xanh để giữ mắt, môi, tóc hoặc dấu đặc trưng.</p>
+        </div>
+        <div id="skinEdgeControls" hidden>
+          <p>Tô một dải dọc viền, phủ sang cả phía da và nền. Chỉ dải nằm trong vùng tô được sửa; cọ xanh luôn bảo vệ.</p>
+          <label for="edgeWidth">Bề rộng mỗi phía <output id="edgeWidthValue">16 px</output><input id="edgeWidth" type="range" min="3" max="48" value="16" step="1"></label>
+          <label for="edgeSoftness">Độ mềm của viền <output id="edgeSoftnessValue">50%</output><input id="edgeSoftness" type="range" min="0" max="100" value="50" step="1"></label>
+          <label for="edgeDecontam">Khử lem màu nền <output id="edgeDecontamValue">30%</output><input id="edgeDecontam" type="range" min="0" max="100" value="30" step="1"></label>
+          <p>Giữ đường nét cơ thể: luôn bật. Công cụ không dịch chuyển hoặc vẽ lại đường cong.</p>
+          <div class="button-row"><button id="edgePickSkin" type="button" aria-pressed="false">Chọn điểm Da</button><button id="edgePickBackground" type="button" aria-pressed="false">Chọn điểm Nền</button><button id="edgeClearPoints" type="button">Xóa hai điểm</button></div>
+          <p id="edgePointsStatus" role="status">Tự động ước lượng hai phía theo màu. Chọn hai điểm tham chiếu nếu nhận diện chưa đúng.</p>
+          <p>Xem thử tự đặt tại viền đã nhận diện. Bật “Hiện đường biên” trong cửa sổ so sánh để kiểm tra.</p>
+        </div>
+        <label>Phạm vi<select id="enhanceScope"><option value="all">Toàn ảnh, trừ vùng bảo vệ</option><option value="selected">Chỉ vùng đã tô đỏ</option></select></label>
+        <p id="enhanceProtectionHint">Dùng cọ bảo vệ màu xanh để giữ mặt, chữ hoặc logo.</p>
+        <strong id="enhanceDimensions" aria-live="polite"></strong>
+        <p id="enhanceStatus" role="status"></p>
+        <details id="enhancePreviewPosition"><summary>Vị trí xem thử</summary><p>Chọn vùng tối đa 256 × 256 px trong ảnh nguồn. 0% là đầu ảnh, 100% là cuối ảnh.</p><div class="enhance-preview-position"><label>Ngang (%)<input id="enhancePreviewX" type="number" min="0" max="100" value="50"></label><label>Dọc (%)<input id="enhancePreviewY" type="number" min="0" max="100" value="50"></label></div></details>
+        <div class="button-row"><button id="enhancePreview" type="button">Xem thử một vùng</button><button id="enhanceRun" class="primary" type="button">Cải thiện toàn ảnh</button></div>
+        <button id="enhanceRefresh" type="button">Kiểm tra lại dịch vụ</button>
+      </section>

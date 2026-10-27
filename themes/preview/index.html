@@ -28,15 +28,34 @@
   <div class="grid">
     <section class="ui-card stack">
       <h2>Thao tác</h2>
-      <div class="ui-actions"><button class="ui-button ui-primary">Tạo dự án</button><button class="ui-button">Xem trước</button></div>
-      <div class="ui-actions"><button class="ui-button" disabled>Chưa khả dụng</button><button class="ui-button" disabled aria-busy="true">Đang lưu…</button></div>
+      <div class="ui-actions">
+        <button class="ui-button ui-primary">Tạo dự án</button>
+        <button class="ui-button">Xem trước</button>
+      </div>
+      <div class="ui-actions">
+        <button class="ui-button" disabled>Chưa khả dụng</button>
+        <button class="ui-button" disabled aria-busy="true">Đang lưu…</button>
+      </div>
       <p>Nhấn Tab để kiểm tra viền focus; rê chuột lên nút để xem hover.</p>
     </section>
     <section class="ui-card stack">
       <h2>Thông tin dự án</h2>
-      <label>Tên dự án<input class="ui-input" value="Xưởng sáng tạo — Tiếng Việt"></label>
-      <label>Loại dự án<select class="ui-select"><option>Hình ảnh</option><option>Âm thanh</option><option>Video</option></select></label>
-      <label>Ghi chú<textarea class="ui-textarea" placeholder="Mô tả ý tưởng của bạn"></textarea></label>
+      <label>
+        Tên dự án
+        <input class="ui-input" value="Xưởng sáng tạo — Tiếng Việt">
+      </label>
+      <label>
+        Loại dự án
+        <select class="ui-select">
+          <option>Hình ảnh</option>
+          <option>Âm thanh</option>
+          <option>Video</option>
+        </select>
+      </label>
+      <label>
+        Ghi chú
+        <textarea class="ui-textarea" placeholder="Mô tả ý tưởng của bạn"></textarea>
+      </label>
     </section>
     <section class="ui-card stack">
       <h2>Phản hồi</h2>
@@ -48,7 +67,13 @@
   </div>
   <section class="ui-card">
     <h2>Hoạt động gần đây</h2>
-    <table class="ui-table"><thead><tr><th>Dự án</th><th>Trạng thái</th><th>Loại</th></tr></thead><tbody><tr><td>Bộ sưu tập mùa thu</td><td>Hoàn tất</td><td>Hình ảnh</td></tr><tr><td>Câu chuyện mới</td><td>Bản nháp</td><td>Âm thanh</td></tr></tbody></table>
+    <table class="ui-table">
+      <thead><tr><th>Dự án</th><th>Trạng thái</th><th>Loại</th></tr></thead>
+      <tbody>
+        <tr><td>Bộ sưu tập mùa thu</td><td>Hoàn tất</td><td>Hình ảnh</td></tr>
+        <tr><td>Câu chuyện mới</td><td>Bản nháp</td><td>Âm thanh</td></tr>
+      </tbody>
+    </table>
   </section>
 </main>
 </body>

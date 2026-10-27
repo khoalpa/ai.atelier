@@ -38,14 +38,16 @@
     const task=document.body.dataset.studioTask,description=byId('tryonInputMode').value==='description';
     const steps=task==='body'?[['Ảnh nguồn','Chọn hoặc tải ảnh','imageSelect'],['Nhân vật','Nhận diện và chọn người','characterFaceMain'],['Thay đổi cơ thể','Tư thế, bộ phận hoặc tương tác','characterChangeMain'],['Phạm vi & bảo toàn','Giữ mặt, trang phục và nền','bodyScopeMain'],['Xem thử & áp dụng','Kiểm tra vùng và chọn phương án','studioPrimaryAction']]:task==='character'?[['Ảnh nguồn','Chọn hoặc tải ảnh','imageSelect'],['Khuôn mặt','Nhận diện và chọn người','characterFaceMain'],['Thay đổi','Nhanh, mô tả hoặc tham chiếu','characterChangeMain'],['Phạm vi & bảo toàn','Mức độ và vùng được phép sửa','characterScopeMain'],['Xem thử & áp dụng','So sánh hai phương án','studioPrimaryAction']]:task==='makeup'?[['Ảnh nguồn','Chọn ảnh nhân vật','imageSelect'],['Khuôn mặt','Nhận diện và chọn người','makeupFaceMain'],['Phong cách','Mẫu, mô tả hoặc tham chiếu','makeupStyleMain'],['Vùng & mức độ','Chọn vùng và độ đậm','makeupRegionMain'],['Xem thử & áp dụng','So sánh hai phương án','studioPrimaryAction']]:task==='enhance'?
       [['Ảnh nguồn','Chọn hoặc tải ảnh','imageSelect'],['Mục tiêu','Chọn cách cải thiện','enhanceMethodMain'],['Phạm vi','Toàn ảnh hoặc vùng chọn','enhanceScopeMain'],['Xem thử','Kiểm tra trước và sau','studioPrimaryAction'],['Áp dụng & so sánh','Lưu kết quả phù hợp','studioPrimaryAction']]:task==='outpaint'?
-      [['Ảnh nguồn','Chọn hoặc tải ảnh','imageSelect'],['Khung mới','Chọn tỷ lệ và vị trí','outpaintWidth'],['Mô tả','Nội dung phần mở rộng','outpaintPrompt'],['Tạo và so sánh','Chọn bố cục phù hợp','studioPrimaryAction']]:task==='chroma'?
-      [['Mô tả','Nội dung ảnh muốn tạo','chromaPrompt'],['Khung ảnh','Chọn tỷ lệ và bố cục','newImageComposition'],['Chất lượng','Chọn mức chi tiết','textToImagePreset'],['Tạo và so sánh','Sinh phương án','studioPrimaryAction']]:
-      task==='inpaint'?[['Ảnh nguồn','Chọn hoặc tải ảnh','imageSelect'],['Chọn vật thể','Tự động hoặc tô thủ công','aiTool'],['Cách lấp vùng','Phục hồi nền hoặc bề mặt','inpaintFillMode'],['Xóa và so sánh','Tạo phương án','studioPrimaryAction']]:[['Ảnh nguồn','Chọn hoặc tải ảnh','imageSelect'],description?['Trang phục mới','Mô tả trang phục','tryonDescription']:['Trang phục mới','Thêm ảnh mẫu','garmentFile'],['Người & vùng thay','Tạo tự động hoặc chỉnh tay','autoMaskButton'],['Chất lượng','Chọn mức và số phương án','tryonQualityMain'],['Tạo và so sánh','Sinh phương án','studioPrimaryAction']];
+      [['Ảnh nguồn','Chọn hoặc tải ảnh','imageSelect'],['Khung mới','Chọn tỷ lệ và vị trí','outpaintWidth'],['Mô tả','Nội dung phần mở rộng','outpaintPrompt'],['Xem thử','Kiểm tra khung và phần mở rộng','outpaintPreview'],['Tạo và so sánh','Chọn bố cục phù hợp','studioPrimaryAction']]:task==='chroma'?
+      [['Ý tưởng','Mô tả ảnh muốn tạo','chromaPrompt'],['Khung ảnh','Chọn tỷ lệ và bố cục','newImageComposition'],['Chất lượng','Chọn mức chi tiết','textToImagePreset'],['Kiểm tra','Rà soát mô tả và thiết lập','chromaPrompt'],['Tạo và so sánh','Sinh và chọn phương án','studioPrimaryAction']]:
+      task==='inpaint'?[['Ảnh nguồn','Chọn hoặc tải ảnh','imageSelect'],['Chọn vật thể','Tự động hoặc tô thủ công','aiTool'],['Cách lấp vùng','Phục hồi nền hoặc bề mặt','inpaintFillMode'],['Xem thử','Kiểm tra vùng sẽ xóa','scopePreviewButton'],['Xóa và so sánh','Tạo và chọn phương án','studioPrimaryAction']]:[['Ảnh nguồn','Chọn hoặc tải ảnh','imageSelect'],description?['Trang phục mới','Mô tả trang phục','tryonDescription']:['Trang phục mới','Thêm ảnh mẫu','garmentFile'],['Người & vùng thay','Tạo tự động hoặc chỉnh tay','autoMaskButton'],['Chất lượng','Chọn mức và số phương án','tryonQualityMain'],['Tạo và so sánh','Sinh phương án','studioPrimaryAction']];
     document.querySelectorAll('.journey-steps li').forEach((step,index)=>{
       step.hidden=index>=steps.length;
       if(index<steps.length){step.hidden=false;step.dataset.stepTarget=steps[index][2];step.querySelector('strong').textContent=steps[index][0];step.querySelector('small').textContent=steps[index][1];}
       if(task==='chroma')step.classList.toggle('complete',index===0?Boolean(byId('chromaPrompt').value.trim()):index===1?Boolean(byId('textToImageModel').value):Boolean(byId('studioCompareAfter').getAttribute('src')));
     });
+    const journeySteps=document.querySelector('.journey-steps');
+    if(journeySteps)journeySteps.style.setProperty('--journey-step-count',String(steps.length));
     document.querySelectorAll('[data-studio-mode]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.studioMode===task)));
     const count=['character','body'].includes(task)?byId('characterCount').value:task==='makeup'?2:task==='enhance'?1:byId(task==='outpaint'?'outpaintCount':task==='inpaint'?'inpaintCount':task==='chroma'?'chromaCount':'tryonCount')?.value;
     const hint=byId('studioCommandHint');
@@ -90,6 +92,17 @@
     new MutationObserver(updateAll).observe(byId('appMain'),{attributes:true,attributeFilter:['class']});updateAll();
     const switcher=document.querySelector('.studio-mode-card'),header=document.createElement('div');header.className='workspace-compact-header';
     workspace.prepend(header);header.append(switcher);
+    const journeySteps=document.querySelector('.journey-steps');
+    if(journeySteps){
+      journeySteps.id='studioJourneyProgress';journeySteps.classList.add('workspace-journey');journeySteps.setAttribute('aria-label','Tiến trình tác vụ');header.after(journeySteps);
+      const journeyToggle=document.createElement('button');journeyToggle.type='button';journeyToggle.className='journey-progress-toggle';journeyToggle.setAttribute('aria-controls',journeySteps.id);
+      const setJourneyCollapsed=collapsed=>{
+        state.journeyProgressCollapsed=Boolean(collapsed);journeySteps.classList.toggle('is-collapsed',state.journeyProgressCollapsed);
+        journeyToggle.setAttribute('aria-expanded',String(!state.journeyProgressCollapsed));journeyToggle.textContent=state.journeyProgressCollapsed?'Mở tiến trình':'Thu tiến trình';
+        journeyToggle.setAttribute('aria-label',journeyToggle.textContent+' tác vụ');save();
+      };
+      journeyToggle.onclick=()=>setJourneyCollapsed(!state.journeyProgressCollapsed);header.append(journeyToggle);setJourneyCollapsed(state.journeyProgressCollapsed);
+    }
     document.querySelector('.app-header .header-actions').prepend(bar);
     const progressDock=document.createElement('div');progressDock.className='workspace-progress-dock';
     byId('canvasWrap').after(progressDock);progressDock.append(byId('editorLiveProgress'),byId('chromaLiveProgress'));

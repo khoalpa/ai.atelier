@@ -11,6 +11,7 @@ class TaskContext(Mapping):
     OUTPUTS: Path
     JOBS_DIR: Path
     CHROMA_ROOT: Path
+    INPAINT_MODEL: Path
     SOURCE_REVISION: str
     device: str
     torch: Any

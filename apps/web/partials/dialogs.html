@@ -1,0 +1,113 @@
+  <dialog id="helpDialog" class="help-dialog">
+    <div class="results-header"><div><p class="eyebrow">BẮT ĐẦU NHANH</p><h2>Tạo kết quả đầu tiên</h2></div><button id="closeHelp">Đóng</button></div>
+    <div class="help-grid"><article><span>1</span><h3>Chọn ảnh</h3><p>Chọn ảnh mẫu ở cột bên trái.</p></article><article><span>2</span><h3>Đánh dấu vùng</h3><p>Dùng cọ hoặc Điểm AI để chọn trang phục.</p></article><article><span>3</span><h3>Thêm mẫu</h3><p>Tải ảnh trang phục tham chiếu ở bảng thiết lập.</p></article><article><span>4</span><h3>Tạo và duyệt</h3><p>So sánh các phương án rồi chọn kết quả tốt nhất.</p></article></div>
+  </dialog>
+
+  <dialog id="modelManagerDialog" class="model-manager-dialog">
+    <div class="results-header"><div><p class="eyebrow">MODEL CỤC BỘ</p><h2>Quản lý model theo chức năng</h2><p>Chọn model tương thích, kiểm tra phụ thuộc hoặc quản lý model trên máy.</p></div><button id="closeModelManager">Đóng</button></div>
+    <div id="modelManagerContent"></div>
+  </dialog>
+
+  <dialog id="emptyMaskDialog" class="mask-guide-dialog">
+    <div class="mask-guide-icon" aria-hidden="true">✦</div>
+    <div>
+      <p class="eyebrow">CHƯA CÓ VÙNG CẦN XÓA</p>
+      <h2 id="maskGuideTitle">Chọn vùng trước khi tạo phương án</h2>
+      <p id="maskGuideText">Hãy tô lên vật thể hoặc để AI tạo vùng theo preset hiện tại.</p>
+      <div class="mask-guide-actions">
+        <button id="maskGuideAi" class="primary">Tạo vùng bằng AI</button>
+        <button id="maskGuideManual">Tự tô vùng</button>
+        <button id="maskGuideCancel" class="mask-guide-cancel">Để sau</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="resultsDialog">
+    <div class="results-header"><h2>Kết quả inpainting</h2><button id="closeResults">Đóng</button></div>
+    <div id="reviewProgress" class="review-progress" hidden></div>
+    <div id="comparePanel" class="compare-panel" hidden>
+      <div class="compare-stage"><img id="compareBefore" alt="Trước"><div id="compareAfterWrap"><img id="compareAfter" alt="Sau"></div></div>
+      <label>So sánh trước / sau <input id="compareSlider" type="range" min="0" max="100" value="50"></label>
+    </div>
+    <div id="resultPromptTrace" hidden></div>
+    <div id="resultsGrid" class="results-grid"></div>
+  </dialog>
+
+  <dialog id="imageViewerDialog" class="image-viewer-dialog" aria-labelledby="imageViewerTitle">
+    <header class="image-viewer-header"><div><strong id="imageViewerTitle">Ảnh ở kích thước 100%</strong><small id="imageViewerMeta">Nhấp đúp vào ảnh bất kỳ để mở.</small></div><div class="button-row"><button id="sendViewerImageToStudioButton" class="primary" type="button" disabled>Dùng trong Studio</button><button id="toggleViewerFitButton" type="button" aria-pressed="false">Xem toàn ảnh</button><button id="saveViewerImageButton" type="button" disabled>Lưu ảnh kích thước gốc</button><button id="closeImageViewer" class="image-viewer-close" type="button" aria-label="Đóng trình xem ảnh" title="Đóng trình xem ảnh"><span aria-hidden="true">×</span></button></div></header>
+    <div id="imagePromptTrace" hidden></div>
+    <div class="image-viewer-canvas"><img id="imageViewerImage" alt="Ảnh phóng to"></div>
+  </dialog>
+
+  <dialog id="generationPromptDialog" class="prompt-assist-dialog" aria-labelledby="generationPromptTitle">
+    <form id="generationPromptForm">
+      <div class="results-header"><h2 id="generationPromptTitle">Xác nhận prompt tổng hợp</h2><button type="button" id="cancelGenerationPrompt">Đóng</button></div>
+      <p>Kiểm tra và chỉnh sửa nội dung sẽ dùng để tạo kết quả.</p>
+      <label>Prompt tổng hợp<textarea id="generationPrompt" rows="9" required></textarea></label>
+      <section id="generationEncoderPrompts" class="encoder-prompts" aria-label="Prompt theo bộ mã hóa" aria-live="polite"></section>
+      <label>Negative prompt<textarea id="generationNegativePrompt" rows="4"></textarea></label>
+      <p>Lần tạo này dùng nội dung đã xác nhận và không tự thử lại với prompt khác.</p>
+      <div class="button-row"><button type="submit" class="primary">Xác nhận và tạo kết quả</button><button type="button" id="resetGenerationPrompt">Khôi phục bản tổng hợp</button><button type="button" id="backGenerationPrompt">Quay lại</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="promptAssistDialog" class="prompt-assist-dialog">
+    <div class="results-header"><div><p class="eyebrow">TRỢ LÝ PROMPT</p><h2 id="promptAssistDialogTitle">Bản nháp AI</h2></div><button id="closePromptAssistDialog">Đóng</button></div>
+    <div class="prompt-assist-score" id="promptAssistScore" hidden></div>
+    <div class="prompt-assist-compare"><label>Nội dung hiện tại<textarea id="promptAssistOriginal" rows="5" readonly></textarea></label><label>Bản đề xuất<textarea id="promptAssistDraft" rows="5"></textarea></label></div>
+    <section class="prompt-assist-diff" aria-label="So sánh thay đổi">
+      <strong>Khác biệt giữa hai bản</strong>
+      <p id="promptAssistDiffStatus" role="status"></p>
+      <div id="promptAssistDiffColumns" class="prompt-assist-compare" hidden>
+        <div><h3>Nội dung hiện tại · Phần bị xóa</h3><div id="promptAssistDiffOriginal" class="prompt-assist-diff-text"></div></div>
+        <div><h3>Bản đề xuất · Phần thêm mới</h3><div id="promptAssistDiffDraft" class="prompt-assist-diff-text"></div></div>
+      </div>
+    </section>
+    <section id="promptAssistChanges" class="prompt-assist-feedback" hidden></section>
+    <section id="promptAssistWarnings" class="prompt-assist-feedback warnings" hidden></section>
+    <div class="button-row"><button id="applyPromptAssistButton" class="primary">Áp dụng bản nháp</button><button id="copyPromptAssistButton">Sao chép</button><button id="keepPromptAssistButton">Giữ nội dung hiện tại</button></div>
+  </dialog>
+
+  <dialog id="safeExitDialog" class="safe-exit-dialog" aria-labelledby="safeExitTitle">
+    <form method="dialog">
+      <div class="safe-exit-icon" aria-hidden="true">⏻</div>
+      <h2 id="safeExitTitle">Đóng AI Atelier?</h2>
+      <p id="safeExitSummary">Các thay đổi đã lưu sẽ được giữ trên máy.</p>
+      <div id="safeExitNotice" class="safe-exit-notice" role="status"></div>
+      <div class="button-row">
+        <button id="confirmSafeExit" class="primary" type="button">Đóng ứng dụng</button>
+        <button type="submit" value="cancel">Ở lại</button>
+      </div>
+      <small>Trình duyệt có thể yêu cầu bạn xác nhận nếu còn bản nháp chưa lưu.</small>
+    </form>
+  </dialog>
+
+  <dialog id="jsonEditorDialog" class="json-editor-dialog" aria-labelledby="jsonEditorTitle">
+    <header class="json-editor-header"><div><h2 id="jsonEditorTitle">Chỉnh sửa cấu hình JSON</h2><span id="jsonEditorDirty" class="json-editor-dirty"></span></div><button id="jsonEditorClose" type="button">Đóng</button></header>
+    <p>Chỉnh sửa toàn bộ trường, thêm/xóa phần tử hoặc dùng JSON trực tiếp. Thay đổi được giữ trong bản nháp cho đến khi bấm Lưu; mỗi lần lưu đều sao lưu bản trước.</p>
+    <div class="json-editor-toolbar"><label class="json-editor-file">Tệp<select id="jsonEditorFile"></select></label><label>Nhóm<select id="jsonEditorGroup"></select></label><label>Chế độ<select id="jsonEditorMode"><option value="form">Biểu mẫu</option><option value="raw">JSON</option></select></label><label>Tìm trường<input id="jsonEditorSearch" type="search"></label></div>
+    <small id="jsonEditorPath" class="json-editor-path"></small>
+    <div class="json-editor-toolbar"><label>Tính năng<select id="jsonEditorFeature"></select></label></div>
+    <details id="jsonEditorTaskPanel"><summary>Xem trước prompt theo tác vụ và kiểm tra token</summary><div class="json-editor-toolbar"><label>Tác vụ<select id="jsonEditorTask"></select></label><label>ID model kiểm tra token (tùy chọn)<input id="jsonEditorTokenModel"></label></div><label>Dữ liệu thay biến (JSON)<textarea id="jsonEditorVariables" rows="3" spellcheck="false">{}</textarea></label><button id="jsonEditorPreview" type="button">Ghép bản xem trước</button><pre id="jsonEditorPreviewOutput" style="white-space:pre-wrap;overflow-wrap:anywhere" aria-live="polite"></pre></details>
+    <div id="jsonEditorForm"></div><textarea id="jsonEditorRaw" class="json-editor-raw" aria-label="Nội dung JSON của nhóm đang chọn" spellcheck="false" hidden></textarea>
+    <div class="json-editor-toolbar"><button id="jsonEditorFormat" type="button">Định dạng</button><button id="jsonEditorValidate" type="button">Kiểm tra thay đổi</button><button id="jsonEditorSave" type="button" class="primary">Lưu cấu hình</button><button id="jsonEditorReload" type="button">Bỏ bản nháp / tải lại</button><button id="jsonEditorExport" type="button">Xuất toàn bộ tệp</button><label>Nhập tệp vào bản nháp<input id="jsonEditorImport" type="file" accept=".json,application/json"></label></div>
+    <div class="json-editor-toolbar"><label>Bản sao lưu<select id="jsonEditorBackup"></select></label><button id="jsonEditorRestore" type="button">Khôi phục bản đã chọn</button></div>
+    <p id="jsonEditorStatus" class="json-editor-status" role="status" aria-live="polite"></p>
+  </dialog>
+  <dialog id="anatomyPartsDialog" class="json-editor-dialog" aria-labelledby="anatomyPartsTitle">
+    <header class="json-editor-header"><div><h2 id="anatomyPartsTitle">Quản lý phạm vi bộ phận</h2><span id="anatomyPartsDirty" class="json-editor-dirty"></span></div><button id="anatomyPartsClose" type="button">Đóng</button></header>
+    <p>Các chỉ số khớp dùng chuẩn COCO 0–16. Thay đổi chỉ có hiệu lực sau khi lưu và kiểm tra lại vùng sửa.</p>
+    <div class="json-editor-toolbar"><label>Danh sách bộ phận<select id="anatomyPartsList" size="10"></select></label><div class="button-row"><button id="anatomyPartAdd" type="button">Thêm</button><button id="anatomyPartDelete" class="danger" type="button">Xóa</button></div></div>
+    <section class="anatomy-part-form">
+      <label>ID kỹ thuật<input id="anatomyPartId" maxlength="64" pattern="[a-z][a-z0-9_-]+"></label>
+      <label>Tên hiển thị<input id="anatomyPartLabel" maxlength="80"></label>
+      <label>Phía cơ thể<select id="anatomyPartSide"><option value="left">Trái</option><option value="right">Phải</option><option value="center">Giữa</option></select></label>
+      <label>Loại hình học<select id="anatomyPartKind"><option value="hand">Bàn tay</option><option value="foot">Bàn chân</option><option value="limb">Chi</option><option value="region">Vùng</option></select></label>
+      <label>Khớp, cách nhau bằng dấu phẩy<input id="anatomyPartJoints"></label>
+      <label>Đoạn xương, mỗi đoạn một dòng<textarea id="anatomyPartSegments" rows="3"></textarea></label>
+      <fieldset><legend>Độ rộng mask theo vai</legend><label>An toàn<input id="anatomyMaskSafe" type="number" min="0.05" max="1.5" step="0.01"></label><label>Cân bằng<input id="anatomyMaskBalanced" type="number" min="0.05" max="1.5" step="0.01"></label><label>Nghiêm ngặt<input id="anatomyMaskStrict" type="number" min="0.05" max="1.5" step="0.01"></label><label>Hệ số đầu mút<input id="anatomyEndpointScale" type="number" min="0.5" max="4" step="0.05"></label><label>Bán kính tối thiểu<input id="anatomyMinimumRadius" type="number" min="4" max="128" step="1"></label><label id="anatomyEllipseRatioLabel">Tỷ lệ ellipse bàn chân<input id="anatomyEllipseRatio" type="number" min="1" max="4" step="0.1"></label></fieldset>
+      <fieldset><legend>Điểm tối thiểu để được chọn</legend><label>An toàn<input id="anatomyQualitySafe" type="number" min="0" max="100"></label><label>Cân bằng<input id="anatomyQualityBalanced" type="number" min="0" max="100"></label><label>Nghiêm ngặt<input id="anatomyQualityStrict" type="number" min="0" max="100"></label></fieldset>
+    </section>
+    <div class="button-row"><button id="anatomyPartsSave" class="primary" type="button">Lưu danh sách</button><button id="anatomyPartsReset" type="button">Khôi phục mặc định</button></div>
+    <p id="anatomyPartsStatus" role="status" aria-live="polite"></p>
+  </dialog>

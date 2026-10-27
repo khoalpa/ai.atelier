@@ -1,0 +1,135 @@
+      <!-- Thay trang phục -->
+      <details class="inpaint-panel studio-task-panel" id="studioTryonPanel" open>
+        <summary>Thay trang phục</summary>
+        <label>Cách thay trang phục<select id="tryonInputMode"><option value="reference">Theo ảnh mẫu</option><option value="description">Theo mô tả</option></select></label>
+        <div id="tryonDescriptionFields" class="tryon-description-main" hidden>
+          <label>Model tạo trang phục<select id="tryonDescriptionModel" disabled><option value="">Đang kiểm tra model…</option></select></label>
+          <label>Bạn muốn nhân vật mặc gì?<textarea id="tryonDescription" rows="4" maxlength="16000"></textarea></label>
+          <label>Điều cần tránh<textarea id="tryonDescriptionNegative" rows="2" maxlength="16000"></textarea></label>
+          <small id="descriptionNegativeHint"></small>
+          <details><summary>Thông số tạo trang phục</summary><div class="compact-grid">
+            <label>Số bước<input id="descriptionSteps" type="number" min="4" max="60" value="40"></label>
+            <label>Mức bám mô tả<input id="descriptionGuidance" type="number" min="1" max="50" step="0.5" value="6"></label>
+            <label>Mức thay đổi<input id="descriptionStrength" type="number" min="0.2" max="1" step="0.05" value="1"></label>
+            <label>Độ phân giải<select id="descriptionResolution"><option>512</option><option>768</option><option selected>1024</option></select></label>
+          </div><small>Đổi model sẽ áp dụng thông số riêng của model đó. Có thể chỉnh lại trước khi tạo.</small></details>
+          <small id="tryonDescriptionHint">Không cần ảnh mẫu. Tô vùng cần thay hoặc tạo vùng tự động theo loại. Với ma-nơ-canh và tùy chỉnh, hãy tô vùng thủ công.</small>
+        </div>
+        <label class="inpaint-model-field">Model thay trang phục<select id="tryonModelSelect" disabled><option value="">Đang kiểm tra model…</option></select><small id="tryonModelHint">Đang kiểm tra khả năng xử lý.</small></label>
+        <label>Ảnh trang phục tham chiếu
+          <input id="garmentFile" type="file" accept="image/png,image/jpeg,image/webp">
+        </label>
+        <img id="garmentPreview" class="garment-preview" hidden alt="Trang phục tham chiếu">
+        <button id="saveReferenceButton">Lưu ảnh tham chiếu cho loại hiện tại</button>
+        <button id="refreshReferenceReadinessButton">Kiểm tra trạng thái reference</button>
+        <button id="qualifyReferenceButton">Chạy smoke qualification cho loại hiện tại</button>
+        <div id="referenceReadiness" class="model-list">Đang kiểm tra reference…</div>
+        <div class="button-row">
+          <button id="preprocessGarmentButton">Tách nền trang phục</button>
+          <button id="autoMaskButton">Tạo vùng tự động</button>
+        </div>
+        <label>Nhân vật
+          <select id="personSelect"><option value="0">Nhân vật chính</option></select>
+        </label>
+        <button id="detectPeopleButton">Phát hiện nhân vật trong ảnh</button>
+        <label class="check-row"><input id="usePoseToggle" type="checkbox"> Pose chính xác cao cho ảnh cần duyệt</label>
+        <label>Loại trang phục
+          <select id="garmentCategory">
+            <option value="upper_body">Áo / thân trên</option>
+            <option value="lower_body">Quần / váy</option>
+            <option value="overall">Váy liền / toàn thân</option>
+          </select>
+        </label>
+        <label>Chi tiết cần giữ <small>Không bắt buộc</small>
+          <textarea id="garmentDescription" rows="2" maxlength="400"></textarea>
+          <small>Nêu màu, kiểu dáng, tay áo hoặc chất liệu cần giữ từ ảnh mẫu.</small>
+        </label>
+        <label>Loại ảnh mẫu<select id="referenceType"><option value="auto">Tự nhận diện</option><option value="product">Ảnh sản phẩm, không có người</option><option value="model">Ảnh có người mặc mẫu</option></select></label>
+        <details id="targetGarmentFields"><summary>Phạm vi thay và chi tiết cần đối chiếu</summary>
+          <small>Tay áo, chiều dài và dáng giúp mở rộng vùng thay. Chọn theo trang phục mới rồi tạo lại vùng tự động. Cổ áo và số lớp được lưu để đối chiếu khi xem kết quả.</small>
+          <div class="compact-grid">
+            <label>Tay áo<select id="targetSleeveLength"><option value="unknown">Chưa xác định</option><option value="sleeveless">Không tay</option><option value="short">Tay ngắn</option><option value="long">Tay dài</option></select></label>
+            <label>Chiều dài<select id="targetHemLength"><option value="unknown">Chưa xác định</option><option value="hip">Ngang hông</option><option value="thigh">Ngang đùi</option><option value="knee">Ngang gối</option><option value="ankle">Ngang cổ chân</option></select></label>
+            <label>Dáng<select id="targetSilhouette"><option value="unknown">Chưa xác định</option><option value="straight">Suông</option><option value="a_line">Xòe chữ A</option><option value="trousers">Quần hai ống</option></select></label>
+            <label>Cổ áo<select id="targetNeckline"><option value="unknown">Chưa xác định</option><option value="round">Cổ tròn</option><option value="v_neck">Cổ chữ V</option><option value="collared">Có cổ bẻ</option></select></label>
+            <label>Lớp trang phục<select id="targetLayering"><option value="unknown">Chưa xác định</option><option value="single">Một lớp</option><option value="layered">Nhiều lớp</option></select></label>
+          </div>
+        </details>
+        <div class="compact-grid">
+          <label class="seed-field">Seed<div class="seed-control"><select id="tryonSeedMode" aria-label="Chế độ seed"><option value="default">Mặc định</option><option value="random">Ngẫu nhiên</option><option value="custom">Tùy chỉnh</option></select><div><input id="tryonSeed" type="number" min="0" max="2147483647" value="42" data-default-seed="42"><button id="tryonSeedRandom" type="button" title="Tạo seed tùy chỉnh ngẫu nhiên" aria-label="Tạo seed tùy chỉnh ngẫu nhiên">🎲</button><button id="tryonSeedReset" type="button" title="Đặt lại seed mặc định" aria-label="Đặt lại seed mặc định">↺</button></div></div></label>
+          <label class="variant-count-field">Số phương án<select id="tryonCount"><option selected>1</option><option>2</option><option>4</option></select></label>
+          <label>Số bước<input id="tryonSteps" type="number" min="10" max="60" value="35"></label>
+          <label>Guidance<input id="tryonGuidance" type="number" min="0.5" max="7.5" step="0.5" value="2.5"></label>
+        </div>
+        <label class="check-row"><input id="autoMaskToggle" type="checkbox"> Tự tạo mask khi chạy</label>
+        <label class="check-row body-reconstruction-toggle"><span>Tái tạo phần cơ thể mới lộ ra</span><input id="reconstructExposedBodyToggle" type="checkbox" role="switch" checked></label>
+        <label>Sửa phần tay mới lộ ra (thử nghiệm)<select id="bodyRepairMode"><option value="off">Không sửa bổ sung</option><option value="auto">Tự động với áo hai dây rõ ràng</option><option value="arms">Tái tạo tay trần, xóa tay áo cũ</option></select></label>
+        <small id="tryonReferenceBodyHint">Bổ sung vùng quần áo cũ vào vùng xử lý khi đổi sang đồ ít che phủ hơn. Phần cơ thể bị che được AI ước lượng từ ảnh; vùng đánh dấu bảo vệ vẫn giữ nguyên.</small>
+        <label class="check-row"><input id="cropPersonToggle" type="checkbox" checked> Crop từng người rồi ghép lại</label>
+        <label>Ngưỡng tin cậy <strong id="confidenceValue">75%</strong>
+          <input id="confidenceThreshold" type="range" min="40" max="95" value="75">
+        </label>
+        <label class="check-row"><input id="onlyConfidentToggle" type="checkbox" checked> Chỉ chạy ảnh vượt ngưỡng</label>
+        <label class="check-row"><input id="twoStageToggle" type="checkbox" checked> Lọc seed nhanh rồi render chất lượng cao</label>
+        <div class="compact-grid">
+          <label>Điểm tối thiểu<input id="minimumQuality" type="number" min="0" max="100" value="75"></label>
+          <label>Giống mẫu tối thiểu<input id="minimumSimilarity" type="number" min="0" max="1" step="0.05" value="0.55"></label>
+          <label>Điểm biên tối thiểu<input id="minimumSeam" type="number" min="0" max="100" value="65"></label>
+          <label>Điểm bảo toàn tối thiểu<input id="minimumAnatomy" type="number" min="0" max="100" value="90"></label>
+          <label>Số lần chạy lại<input id="maxRetries" type="number" min="0" max="3" value="1"></label>
+        </div>
+        <label class="check-row"><input id="repairSeamsToggle" type="checkbox" checked> Sửa cục bộ vùng biên bất thường</label>
+        <label class="check-row"><input id="generativeRefineToggle" type="checkbox" checked> Sửa sinh ảnh khi điểm biên chưa đạt</label>
+        <label>Vùng ưu tiên sửa
+          <select id="refineRegion"><option value="auto">Tự động</option><option value="collar">Cổ áo</option><option value="sleeves">Tay áo</option><option value="waist">Vùng eo</option></select>
+        </label>
+        <label class="check-row"><input id="onlyQualityToggle" type="checkbox" checked> Không đưa kết quả dưới chuẩn vào hàng duyệt</label>
+        <label>Phạm vi
+          <select id="batchScope">
+            <option value="current">Ảnh hiện tại</option>
+            <option value="group">Nhóm ảnh hiện tại</option>
+            <option value="selected">Tối đa 12 ảnh đầu</option>
+          </select>
+        </label>
+        <section class="batch-command-card" aria-labelledby="batchCommandTitle">
+          <div class="batch-command-heading">
+            <span class="batch-command-icon" aria-hidden="true">⇉</span>
+            <div><strong id="batchCommandTitle">Xử lý hàng loạt</strong><small>Tự tạo mask và chọn kết quả tốt nhất.</small></div>
+          </div>
+          <button id="batchTryonButton" class="batch-command-primary">Chạy hàng loạt và tự chọn</button>
+          <div class="batch-command-actions">
+            <button id="cancelJobButton" disabled>Hủy an toàn</button>
+            <button id="resumeJobButton" disabled>Tiếp tục tác vụ</button>
+          </div>
+          <progress id="jobProgress" max="100" value="0" hidden></progress>
+          <small class="batch-command-license">POC phi thương mại <span aria-hidden="true">·</span> CatVTON CC BY-NC-SA 4.0</small>
+        </section>
+        <button id="auditButton">Kiểm tra hồi quy 23 ảnh</button>
+        <label>Lọc hàng đợi duyệt
+          <select id="reviewFilter">
+            <option value="all">Tất cả</option><option value="pending">Chờ duyệt</option>
+            <option value="approved">Đã chấp nhận</option><option value="retry">Chạy lại</option><option value="rejected">Loại bỏ</option>
+          </select>
+        </label>
+        <button id="exportApprovedButton">Xuất manifest đã duyệt</button>
+        <button id="calibrateButton">Hiệu chỉnh ngưỡng từ kết quả đã duyệt</button>
+        <button id="goldenButton">Tạo bộ ảnh chuẩn hồi quy</button>
+        <button id="compareBaselineButton">So sánh với bộ ảnh chuẩn</button>
+        <button id="jobsButton">Quản lý hàng đợi</button>
+        <div class="compact-grid"><label>Lưu job (ngày)<input id="jobRetentionDays" type="number" min="1" max="365" value="14"></label><button id="cleanupJobsButton">Dọn checkpoint cũ</button></div>
+        <button id="benchmarkButton">Benchmark cố định 23 ảnh</button>
+        <button id="dashboardButton">Tạo bảng phân tích chất lượng</button>
+        <button id="reviewBenchmarkButton">Duyệt 23 kết quả benchmark</button>
+        <button id="reviewReadinessButton">Kiểm tra tiến độ duyệt</button>
+        <button id="runRetryQueueButton">Chạy lại các ảnh được đánh dấu</button>
+        <button id="retryComparisonsButton">So sánh kết quả chạy lại</button>
+        <button id="calibrateWeightsButton">Hiệu chỉnh trọng số từ nhãn duyệt</button>
+        <button id="compareWeightsButton">So sánh A/B trọng số</button>
+        <button id="activateWeightsButton">Kích hoạt trọng số đã kiểm chứng</button>
+        <button id="confirmDefaultWeightsButton">Xác nhận không cần hiệu chỉnh</button>
+        <button id="acceptanceButton">Kiểm tra điều kiện nghiệm thu</button>
+        <button id="systemCheckButton">Kiểm tra sẵn sàng offline</button>
+        <button id="backupButton">Sao lưu cấu hình và dữ liệu duyệt</button>
+        <label>Khôi phục bản sao lưu<select id="backupSelect"><option value="">Chưa tải danh sách</option></select></label>
+        <button id="restoreBackupButton" class="danger">Khôi phục bản sao lưu đã chọn</button>
+      </details>

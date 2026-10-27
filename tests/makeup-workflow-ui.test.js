@@ -1,7 +1,7 @@
 const fs=require('fs');
 const assert=require('assert');
 
-const html=fs.readFileSync('apps/web/index.html','utf8');
+const html=require('./helpers/web-html')();
 const feature=fs.readFileSync('apps/web/features/makeup.js','utf8');
 const navigation=fs.readFileSync('apps/web/core/navigation.js','utf8');
 const workspace=fs.readFileSync('apps/web/features/studio-workspace.js','utf8');

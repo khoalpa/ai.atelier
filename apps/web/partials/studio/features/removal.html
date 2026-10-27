@@ -1,0 +1,111 @@
+      <!-- Xóa vật thể -->
+      <details class="inpaint-panel studio-task-panel" id="studioInpaintPanel" open>
+        <summary>Xóa vật thể</summary>
+        <label class="inpaint-model-field">Model Inpainting<select id="inpaintModelSelect"><option value="">Đang tải model…</option></select><small id="inpaintModelHint">Chỉ hiển thị model đã đăng ký và sẵn sàng.</small></label>
+        <details class="lora-panel studio-lora-panel" id="studioLoraPanel">
+          <summary id="loraPanelTitle">LoRA theo model Inpainting</summary>
+          <div class="studio-lora-content">
+          <p class="studio-lora-description">Bổ sung đặc điểm từ LoRA tương thích với model đang chọn.</p>
+          <label>Adapter · tối đa 2
+            <select id="loraSelect" multiple size="3" aria-describedby="loraStatus loraSelectionHint"></select>
+            <small id="loraSelectionHint">Giữ Ctrl để chọn nhiều adapter.</small>
+          </label>
+          <label class="studio-lora-weight"><span>Mức ảnh hưởng <strong id="loraWeightValue">0.75</strong></span>
+            <input id="loraWeight" type="range" min="0" max="1.5" step="0.05" value="0.75">
+          </label>
+          <div class="studio-lora-actions"><button id="applyLoraButton" class="primary" type="button">Áp dụng LoRA</button><button id="clearLoraButton" type="button">Tắt LoRA</button></div>
+          <small id="loraStatus" role="status" aria-live="polite">Chưa đọc danh sách LoRA.</small>
+          <button id="refreshLoraButton" type="button">Cập nhật danh sách</button>
+          <details class="studio-lora-tests">
+            <summary>So sánh và hiệu chỉnh</summary>
+            <div class="studio-lora-test-actions">
+              <button id="loraAbButton" type="button">So sánh A/B cùng seed</button>
+              <button id="loraMatrixButton" type="button">Thử 5 ảnh × 3 mức ảnh hưởng</button>
+              <button id="loraStrengthButton" type="button">Thử 3 ảnh × 3 mức tái tạo</button>
+            </div>
+          </details>
+          </div>
+        </details>
+        <div class="studio-prompt-group inpaint-target-group" role="group" aria-label="Đối tượng cần xóa">
+        <strong>Vật thể cần xóa</strong>
+        <label>Loại vật thể
+          <select id="accessoryPreset">
+			<option value="outfit">Trang phục</option>
+			<option value="shirt">Áo / thân trên</option>
+			<option value="pants">Quần / váy</option>
+			<option value="glasses">Kính</option>
+            <option value="hat">Mũ</option>
+            <option value="jewelry">Trang sức</option>
+            <option value="bag">Túi</option>
+            <option value="shoes">Giày</option>
+            <option value="mannequin">Ma-nơ-canh</option>
+            <option value="custom">Tùy chỉnh</option>
+          </select>
+        </label>
+        <label>Mô tả kết quả mong muốn <small>Không bắt buộc</small>
+          <textarea id="inpaintPrompt" rows="3"></textarea>
+          <small>Mô tả nền hoặc bề mặt cần phục hồi. Hãy chọn cả bóng đổ, phản chiếu hoặc dây nối nếu muốn xóa chúng.</small>
+          <span class="llm-assist-row"><button id="suggestInpaintPromptButton" type="button" class="llm-assist-button">✦ Gợi ý bằng AI</button><small id="inpaintPromptAssistStatus">Phân tích ảnh và mask hiện tại.</small></span>
+        </label>
+        <label>Tên vật thể để kiểm tra (tùy chọn)
+          <input id="inpaintObjectLabel" maxlength="160">
+          <small>Dùng tên tiếng Anh khi chọn Tùy chỉnh. Không nhận diện được vật thể trong ảnh gốc thì kết quả cần kiểm tra trực quan.</small>
+        </label>
+        </div>
+        <div class="studio-prompt-group inpaint-fill-group" role="group" aria-label="Kết quả sau khi xóa">
+        <strong>Sau khi xóa, bạn muốn thấy gì?</strong>
+        <label>Cách lấp vùng xóa
+          <select id="inpaintFillMode">
+            <option value="background" selected>Phục hồi nền</option>
+            <option value="base_layer">Tiếp tục bề mặt / lớp nền</option>
+            <option value="reconstruct_body">Tái tạo vùng người</option>
+          </select>
+          <small id="inpaintFillModeHint">Khôi phục nội dung xung quanh vào vùng đã chọn.</small>
+        </label>
+        <div class="studio-result-instructions">
+          <label>Hướng dẫn cho kết quả đã chọn<textarea id="inpaintFillModePrompt" rows="5" maxlength="16000" disabled></textarea></label>
+          <small>Chỉ mô tả phần thay thế. Hệ thống tự bổ sung yêu cầu giữ danh tính, tư thế, ánh sáng và vùng ngoài mask.</small>
+          <button id="saveInpaintFillModePrompt" type="button" disabled>Lưu hướng dẫn</button>
+          <small id="inpaintFillModePromptStatus" role="status">Đang tải hướng dẫn…</small>
+        </div>
+        </div>
+        <div class="studio-prompt-group" role="group" aria-label="Điều cần tránh">
+        <label>Điều cần tránh
+          <textarea id="inpaintNegativePrompt" rows="3"></textarea>
+          <small id="inpaintNegativeHint">Các chi tiết cần tránh khi phục hồi vùng chọn.</small>
+        </label>
+        </div>
+        <div class="compact-grid">
+          <label class="seed-field">Seed<div class="seed-control"><select id="inpaintSeedMode" aria-label="Chế độ seed"><option value="default">Mặc định</option><option value="random">Ngẫu nhiên</option><option value="custom">Tùy chỉnh</option></select><div><input id="inpaintSeed" type="number" min="0" max="2147483647" value="42" data-default-seed="42"><button id="inpaintSeedRandom" type="button" title="Tạo seed tùy chỉnh ngẫu nhiên" aria-label="Tạo seed tùy chỉnh ngẫu nhiên">🎲</button><button id="inpaintSeedReset" type="button" title="Đặt lại seed mặc định" aria-label="Đặt lại seed mặc định">↺</button></div></div></label>
+          <label class="variant-count-field">Số phương án<select id="inpaintCount"><option selected>1</option><option>2</option><option>4</option></select></label>
+          <label>Mở rộng mask tạo ảnh<input id="maskExpand" type="number" min="0" max="64" value="24"></label>
+          <label>Làm mềm biên ghép<input id="maskBlur" type="number" min="0" max="32" value="16"></label>
+          <label>Số bước<input id="inpaintSteps" type="number" min="4" max="60" value="40"></label>
+          <label>Strength<input id="inpaintStrength" type="number" min="0.2" max="1" step="0.05" value="0.65"></label>
+          <label>Guidance<input id="inpaintGuidance" type="number" min="1" max="12" step="0.5" value="4.5"></label>
+          <label>Ngữ cảnh quanh vật thể (px)<input id="cropPadding" type="number" min="0" max="256" value="96"></label>
+          <label>Độ phân giải AI<select id="inpaintResolution"><option value="512">Nhanh · 512 px</option><option value="640">Cân bằng · 640 px</option><option value="768" selected>Chi tiết · 768 px</option><option value="1024">Tối đa · 1024 px</option></select></label>
+        </div>
+        <details class="lora-panel ai-region-panel">
+          <summary>Chọn vùng và tinh chỉnh bằng AI</summary>
+          <section class="ai-tool-group"><h4>Chọn vùng bằng AI</h4>
+            <label>Đối tượng cần chọn<input id="yoloClasses"></label>
+            <small>Nhập tên tiếng Anh, cách nhau bằng dấu phẩy.</small>
+            <label>Bộ nhận diện<select id="regionDetector"><option value="grounding-dino">Grounding DINO + SAM · theo hình vật thể</option><option value="florence-2">Florence-2 + SAM · theo hình vật thể</option><option value="yolo-world">YOLO-World + SAM · theo hình vật thể</option></select></label>
+            <button id="regionDetectButton" type="button">Tìm đối tượng</button>
+          </section>
+          <section class="ai-tool-group"><h4>Tinh chỉnh khuôn mặt</h4>
+            <button id="adetailerMaskButton" type="button">Tìm khuôn mặt</button>
+            <label>Mức độ chỉnh sửa<select id="faceStrength"><option value="0.2">Nhẹ · ít thay đổi</option><option value="0.35" selected>Vừa · tái tạo chi tiết</option><option value="0.5">Mạnh · thay đổi nhiều hơn</option></select></label>
+            <small>Tái tạo có thể làm thay đổi nét mặt. Tìm và chọn mặt trước khi tinh chỉnh.</small>
+            <button id="adetailerRefineButton" type="button" disabled>Tinh chỉnh các mặt đã chọn</button>
+          </section>
+          <section id="regionResults" class="ai-tool-group" hidden><h4>Đối tượng tìm được</h4><div id="regionChoices"></div>
+            <label>Áp dụng vùng chọn<select id="regionMergeMode"><option value="replace">Thay vùng hiện tại</option><option value="add">Thêm vào vùng hiện tại</option><option value="subtract">Trừ khỏi vùng hiện tại</option></select></label>
+            <button id="applyRegionButton" type="button">Áp dụng vùng đã chọn</button>
+          </section>
+          <p id="regionProgress" role="status" aria-live="polite"></p>
+          <button id="cancelRegionButton" type="button" hidden>Hủy nhận diện</button>
+          <details><summary>Trạng thái công cụ</summary><small id="runtimeModelStatus">Đang kiểm tra tệp công cụ…</small></details>
+        </details>
+      </details>

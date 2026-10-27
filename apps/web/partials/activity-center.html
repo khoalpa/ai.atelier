@@ -1,0 +1,16 @@
+  <aside id="activityCenter" class="activity-center" hidden aria-live="polite">
+    <button id="activityCollapse" class="studio-command-toggle activity-collapse-toggle" type="button" aria-expanded="true" aria-label="Thu gọn thông báo tác vụ" title="Thu gọn thông báo tác vụ"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g class="command-icon-collapse"><path d="M4 4l6 6M10 5v5H5M20 20l-6-6M14 19v-5h5"/></g><g class="command-icon-expand"><path d="M10 10 4 4M4 9V4h5M14 14l6 6M20 15v5h-5"/></g></svg></button>
+    <div class="activity-summary">
+      <div id="activitySpinner" class="activity-spinner">AI</div>
+      <div class="activity-copy"><strong id="activityTitle">Đang chuẩn bị tác vụ</strong><small id="activitySubtitle">Vui lòng chờ…</small></div>
+      <div class="activity-actions"><button id="activityReturn">Về tác vụ</button><button id="activityToggle" aria-expanded="false">Chi tiết</button><button id="activityCancel" class="danger">Hủy an toàn</button><button id="activityClose" hidden>Đóng tác vụ</button></div>
+    </div>
+    <div class="activity-progress"><span id="activityProgressBar"></span></div>
+    <div id="activityDrawer" class="activity-drawer" hidden>
+      <div class="activity-stats"><div class="activity-stat"><span>Tiến độ</span><strong id="activityPercent">0%</strong></div><div class="activity-stat"><span>Đã chạy</span><strong id="activityElapsed">00:00</strong></div><div class="activity-stat"><span>Còn lại</span><strong id="activityEta">Đang tính</strong></div><div class="activity-stat"><span>Kết quả</span><strong id="activityResultCount">0</strong></div><div class="activity-stat"><span>GPU / VRAM</span><strong id="activityGpu">—</strong></div></div>
+      <h3 class="activity-section-title">Các bước thực hiện</h3><div id="activityTimeline" class="activity-timeline"></div>
+      <h3 class="activity-section-title">Ảnh đang được xử lý</h3><div id="activityPreview" class="activity-preview" hidden><img id="activityPreviewImage" alt="Ảnh xem trước đang xử lý"><div><strong id="activityPreviewTitle">Bản xem trước trực tiếp</strong><small id="activityPreviewMeta">Ảnh sẽ được cập nhật trong quá trình khử nhiễu.</small></div></div>
+      <h3 class="activity-section-title">Kết quả cập nhật trực tiếp</h3><div id="activityResults" class="live-results"></div>
+      <h3 class="activity-section-title">Nhật ký hoạt động</h3><div id="activityLog" class="activity-log"></div>
+    </div>
+  </aside>
