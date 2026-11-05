@@ -7,6 +7,13 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from object_removal import match_simple_background, blend_removal
 from outpaint_quality import final_seam_review, choose_refinement
 
+# Multiple gross colour bands are a failed layout, not a selectable result.
+framed = Image.new('RGB', (120, 120), (20, 20, 20))
+framed.paste((200, 200, 200), (20, 20, 100, 100))
+rejected = final_seam_review(framed, dict(width=120, height=120, left=20, top=20,
+    right=20, bottom=20, sourceWidth=80, sourceHeight=80, preserveOriginal=True))
+assert rejected['status'] == 'rejected'
+
 yy,xx=np.mgrid[:180,:240]
 mask=Image.new('L',(240,180));mask.paste(255,(85,65,130,105))
 selected=np.asarray(mask)>0

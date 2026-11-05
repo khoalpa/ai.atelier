@@ -53,6 +53,7 @@ async function handleRequest(req, res) {
     }catch(error){return deps.send(res,400,JSON.stringify({ok:false,error:error.message}));}
   }
   if(req.method==='GET'&&/^\/manual-assets\/[a-f0-9]{64}\.png$/.test(pathname))return deps.serveFile(res,deps.manualStore.assets,pathname.slice('/manual-assets/'.length));
+  if(req.method==='GET'&&/^\/acceptance-evidence\/[a-f0-9]{64}\.(?:png|jpe?g|webp)$/.test(pathname))return deps.serveFile(res,deps.path.join(deps.ROOT,'workspace/acceptance/evidence'),pathname.slice('/acceptance-evidence/'.length));
   if(pathname.startsWith('/api/quality-learning/')) {
     const action=pathname.slice('/api/quality-learning/'.length);
     if(req.method!=='POST'||!['state','configure','feedback','rollback','selection','report'].includes(action))return deps.send(res,405,JSON.stringify({ok:false,error:'Thao tác không được hỗ trợ.'}));

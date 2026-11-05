@@ -27,6 +27,8 @@ for left, top, right, bottom in [(35, 0, 0, 0), (0, 0, 47, 0), (0, 31, 0, 0), (0
     body = dict(width=source.width+left+right, height=source.height+top+bottom, left=left, top=top)
     canvas, mask, geometry = prepare_canvas(source, body)
     assert canvas.size == mask.size == (body['width'], body['height'])
+    outside_canvas = np.asarray(canvas)[np.asarray(mask) > 0]
+    assert outside_canvas.var(axis=0).max() == 0, 'conditioning fill must not stretch source-edge geometry'
     model_image, model_mask, crop = prepare_inference(canvas, mask, 768)
     assert model_image.size == model_mask.size
     assert model_image.width*model_image.height <= 768**2
@@ -192,10 +194,13 @@ with tempfile.TemporaryDirectory() as folder:
         load_inpaint_pipe=lambda *args:SimpleNamespace(), traced_pipeline_call=pipeline,
         torch=SimpleNamespace(Generator=Generator,inference_mode=contextlib.nullcontext),
         encode_image=lambda image:'data:image/png;base64,test', json=json,
-        outpaint_pipeline_kwargs=outpaint_pipeline_kwargs)
+        outpaint_pipeline_kwargs=outpaint_pipeline_kwargs,
+        effective_seam_width=__import__('services.ai.tasks.outpaint',fromlist=['effective_seam_width']).effective_seam_width)
     namespace['outpaint_semantics']=lambda image,manual=None:(Image.new('L',image.size,0),Image.new('L',image.size,0),
                                                             manual or Image.new('L',image.size,0),[])
     namespace['metadata']=metadata
+    __import__('outpaint_quality').final_seam_review=lambda image,geometry:dict(
+        status='unverified',sides={},message='Test result',method='final-multiscale-seam-v2')
     exec(compile(ast.Module(body=[runner],type_ignores=[]),str(ROOT/'ai_service.py'),'exec'), namespace)
     body = dict(jobId='test',sampleId='source.png',width=180,height=120,left=30,top=20,count=2)
     response = namespace['outpaint'](body)
@@ -226,7 +231,7 @@ with tempfile.TemporaryDirectory() as folder:
     assert oriented['geometry']['sourceWidth'] == 20 and oriented['geometry']['sourceHeight'] == 40
     assert oriented['results'][0]['originalRegionMAE'] == 0
     assert oriented['results'][0]['finalReview']['method'] == 'final-multiscale-seam-v2'
-    assert oriented['results'][0]['finalReview']['status'] in ('needs-review','unverified')
+    assert oriented['results'][0]['finalReview']['status'] in ('rejected','needs-review','unverified')
     large.save(root/'large.png')
     namespace['safe_sample'] = lambda name:root/'large.png'
     before = len(calls)

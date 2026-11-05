@@ -36,6 +36,8 @@
   <dialog id="imageViewerDialog" class="image-viewer-dialog" aria-labelledby="imageViewerTitle">
     <header class="image-viewer-header"><div><strong id="imageViewerTitle">Ảnh ở kích thước 100%</strong><small id="imageViewerMeta">Nhấp đúp vào ảnh bất kỳ để mở.</small></div><div class="button-row"><button id="sendViewerImageToStudioButton" class="primary" type="button" disabled>Dùng trong Studio</button><button id="toggleViewerFitButton" type="button" aria-pressed="false">Xem toàn ảnh</button><button id="saveViewerImageButton" type="button" disabled>Lưu ảnh kích thước gốc</button><button id="closeImageViewer" class="image-viewer-close" type="button" aria-label="Đóng trình xem ảnh" title="Đóng trình xem ảnh"><span aria-hidden="true">×</span></button></div></header>
     <div id="imagePromptTrace" hidden></div>
+    <button id="previousViewerImageButton" class="image-viewer-navigation image-viewer-previous" type="button" aria-label="Xem ảnh trước" title="Ảnh trước (←)" disabled><span aria-hidden="true">‹</span></button>
+    <button id="nextViewerImageButton" class="image-viewer-navigation image-viewer-next" type="button" aria-label="Xem ảnh sau" title="Ảnh sau (→)" disabled><span aria-hidden="true">›</span></button>
     <div class="image-viewer-canvas"><img id="imageViewerImage" alt="Ảnh phóng to"></div>
   </dialog>
 

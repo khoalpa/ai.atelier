@@ -78,8 +78,8 @@
         <div class="compact-grid">
           <label class="seed-field">Seed<div class="seed-control"><select id="inpaintSeedMode" aria-label="Chế độ seed"><option value="default">Mặc định</option><option value="random">Ngẫu nhiên</option><option value="custom">Tùy chỉnh</option></select><div><input id="inpaintSeed" type="number" min="0" max="2147483647" value="42" data-default-seed="42"><button id="inpaintSeedRandom" type="button" title="Tạo seed tùy chỉnh ngẫu nhiên" aria-label="Tạo seed tùy chỉnh ngẫu nhiên">🎲</button><button id="inpaintSeedReset" type="button" title="Đặt lại seed mặc định" aria-label="Đặt lại seed mặc định">↺</button></div></div></label>
           <label class="variant-count-field">Số phương án<select id="inpaintCount"><option selected>1</option><option>2</option><option>4</option></select></label>
-          <label>Mở rộng mask tạo ảnh<input id="maskExpand" type="number" min="0" max="64" value="24"></label>
-          <label>Làm mềm biên ghép<input id="maskBlur" type="number" min="0" max="32" value="16"></label>
+          <label>Mở rộng mask tạo ảnh<input id="maskExpand" type="number" min="0" max="64" value="10"></label>
+          <label>Làm mềm biên ghép<input id="maskBlur" type="number" min="0" max="32" value="6"></label>
           <label>Số bước<input id="inpaintSteps" type="number" min="4" max="60" value="40"></label>
           <label>Strength<input id="inpaintStrength" type="number" min="0.2" max="1" step="0.05" value="0.65"></label>
           <label>Guidance<input id="inpaintGuidance" type="number" min="1" max="12" step="0.5" value="4.5"></label>

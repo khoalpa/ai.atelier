@@ -20,6 +20,7 @@ assert.equal(fields.outpaintSteps.value,'30');assert.equal(fields.outpaintGuidan
 fields.outpaintModel.value='qwen-image-controlnet-inpainting';context.applyOutpaintModelProfile(true);
 assert.equal(fields.outpaintSteps.value,'30');assert.equal(fields.outpaintGuidance.value,'4');assert.equal(fields.outpaintResolution.value,'768');
 assert.equal(context.outpaintGeometry().right,128);
+assert.equal(context.effectiveOutpaintSeamWidth(context.outpaintGeometry(),48),32);
 for(const ratio of ['1:1','4:5','3:2','16:9']){
   fields.outpaintRatio.value=ratio;context.applyOutpaintRatio();
   const g=context.outpaintGeometry(),[a,b]=ratio.split(':').map(Number);
@@ -62,4 +63,10 @@ context.presentStudioResults=()=>{};context.showCompare=()=>{};context.activateA
 context.showSavedOutpaintResults({width:160,height:120,sourceId:'source.png',results:[{file:'workspace/outputs/outpaint_test/result_seed_42.png',seed:42,originalRegionMAE:0,finalReview:{status:'needs-review',message:'Cần xem nền <test>'}}]});
 assert(fields.resultsGrid.innerHTML.includes('Cần xem nền &lt;test>'));
 assert(fields.resultsGrid.innerHTML.includes('Xem đường nối ở 100%'));
+assert(fields.resultsGrid.innerHTML.includes('Cần xem'));
+assert(fields.resultsGrid.innerHTML.includes('Xem 100% trước khi chọn'));
+fields.resultsGrid={innerHTML:'',querySelectorAll:()=>[]};
+context.renderOutpaintResults({width:160,height:120,directory:'workspace/outputs/outpaint_test',results:[{file:'workspace/outputs/outpaint_test/result_seed_43.png',seed:43,originalRegionMAE:0,finalReview:{status:'rejected',message:'Không đạt'}}]},'source.png');
+assert(!fields.resultsGrid.innerHTML.includes(' download>'),'rejected output must not be downloadable');
+assert(fields.resultsGrid.innerHTML.includes('Không đạt chất lượng'));
 console.log('OK: frame presets, custom positions, history and saved final-review warning.');

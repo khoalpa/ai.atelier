@@ -83,6 +83,88 @@ def prepare_dual_inpaint_masks(
     }
 
 
+def clean_object_removal_mask(mask: Image.Image, protected_mask: Image.Image | None = None):
+    """Remove brush noise and pinholes without merging distinct selected objects."""
+    binary = (np.asarray(mask.convert("L"), dtype=np.uint8) > 16).astype(np.uint8) * 255
+    before = int((binary > 0).sum())
+    if before == 0:
+        return Image.fromarray(binary, mode="L"), {"changedPixels": 0, "removedSpecks": 0, "filledPinholes": 0}
+
+    # A 3x3 close fills brush pinholes but is intentionally too small to join
+    # separate objects.  Only tiny disconnected specks are discarded.
+    closed = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, np.ones((3, 3), np.uint8))
+    count, labels, stats, _ = cv2.connectedComponentsWithStats(closed, 8)
+    cleaned = np.zeros_like(closed)
+    specks = 0
+    minimum_component = max(4, min(24, round(before * 0.00005)))
+    for label in range(1, count):
+        area = int(stats[label, cv2.CC_STAT_AREA])
+        if area >= minimum_component:
+            cleaned[labels == label] = 255
+        else:
+            specks += 1
+    if protected_mask is not None:
+        cleaned[np.asarray(protected_mask.convert("L"), dtype=np.uint8) > 16] = 0
+    filled = int(np.logical_and(cleaned > 0, binary == 0).sum())
+    changed = int((cleaned != binary).sum())
+    return Image.fromarray(cleaned, mode="L"), {
+        "changedPixels": changed, "removedSpecks": specks, "filledPinholes": filled,
+        "minimumComponentPixels": minimum_component,
+    }
+
+
+def adaptive_object_removal_feather(mask: Image.Image, requested: int | None = None) -> int:
+    """Choose a restrained feather from object size; explicit values remain an upper bound."""
+    bbox = mask.getbbox()
+    if bbox is None:
+        return 4
+    short_side = max(1, min(bbox[2] - bbox[0], bbox[3] - bbox[1]))
+    adaptive = max(3, min(10, round(short_side * 0.025)))
+    return adaptive if requested is None else max(3, min(adaptive, int(requested)))
+
+
+def refine_background_structure(source: Image.Image, result: Image.Image, hard_mask: Image.Image, edge_feather: int = 6):
+    """Repair isolated seam fragments inside a background-removal boundary band."""
+    source_array = np.asarray(source.convert("RGB"), dtype=np.uint8)
+    result_array = np.asarray(result.convert("RGB"), dtype=np.uint8)
+    binary = (np.asarray(hard_mask.convert("L"), dtype=np.uint8) > 16).astype(np.uint8)
+    if not binary.any():
+        return result.copy(), Image.new("L", result.size), {"detected": False, "applied": False, "artifactPixels": 0}
+    feather = max(3, min(12, int(edge_feather)))
+    distance = cv2.distanceTransform(binary, cv2.DIST_L2, 5)
+    band = np.logical_and(binary > 0, distance <= feather * 2.0)
+    gray = cv2.cvtColor(result_array, cv2.COLOR_RGB2GRAY)
+    smooth = cv2.GaussianBlur(gray, (0, 0), max(1.2, feather * 0.35))
+    deviation = cv2.absdiff(gray, smooth)
+    threshold = max(24.0, float(np.percentile(deviation[band], 99.0))) if band.any() else 255.0
+    candidates = np.logical_and(band, deviation >= threshold).astype(np.uint8) * 255
+    candidates = cv2.morphologyEx(candidates, cv2.MORPH_OPEN, np.ones((3, 3), np.uint8))
+    count, labels, stats, _ = cv2.connectedComponentsWithStats(candidates, 8)
+    artifacts = np.zeros_like(candidates)
+    components = 0
+    for label in range(1, count):
+        area = int(stats[label, cv2.CC_STAT_AREA])
+        if 6 <= area <= max(48, feather * feather * 3):
+            artifacts[labels == label] = 255
+            components += 1
+    artifact_pixels = int((artifacts > 0).sum())
+    if not artifact_pixels:
+        return result.copy(), Image.fromarray(artifacts, mode="L"), {
+            "detected": False, "applied": False, "artifactPixels": 0,
+            "componentCount": 0, "responseThreshold": threshold,
+        }
+    artifacts = cv2.dilate(artifacts, np.ones((3, 3), np.uint8), iterations=1)
+    repaired = cv2.inpaint(result_array, artifacts, 2.0, cv2.INPAINT_TELEA)
+    alpha = cv2.GaussianBlur(artifacts, (0, 0), 1.0).astype(np.float32) / 255.0
+    output = np.clip(repaired * alpha[..., None] + result_array * (1.0 - alpha[..., None]), 0, 255).astype(np.uint8)
+    output[binary == 0] = source_array[binary == 0]
+    return Image.fromarray(output, mode="RGB"), Image.fromarray(artifacts, mode="L"), {
+        "detected": True, "applied": True, "artifactPixels": artifact_pixels,
+        "componentCount": components, "responseThreshold": threshold,
+        "method": "boundary-band-telea-v1",
+    }
+
+
 def adaptive_inpaint_context_padding(mask: Image.Image, requested_padding: int = 96, context_ratio: float = 0.30) -> int:
     """Keep enough surrounding pose and lighting context around the edit."""
     requested = max(0, min(256, int(requested_padding)))

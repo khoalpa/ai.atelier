@@ -43,6 +43,7 @@ const PORT = Number(process.env.AI_IMAGE_PORT || 7860);
 const AI_PORT = Number(process.env.AI_SEGMENT_PORT || 7861);
 const LLM_BASE_URL = String(process.env.ATELIER_LLM_URL || 'http://127.0.0.1:11434').replace(/\/$/, '');
 const LLM_MODEL = String(process.env.ATELIER_LLM_MODEL || 'llava:7b');
+const PROMPT_LLM_MODEL = String(process.env.ATELIER_PROMPT_LLM_MODEL || 'qwen3:4b');
 const MAKEUP_LLM_MODEL = String(process.env.ATELIER_MAKEUP_LLM_MODEL || 'qwen3:4b');
 const {readVersion,webRevision}=require('../../app/runtime-version');
 const VERSION=readVersion(ROOT), WEB_REVISION=webRevision(ROOT);
@@ -58,7 +59,7 @@ const MIME = {
   '.jpeg': 'image/jpeg',
   '.webp': 'image/webp',
 };
-const deps={http,fs,path,crypto,spawn,trustedRequest,PROMPTS_FILE,readCatalog,updateCatalog,renderTemplate,savePresetPrompt,listModes,saveMode,migrateBrowser,previewImport,importCatalog,readRemoved,updateRemoved,editHistory,jsonConfigStore,ROOT,manualStore,qualityService,PUBLIC_DIR,SAMPLES_DIR,UPLOADS_DIR,MASKS_DIR,OUTPUTS_DIR,REVIEW_DIR,REVIEW_STATE,JOBS_DIR,BACKUPS_DIR,RESET_ARCHIVE_DIR,REFERENCES_DIR,RETRY_COMPARISONS,MODEL_REGISTRY,MODEL_CANDIDATES,EXTERNAL_MODEL_SOURCES,MODEL_DOWNLOADS,MODEL_DOWNLOADER,MODEL_DOWNLOAD_PYTHON,MODEL_HISTORY,CONFIG_FILE,assetCatalog,regionStore,workQueue,exportPresets,backupStore,HOST,PORT,AI_PORT,LLM_BASE_URL,LLM_MODEL,MAKEUP_LLM_MODEL,readVersion,webRevision,VERSION,WEB_REVISION,acceptanceStore,backgroundRenderer,MIME};
+const deps={http,fs,path,crypto,spawn,trustedRequest,PROMPTS_FILE,readCatalog,updateCatalog,renderTemplate,savePresetPrompt,listModes,saveMode,migrateBrowser,previewImport,importCatalog,readRemoved,updateRemoved,editHistory,jsonConfigStore,ROOT,manualStore,qualityService,PUBLIC_DIR,SAMPLES_DIR,UPLOADS_DIR,MASKS_DIR,OUTPUTS_DIR,REVIEW_DIR,REVIEW_STATE,JOBS_DIR,BACKUPS_DIR,RESET_ARCHIVE_DIR,REFERENCES_DIR,RETRY_COMPARISONS,MODEL_REGISTRY,MODEL_CANDIDATES,EXTERNAL_MODEL_SOURCES,MODEL_DOWNLOADS,MODEL_DOWNLOADER,MODEL_DOWNLOAD_PYTHON,MODEL_HISTORY,CONFIG_FILE,assetCatalog,regionStore,workQueue,exportPresets,backupStore,HOST,PORT,AI_PORT,LLM_BASE_URL,LLM_MODEL,PROMPT_LLM_MODEL,MAKEUP_LLM_MODEL,readVersion,webRevision,VERSION,WEB_REVISION,acceptanceStore,backgroundRenderer,MIME};
 deps.taskRoutes=require('./task-routes')(deps);
 for(const name of ["transport","library","jobs","review","prompts","models","administration","routes"]) {
  const service=require('./services/'+name)(deps);

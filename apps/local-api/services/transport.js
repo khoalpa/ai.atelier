@@ -22,6 +22,7 @@ function safeJoin(base, relativePath) {
 function parseJson(req, maxBytes = 30 * 1024 * 1024) {
   return new Promise((resolve, reject) => {
     let data = '';
+    req.setEncoding('utf8');
     req.on('data', (chunk) => {
       data += chunk;
       if (Buffer.byteLength(data) > maxBytes) {

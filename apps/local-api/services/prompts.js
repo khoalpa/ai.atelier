@@ -1,6 +1,6 @@
 'use strict';
 const requireFromApp = require('node:module').createRequire(require('node:path').resolve(__dirname,'../../../app/server.js'));
-// Dependencies: LLM_BASE_URL, LLM_MODEL, decodePngDataUrl, fs, http, parseJson, readCatalog, renderTemplate, resolveSamplePath, send
+// Dependencies: LLM_BASE_URL, LLM_MODEL, PROMPT_LLM_MODEL, decodePngDataUrl, fs, http, parseJson, readCatalog, renderTemplate, resolveSamplePath, send
 module.exports = function createPrompts(deps) {
 const require = requireFromApp;
 const __dirname = require('node:path').join(deps.ROOT,'app');
@@ -73,6 +73,27 @@ function normalizeNegativePrompt(value) {
   return uniquePromptTerms(generated).join(', ');
 }
 
+function compactContext(value, maximum = 12000) {
+  const text = String(value || '').replace(/\r\n/g, '\n').replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
+  if (text.length <= maximum) return text;
+  const marker = '\n[… ngữ cảnh phụ đã được rút gọn …]\n';
+  const side = Math.floor((maximum - marker.length) / 2);
+  return text.slice(0, side).trimEnd() + marker + text.slice(-side).trimStart();
+}
+
+function compactModelPolicy(policy) {
+  if (!policy) return null;
+  return Object.fromEntries(['encoder','pipeline','maxSequenceLength','supportsNegative','chatTemplate','wrapper'].filter((key) => policy[key] !== undefined).map((key) => [key,policy[key]]));
+}
+
+function assertCompleteLlmResult(result, tokenLimit) {
+  if (result?.done_reason === 'length') throw Error(`Phản hồi từ model cục bộ vượt giới hạn ${tokenLimit} token và có thể chưa hoàn chỉnh. Nội dung hiện tại được giữ nguyên.`);
+  if (result?.done === false) {
+    const reason = String(result.done_reason || '').trim();
+    throw Error(reason ? `Model cục bộ dừng bất thường (${reason}); nội dung hiện tại được giữ nguyên.` : 'Kết nối với model cục bộ bị ngắt trước khi hoàn tất; nội dung hiện tại được giữ nguyên.');
+  }
+}
+
 function requestLocalLlm(payload, timeoutMs = 90000) {
   const target = new URL('/api/chat', deps.LLM_BASE_URL);
   if (!['http:', 'https:'].includes(target.protocol)) return Promise.reject(new Error('Địa chỉ LLM không hợp lệ'));
@@ -107,9 +128,9 @@ async function promptAssist(req, res) {
     if (task === 'shortenPrompt') throw new Error('Tác vụ rút gọn cho CLIP đã bị loại vĩnh viễn');
     if (!PROMPT_ASSIST_TASKS[task]) throw new Error('Loại gợi ý không được hỗ trợ');
     const currentText = checkedText(body.currentText ?? '', 'Prompt').trim();
-    let context = checkedText(body.context ?? '', 'Ngữ cảnh',160000).trim();
+    let context = compactContext(checkedText(body.context ?? '', 'Ngữ cảnh',160000));
     let policy=null;
-    if(body.imageModelId){policy=compiler.model(deps.readCatalog(),String(body.imageModelId));context+='\nModel policy: '+JSON.stringify(policy);}
+    if(body.imageModelId){policy=compiler.model(deps.readCatalog(),String(body.imageModelId));context+='\nModel policy: '+JSON.stringify(compactModelPolicy(policy));}
     const quality=deps.readCatalog().promptQuality;
     if(quality&&body.structured===true)context+='\nComponent roles: '+JSON.stringify(quality.componentRules);
     if(quality&&['negativePrompt','optimizeNegativePrompt'].includes(task))context+='\nNegative prompt rules: '+JSON.stringify(quality.negativeRules);
@@ -151,11 +172,14 @@ async function promptAssist(req, res) {
         deps.readCatalog().components['promptBuilder.assessment']
       );
     }
+    instruction += '\nBe concise. Keep suggestion under 900 words, each change or warning under 20 words, and return no more than 5 changes and 5 warnings. Use empty arrays instead of explanations when none apply.';
     const message = {role:'user',content:instruction};
     if (images.length) message.images = images;
     const assistant=quality.assistant;
-    const result = await requestLocalLlm({model:deps.LLM_MODEL,stream:false,messages:[{role:'system',content:deps.readCatalog().promptAssist.system},message],options:{temperature:assistant.temperature,num_ctx:assistant.contextWindow,num_predict:body.evaluation===true?assistant.outputTokens.evaluation:body.structured===true?assistant.outputTokens.structured:assistant.outputTokens.standard}});
-    if(result.done_reason==='length'||result.done===false)throw Error('AI đã chạm giới hạn trả lời; chưa áp dụng nội dung có thể bị cắt. Nội dung hiện tại được giữ nguyên.');
+    const outputTokenLimit=body.evaluation===true?assistant.outputTokens.evaluation:body.structured===true?assistant.outputTokens.structured:assistant.outputTokens.standard;
+    const selectedModel=images.length?deps.LLM_MODEL:(deps.PROMPT_LLM_MODEL||deps.LLM_MODEL);
+    const result = await requestLocalLlm({model:selectedModel,stream:false,format:'json',...(images.length?{}:{think:false}),messages:[{role:'system',content:deps.readCatalog().promptAssist.system},message],options:{temperature:assistant.temperature,num_ctx:assistant.contextWindow,num_predict:outputTokenLimit}});
+    assertCompleteLlmResult(result,outputTokenLimit);
     const assisted = parseAssistResult(result.message?.content || result.response, task === 'analyzePrompt' ? currentText : '');
     if(body.structured===true&&!assisted.components)throw Error('AI chưa trả về các khối prompt có cấu trúc; nội dung hiện tại được giữ nguyên.');
     if (body.evaluation === true && !assisted.assessment) throw Error('AI chưa trả về đánh giá ảnh có cấu trúc; chưa có điểm chất lượng để sử dụng.');
@@ -187,7 +211,7 @@ async function promptAssist(req, res) {
       catch(error){tokenError=error.message;assisted.warnings.push('Chưa kiểm tra được tokenizer: '+error.message);}
     }
     if (!assisted.suggestion && task !== 'analyzePrompt') throw new Error('LLM không tạo được nội dung gợi ý');
-    return deps.send(res, 200, JSON.stringify({ok:true,...assisted,tokenCheck,tokenError,model:deps.LLM_MODEL,usedImage:images.length > 0}));
+    return deps.send(res, 200, JSON.stringify({ok:true,...assisted,tokenCheck,tokenError,model:selectedModel,usedImage:images.length > 0}));
   } catch (error) {
     const unavailable = /ECONNREFUSED|ENOTFOUND|socket|LLM phản hồi quá thời gian/i.test(String(error.message));
     return deps.send(res, unavailable ? 503 : 400, JSON.stringify({ok:false,error:unavailable?'Trợ lý AI cục bộ chưa sẵn sàng. Hãy chạy Ollama và kiểm tra model cấu hình.':error.message}));
@@ -200,6 +224,9 @@ get assistantFallback(){return assistantFallback;},set assistantFallback(value){
 get uniquePromptTerms(){return uniquePromptTerms;},set uniquePromptTerms(value){uniquePromptTerms=value;},
 get normalizeImagePrompt(){return normalizeImagePrompt;},set normalizeImagePrompt(value){normalizeImagePrompt=value;},
 get normalizeNegativePrompt(){return normalizeNegativePrompt;},set normalizeNegativePrompt(value){normalizeNegativePrompt=value;},
+get compactContext(){return compactContext;},set compactContext(value){compactContext=value;},
+get compactModelPolicy(){return compactModelPolicy;},set compactModelPolicy(value){compactModelPolicy=value;},
+get assertCompleteLlmResult(){return assertCompleteLlmResult;},set assertCompleteLlmResult(value){assertCompleteLlmResult=value;},
 get requestLocalLlm(){return requestLocalLlm;},set requestLocalLlm(value){requestLocalLlm=value;},
 get promptAssist(){return promptAssist;},set promptAssist(value){promptAssist=value;}};
 };

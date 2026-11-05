@@ -118,8 +118,18 @@ def final_seam_review(image, geometry):
         sides[name]=dict(boundaryMAE=round(immediate,3),contextGradient=round(natural,3),
                          broadDrift=round(drift,3),outsideGradient=round(outside_normal,3),reasons=reasons)
     flagged = any(side['reasons'] for side in sides.values())
-    return dict(status='needs-review' if flagged else 'unverified', sides=sides,
-        message=('Có dấu hiệu lệch màu, kéo giãn chi tiết hoặc đứt đường nối. Xem ở 100%; nếu bố cục sai, tạo bố cục mới trước khi hoàn thiện.'
+    # A result with multiple gross colour bands is not a reviewable variant.
+    # Calling it completed allowed the exact black/grey-frame failure to be
+    # selected as a final image.  Keep borderline cases reviewable, but reject
+    # an unmistakably broken layout.
+    severe = sum(
+        side['broadDrift'] > 50 or side['boundaryMAE'] > 40
+        for side in sides.values()
+    ) >= 2
+    status = 'rejected' if severe else ('needs-review' if flagged else 'unverified')
+    return dict(status=status, sides=sides,
+        message=('Kết quả bị từ chối vì phần mở rộng tạo dải màu hoặc đường cắt lớn; hãy tạo phương án khác.'
+                 if severe else 'Có dấu hiệu lệch màu, kéo giãn chi tiết hoặc đứt đường nối. Xem ở 100%; nếu bố cục sai, tạo bố cục mới trước khi hoàn thiện.'
                  if flagged else 'Chưa thấy đứt đường nối lớn; vẫn cần xem nội dung, tóc và nền ở 100%.'),
         method='final-multiscale-seam-v2')
 

@@ -18,7 +18,11 @@ from PIL import Image, ImageFilter, ImageOps
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from object_removal import (blend_removal, visual_change, assess_removal, model_settings,
-                            removal_regions, prepare_region, restore_region, removal_rank)
+                            removal_regions, prepare_region, restore_region, removal_rank,
+                            retry_strategy)
+from services.ai.imaging.blending import (adaptive_object_removal_feather,
+                                          clean_object_removal_mask,
+                                          refine_background_structure)
 
 mask = Image.new('L', (160, 160)); mask.paste(255, (60, 60, 100, 100))
 source = Image.new('RGB', mask.size, (128, 128, 128)); source.paste((180, 30, 30), (60, 60, 100, 100))
@@ -72,6 +76,16 @@ separate = Image.new('L', large.size); separate.paste(255, (100,100,120,120)); s
 assert len(removal_regions(separate)) == 2
 assert len(removal_regions(separate, max_regions=1)) == 1
 assert removal_rank({'seed': 1, 'removalCheck': removed}) < removal_rank({'seed': 2, 'removalCheck': change})
+assert retry_strategy({'status':'residual'})['maskDilate'] > 0
+assert retry_strategy({'status':'unchanged'})['strengthDelta'] > 0
+assert retry_strategy({'status':'preservation-failed'})['strengthDelta'] < 0
+noisy = mask.copy(); noisy.putpixel((4, 4), 255); noisy.putpixel((80, 80), 0)
+cleaned, cleanup = clean_object_removal_mask(noisy)
+assert cleaned.getpixel((4, 4)) == 0 and cleaned.getpixel((80, 80)) == 255
+assert cleanup['removedSpecks'] == 1 and cleanup['filledPinholes'] >= 1
+assert adaptive_object_removal_feather(mask, 16) <= 10
+structured, structural_mask, structural = refine_background_structure(source, perfect, mask, 6)
+assert structured.size == source.size and structural_mask.size == mask.size
 print('OK: clean core, protected holes, borders, conservative scoring, low contrast, model settings, thin ROI and disconnected objects.')
 
 # Exercise the production orchestration with a fake model: same code path as API,
@@ -79,7 +93,8 @@ print('OK: clean core, protected holes, borders, conservative scoring, low contr
 tree = ast.parse(read_source(ROOT/'ai_service.py', encoding='utf-8'))
 names = {'inpaint', 'effective_step_policy', 'prepare_dual_inpaint_masks',
          'adaptive_inpaint_context_padding', 'inpaint_removal_check',
-         'texture_preserving_core_recovery', 'detect_core_structural_artifacts', 'adaptive_local_edge_blend'}
+         'texture_preserving_core_recovery', 'detect_core_structural_artifacts', 'adaptive_local_edge_blend',
+         'adaptive_object_removal_feather', 'clean_object_removal_mask', 'refine_background_structure'}
 nodes = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name in names]
 for node in nodes: node.decorator_list = []
 class Generator:

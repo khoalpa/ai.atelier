@@ -37,6 +37,19 @@ def outpaint_pipeline_kwargs(architecture, *, prompt, negative, image, mask, wid
     return result
 
 
+def effective_seam_width(requested, geometry):
+    """Keep seam repair proportional to the newly generated strip.
+
+    A repair band wider than a narrow expansion can consume the complete new
+    area and a large part of the source.  That was the main trigger for framed
+    portraits and horizontal cuts in small four-sided expansions.
+    """
+    extensions = [geometry[name] for name in ('left', 'right', 'top', 'bottom') if geometry[name] > 0]
+    if not extensions:
+        return requested
+    return max(8, min(requested, 32, max(8, min(extensions) // 2)))
+
+
 def outpaint_semantics(source, manual=None):
     """Conservative labels: separate SAM clothing, BiRefNet background and identity."""
     foreground = None
@@ -136,7 +149,8 @@ def outpaint(body: dict) -> dict:
     seed = integer(body.get("seed", 42), "Seed", 0, 2147483647)
     if saved_layout is not None:
         count, seed = 1, integer(body['refineFrom']['seed'], 'Seed', 0, 2147483647)
-    if seed + count - 1 > 2147483647:
+    retry_budget = 0 if saved_layout is not None else 2
+    if seed + count + retry_budget - 1 > 2147483647:
         raise ValueError('Seed cuối vượt giới hạn; hãy giảm seed hoặc số phương án.')
     max_side = integer(body.get("maxSide", 768), "Độ phân giải AI", 512, 1024)
     guidance = float(body.get("guidance", 5))
@@ -195,8 +209,12 @@ def outpaint(body: dict) -> dict:
         detail = material_refine = source_enhance = seam = False
     seam_width = integer(body.get('seamWidth',48),'Dải sửa đường nối',8,128)
     requested_seam_width=seam_width
-    seam_width=min(seam_width,max(1,source.width//4) if geometry['left'] or geometry['right'] else seam_width,
-                   max(1,source.height//4) if geometry['top'] or geometry['bottom'] else seam_width)
+    seam_width=effective_seam_width(seam_width,geometry)
+    if seam and seam_width < requested_seam_width:
+        semantic_seam_warning=(f'Dải sửa đường nối được giảm từ {requested_seam_width} xuống {seam_width} px '
+                               'để không lấn quá phần ảnh mới.')
+    else:
+        semantic_seam_warning=None
     seam_steps = integer(body.get('seamSteps',40),'Số bước sửa đường nối',4,80)
     seam_strength = .4
     effective_seam_steps = max(1,seam_steps-int(seam_steps*(1-seam_strength))
@@ -205,6 +223,7 @@ def outpaint(body: dict) -> dict:
     manual = decode_mask(str(body['protectedDetailMask']),source.size) if body.get('protectedDetailMask') and (seam or source_enhance or material_refine) else None
     if manual is not None: protected=manual.copy()
     semantic_warnings, semantic_masks, seam_work = [], {}, []
+    if semantic_seam_warning: semantic_warnings.append(semantic_seam_warning)
     foreground = garment = None
     if seam or source_enhance:
         foreground,garment,protected,semantic_warnings = outpaint_semantics(source,manual)
@@ -314,7 +333,9 @@ def outpaint(body: dict) -> dict:
     results = []
     completed_work=0
     try:
-        for index in range(count):
+        index = 0
+        target_count = count
+        while index < target_count:
             ensure_job_active(job_id)
             variant_steps=estimated_variant_steps
             run_seed = seed + index
@@ -434,7 +455,7 @@ def outpaint(body: dict) -> dict:
                 cloth_effective=effective_fabric_steps if material_refine else effective_detail_steps
                 variant_steps=layout_steps+len(seam_work)*effective_seam_steps+len(background_regions)*effective_detail_steps+len(fabric_regions)*cloth_effective
                 metadata['detailRegions']=[list(box) for box in background_regions]
-                update_job(job_id,totalSteps=variant_steps,totalWorkSteps=completed_work+variant_steps+(count-index-1)*estimated_variant_steps,
+                update_job(job_id,totalSteps=variant_steps,totalWorkSteps=completed_work+variant_steps+(target_count-index-1)*estimated_variant_steps,
                            warnings=semantic_warnings)
                 if background_regions:
                     background_base=result.copy()
@@ -499,7 +520,29 @@ def outpaint(body: dict) -> dict:
             metadata["results"].append(saved)
             metadata_path.write_text(json.dumps(metadata, ensure_ascii=False, indent=2), encoding="utf-8")
             update_job(job_id, stage="inpaint-variant-complete", _result={"kind":"outpaint", "sampleId":str(body.get("sampleId")), **saved},
-                       _event={"type":"variant.completed", "message":f"Đã mở rộng phương án {index + 1}/{count} · seed {run_seed}"})
+                       _event={"type":"variant.completed", "message":f"Đã mở rộng phương án {index + 1}/{target_count} · seed {run_seed}"})
+            index += 1
+            if index == count and all(item['finalReview']['status'] == 'rejected' for item in results) and retry_budget:
+                target_count = count + retry_budget
+                metadata['automaticQualityRetries'] = retry_budget
+                update_job(job_id,totalVariants=target_count,totalWorkSteps=target_count*estimated_variant_steps,
+                           _event={'type':'outpaint.quality-retry',
+                                   'message':f'Tất cả phương án ban đầu không đạt; tự thử thêm {retry_budget} seed'})
+            if index >= count and any(item['finalReview']['status'] != 'rejected' for item in results):
+                break
+        usable_results=[item for item in results if item['finalReview']['status'] != 'rejected']
+        if not usable_results:
+            metadata['promptHistory'] = prompt_history()
+            metadata['embeddingCache']={'hits':embedding_cache.hits,'misses':embedding_cache.misses}
+            metadata['status']='quality-rejected'
+            metadata['durationSeconds']=round(time.perf_counter()-started,3)
+            metadata_path.write_text(json.dumps(metadata, ensure_ascii=False, indent=2), encoding='utf-8')
+            message='Không có phương án mở rộng nào đạt kiểm định chất lượng sau khi tự thử thêm seed.'
+            update_job(job_id,status='failed',stage='quality-rejected',directory=str(run_dir.relative_to(ROOT)),
+                       completedSteps=completed_work,totalWorkSteps=completed_work,durationSeconds=metadata['durationSeconds'],
+                       error=message,_event={'type':'job.failed','message':message})
+            return dict(ok=False,error=message,directory=str(run_dir.relative_to(ROOT)),results=results,
+                        width=geometry['width'],height=geometry['height'],geometry=geometry,warnings=semantic_warnings)
         metadata["promptHistory"] = prompt_history()
         metadata['embeddingCache']={'hits':embedding_cache.hits,'misses':embedding_cache.misses}
         metadata["status"] = "completed"
@@ -512,7 +555,7 @@ def outpaint(body: dict) -> dict:
         return dict(ok=True, results=results, directory=str(run_dir.relative_to(ROOT)),
                     runMode=run_mode,request=metadata['request'],
                     width=geometry["width"], height=geometry["height"], geometry=geometry,
-                    warnings=semantic_warnings,seamRegionCount=len(seam_work),
+                    warnings=semantic_warnings,seamRegionCount=len(seam_work),usableResultCount=len(usable_results),
                     modelName=entry.get("name") if entry else "Default")
     except Exception as error:
         metadata.update(status="cancelled" if "hủy" in str(error).lower() else "failed", error=str(error))

@@ -32,7 +32,17 @@ def prepare_canvas(source, body):
     if not isinstance(preserve, bool):
         raise ValueError("Chế độ giữ ảnh gốc không hợp lệ")
     rgb = source.convert("RGB")
-    canvas = Image.fromarray(np.pad(np.asarray(rgb), ((top, bottom), (left, right), (0, 0)), mode="edge"))
+    # Do not stretch the outermost source row/column across the generation area.
+    # Some inpainting pipelines retain a little of the conditioning image even
+    # inside a white mask; edge padding then becomes the very visible bars that
+    # outpainting is supposed to replace.  A softly blurred, low-frequency fill
+    # still gives the model the scene palette without injecting fake geometry.
+    values = np.asarray(rgb)
+    fill = np.empty((height, width, 3), dtype=np.uint8)
+    median = np.median(values.reshape(-1, 3), axis=0).astype(np.uint8)
+    fill[:] = median
+    fill[top:top + source.height, left:left + source.width] = values
+    canvas = Image.fromarray(fill)
     box = (left, top, left + source.width, top + source.height)
     mask = Image.new("L", (width, height), 255)
     # Strict preservation also applies to conditioning. Regenerating source

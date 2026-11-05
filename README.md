@@ -115,7 +115,12 @@ pnpm check
 pnpm test
 ```
 
-Sau khi sửa nguồn trong `apps/web`, chạy `pnpm build`. Sau khi thêm hoặc bớt nguồn Python, cập nhật manifest:
+Sau khi sửa nguồn trong `apps/web`, chạy `pnpm build`. Kiểm tra bản web đã sinh mà không
+sửa working tree bằng `pnpm verify:generated`. Dọn cache có thể tái tạo bằng
+`pnpm clean:cache`; lệnh này không đụng tới model, workspace, trọng số, mẫu hoặc mã bên
+thứ ba.
+
+Sau khi thêm hoặc bớt nguồn Python, cập nhật manifest:
 
 ```powershell
 node scripts/update-source-manifest.js

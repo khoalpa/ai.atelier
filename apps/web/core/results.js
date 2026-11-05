@@ -1,8 +1,8 @@
 'use strict';
-// Owned state: currentRunDirectory, studioSelectedResult, studioPendingResult, studioViewingResult, imagePromptRequest, studioResultModes, studioResultDrafts
+// Owned state: currentRunDirectory, studioSelectedResult, studioPendingResult, studioViewingResult, imagePromptRequest, studioResultModes, studioResultDrafts, viewerImages, viewerImageIndex
 // Dependencies: $, STAGE_LABELS, activateAppView, activeJobId, activityState, canvas, current, dismissedProgressJobs, escapeHtml, outputUrl, restoreCanvasBeforeDoubleClick, setActiveJob, setMessage, setReviewStatus, setStudioMode, setTool, sourceImage, uploadSourceImage
 module.exports=function createResults(deps){
-let currentRunDirectory, studioSelectedResult, studioPendingResult, studioViewingResult, imagePromptRequest, studioResultModes, studioResultDrafts;
+let currentRunDirectory, studioSelectedResult, studioPendingResult, studioViewingResult, imagePromptRequest, studioResultModes, studioResultDrafts, viewerImages=[], viewerImageIndex=-1;
 function downloadFullSizeImage(image){
   const source=image?.currentSrc||image?.src;
   if(!source||!image.naturalWidth)return;
@@ -21,9 +21,41 @@ function downloadFullSizeImage(image){
   document.body.appendChild(link);link.click();link.remove();
 }
 
-function openImageAtFullSize(source, alt='Ảnh phóng to'){
+function viewerImageList(target){
+  if(!(target instanceof HTMLImageElement))return [];
+  const usable=(image)=>image.id!=='imageViewerImage'&&Boolean(image.currentSrc||image.src)&&image.getClientRects().length>0;
+  let root=target.parentElement,images=[];
+  while(root&&root!==document.body){
+    images=[...root.querySelectorAll('img')].filter(usable);
+    if(images.length>1)break;
+    root=root.parentElement;
+  }
+  if(!images.length)images=[target];
+  return images.map((image)=>({source:image.currentSrc||image.src,alt:image.alt||'Ảnh ở kích thước 100%'}));
+}
+
+function updateViewerNavigation(){
+  deps.$('previousViewerImageButton').disabled=viewerImageIndex<=0;
+  deps.$('nextViewerImageButton').disabled=viewerImageIndex<0||viewerImageIndex>=viewerImages.length-1;
+}
+
+function showViewerImage(index){
+  const item=viewerImages[index];
+  if(!item)return;
+  viewerImageIndex=index;
+  updateViewerNavigation();
+  openImageAtFullSize(item.source,item.alt,null,true);
+}
+
+function openImageAtFullSize(source, alt='Ảnh phóng to', target=null, preserveGallery=false){
   if(!source)return;
   const dialog=deps.$('imageViewerDialog'),image=deps.$('imageViewerImage');
+  if(!preserveGallery){
+    viewerImages=viewerImageList(target);
+    viewerImageIndex=viewerImages.findIndex((item)=>new URL(item.source,document.baseURI).href===new URL(source,document.baseURI).href);
+    if(viewerImageIndex<0){viewerImages=[{source,alt}];viewerImageIndex=0;}
+    updateViewerNavigation();
+  }
   loadImagePromptTrace(source);
   deps.$('imageViewerTitle').textContent=alt||'Ảnh ở kích thước 100%';
   deps.$('imageViewerMeta').textContent='Đang tải ảnh ở kích thước gốc…';
@@ -300,7 +332,13 @@ document.addEventListener('dblclick',(event)=>{
   }
   if(!(image instanceof HTMLImageElement)||image.id==='imageViewerImage'||!image.currentSrc)return;
   event.preventDefault();
-  openImageAtFullSize(image.currentSrc,image.alt||'Ảnh ở kích thước 100%');
+  openImageAtFullSize(image.currentSrc,image.alt||'Ảnh ở kích thước 100%',image);
+});
+deps.$('previousViewerImageButton').addEventListener?.('click',()=>showViewerImage(viewerImageIndex-1));
+deps.$('nextViewerImageButton').addEventListener?.('click',()=>showViewerImage(viewerImageIndex+1));
+deps.$('imageViewerDialog').addEventListener?.('keydown',(event)=>{
+  if(event.key==='ArrowLeft'&&viewerImageIndex>0){event.preventDefault();showViewerImage(viewerImageIndex-1);}
+  else if(event.key==='ArrowRight'&&viewerImageIndex<viewerImages.length-1){event.preventDefault();showViewerImage(viewerImageIndex+1);}
 });
 },
 function initialize(){

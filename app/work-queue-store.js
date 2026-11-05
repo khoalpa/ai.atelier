@@ -33,7 +33,13 @@ function createQueueStore(root){
    else if(body.action==='retry'){
     if(q.status==='running'&&q.leaseUntil>Date.now())throw Error('Dừng hàng đợi trước khi chạy lại.');for(const item of q.items)if(item.status==='failed'){item.status='pending';item.error='';}q.status='paused';q.stopRequested=false;
    }else{
-    if(!body.owner||q.owner!==body.owner||q.leaseUntil<Date.now())throw Error('Phiên xử lý hết hiệu lực. Kết nối lại tại Hoạt động.');q.leaseUntil=Date.now()+30000;
+    // An expired lease only makes the queue available for another owner to
+    // claim.  It must not invalidate the current owner while no takeover has
+    // happened: a suspended machine or a temporarily blocked event loop can
+    // delay the heartbeat beyond 30 seconds even though the AI job is still
+    // running.  The serialized mutation lock makes the owner comparison the
+    // authoritative takeover check.
+    if(!body.owner||q.owner!==body.owner)throw Error('Phiên xử lý hết hiệu lực. Kết nối lại tại Hoạt động.');q.leaseUntil=Date.now()+30000;
     if(body.action==='item'){
      const item=q.items.find(i=>i.id===body.itemId);if(!item)throw Error('Mục không thuộc hàng đợi.');if(!['running','completed','failed'].includes(body.status))throw Error('Trạng thái không hợp lệ.');if(item.status==='completed'&&body.status!=='completed')throw Error('Ảnh hoàn tất không được chạy lại.');item.status=body.status;item.error=String(body.error||'').slice(0,1000);if(body.result!==undefined)item.result=body.result;if(body.checkpoint!==undefined)item.checkpoint=body.checkpoint;if(body.jobId)item.jobId=String(body.jobId).slice(0,100);
     }else if(body.action==='finish'){q.status=q.items.every(i=>i.status==='completed')?'completed':'paused';q.requested=false;q.owner=null;q.leaseUntil=0;}

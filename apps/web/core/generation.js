@@ -23,9 +23,25 @@ async function refreshModelSelectors(){
   return modelSelectorRefreshPromise;
 }
 
+function isAiStartupError(error){
+  return /Dịch vụ AI chưa chạy|Failed to fetch|Load failed|NetworkError/i.test(String(error?.message||error||''));
+}
+
+async function refreshModelSelectorsAtStartup(){
+  const retryDelays=[750,1500,3000];
+  for(let attempt=0;;attempt+=1){
+    try{return await refreshModelSelectors();}
+    catch(error){
+      if(!isAiStartupError(error)||attempt>=retryDelays.length)throw error;
+      await new Promise((resolve)=>setTimeout(resolve,retryDelays[attempt]));
+    }
+  }
+}
+
 function startModelSelectorStartupScan(){
   if(modelStartupScanPromise)return modelStartupScanPromise;
-  modelStartupScanPromise=refreshModelSelectors().catch((error)=>{
+  modelStartupScanPromise=refreshModelSelectorsAtStartup().catch((error)=>{
+    if(isAiStartupError(error))return;
     deps.setMessage(`Không thể quét model khi mở ứng dụng: ${error.message}`,'error');
   });
   return modelStartupScanPromise;
@@ -75,6 +91,8 @@ get loadTextToImageModels(){return loadTextToImageModels;},set loadTextToImageMo
 get modelSelectorRefreshPromise(){return modelSelectorRefreshPromise;},set modelSelectorRefreshPromise(value){modelSelectorRefreshPromise=value;},
 get modelStartupScanPromise(){return modelStartupScanPromise;},set modelStartupScanPromise(value){modelStartupScanPromise=value;},
 get refreshModelSelectors(){return refreshModelSelectors;},set refreshModelSelectors(value){refreshModelSelectors=value;},
+get isAiStartupError(){return isAiStartupError;},set isAiStartupError(value){isAiStartupError=value;},
+get refreshModelSelectorsAtStartup(){return refreshModelSelectorsAtStartup;},set refreshModelSelectorsAtStartup(value){refreshModelSelectorsAtStartup=value;},
 get startModelSelectorStartupScan(){return startModelSelectorStartupScan;},set startModelSelectorStartupScan(value){startModelSelectorStartupScan=value;},
 get textQuality(){return textQuality;},set textQuality(value){textQuality=value;},
 get TEXT_TO_IMAGE_PRESETS(){return TEXT_TO_IMAGE_PRESETS;},set TEXT_TO_IMAGE_PRESETS(value){TEXT_TO_IMAGE_PRESETS=value;},

@@ -10,7 +10,10 @@
     "start": "node app/server.js",
     "test": "node scripts/run-tests.js",
     "check": "tsc --noEmit",
-    "build": "node scripts/build-web.js"
+    "build": "node scripts/build-web.js",
+    "clean:cache": "node scripts/clean-project.js",
+    "verify:generated": "node scripts/verify-generated.js",
+    "verify": "pnpm check && pnpm verify:generated"
   },
   "devDependencies": {
     "@types/node": "26.6.5",

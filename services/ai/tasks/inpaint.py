@@ -8,7 +8,7 @@ import json
 import numpy as np
 import time
 import torch
-from services.ai.imaging.blending import adaptive_inpaint_context_padding, adaptive_local_edge_blend, detect_core_structural_artifacts, effective_step_policy, generative_core_structural_refine, prepare_dual_inpaint_masks, texture_preserving_core_recovery
+from services.ai.imaging.blending import adaptive_inpaint_context_padding, adaptive_local_edge_blend, adaptive_object_removal_feather, clean_object_removal_mask, detect_core_structural_artifacts, effective_step_policy, generative_core_structural_refine, prepare_dual_inpaint_masks, refine_background_structure, texture_preserving_core_recovery
 from services.ai.imaging.segmentation import decode_image, decode_mask, detect_regions, encode_image, safe_sample
 from services.ai.models.pipelines import _detector, detect_inpaint_architecture, inpaint_model_entry, load_inpaint_pipe, release_inpaint
 from services.ai.models import state as model_state
@@ -168,7 +168,8 @@ def semantic_inpaint_residual_check(result: Image.Image, mask: Image.Image, remo
 @trace_generation
 def inpaint(body: dict) -> dict:
     from object_removal import (model_settings, removal_regions, prepare_region, restore_region,
-                                blend_removal, assess_removal, boundary_metric, removal_rank)
+                                blend_removal, assess_removal, boundary_metric, removal_rank,
+                                retry_strategy)
     started_at = time.perf_counter()
     job_id = str(body.get("jobId", ""))[:80]
     task_type = "anatomy-inpaint" if body.get("taskType") == "anatomy-inpaint" else "inpaint"
@@ -190,9 +191,13 @@ def inpaint(body: dict) -> dict:
     if mask.getbbox() is None:
         raise ValueError("Mask đang trống; hãy chọn phụ kiện cần xóa")
     update_job(job_id, stage="inpaint-preparing-mask", sourceWidth=source.width, sourceHeight=source.height, _event={"type":"mask.preparing", "message":"Đang mở rộng và làm mềm vùng chỉnh sửa"})
-    expand = max(0, min(64, int(body.get("expand", 24))))
-    blur = max(0, min(32, int(body.get("blur", 16))))
     requested_mode = body.get("fillMode") or ("reconstruct_body" if body.get("removalTarget") in ("outfit", "shirt", "pants") else "background")
+    local_removal = requested_mode == "background" and body.get("processingMode") != "outfit-description"
+    mask_cleanup_metrics = {"changedPixels": 0, "removedSpecks": 0, "filledPinholes": 0}
+    if local_removal and body.get("cleanMask", True) is not False:
+        mask, mask_cleanup_metrics = clean_object_removal_mask(mask, protected)
+    expand = max(0, min(64, int(body.get("expand", 10 if local_removal else 24))))
+    blur = max(0, min(32, int(body.get("blur", 6 if local_removal else 16))))
     composite_expand = body.get("compositeExpand")
     if composite_expand is None and requested_mode == "background" and body.get("processingMode") != "outfit-description":
         composite_expand = min(expand, blur)
@@ -201,7 +206,8 @@ def inpaint(body: dict) -> dict:
     )
     if generation_mask.getbbox() is None:
         raise ValueError("Vùng bảo vệ đang che toàn bộ mask chỉnh sửa")
-    edge_feather = max(3, min(32, int(body.get("edgeFeather", max(6, blur)))))
+    requested_feather = body.get("edgeFeather")
+    edge_feather = adaptive_object_removal_feather(mask, requested_feather if requested_feather is not None else blur) if local_removal else max(3, min(32, int(requested_feather if requested_feather is not None else max(6, blur))))
 
     max_side = max(512, min(1024, int(body.get("maxSide", 768))))
     scale = min(max_side / max(source.size), 1.0)
@@ -261,7 +267,9 @@ def inpaint(body: dict) -> dict:
         region_inputs = [(None, model_image, model_mask, (width, height))]
     semantic_enabled = body.get("processingMode") != "outfit-description" and body.get("semanticCheck", True) is True
     object_label = str(body.get("objectLabel") or "")[:640]
+    semantic_started = time.perf_counter()
     semantic_before = semantic_inpaint_residual_check(source, mask, removal_target, fill_mode, object_label) if semantic_enabled else {"available": False, "reason": "disabled"}
+    semantic_before_seconds = round(time.perf_counter() - semantic_started, 4)
     resolved = resolve_inpaint_prompts(body, architecture, profile)
     prompt, generated_negative = resolved["prompt"], resolved["generatedNegativePrompt"]
     prompt_trace_context.get()["resolvedSources"] = {"assembledPrompt": prompt, "generatedNegativePrompt": generated_negative, "profile": profile}
@@ -295,22 +303,46 @@ def inpaint(body: dict) -> dict:
         run_seed = seed + index
         generator = torch.Generator(device="cpu").manual_seed(run_seed)
         retrying = index >= count
+        prior = sorted(results, key=removal_rank)[0] if retrying and results else None
+        retry_plan = retry_strategy(prior["removalCheck"]) if prior else {
+            "id": "initial", "strengthDelta": 0.0, "maskDilate": 0,
+            "contextMultiplier": 1.0, "promptSuffix": "",
+        }
         attempt_prompt = prompt + (prompt_text('inpaint.this_is_a_corrective_retry_make_the') if retrying and body.get("confirmedPrompts") is None else "")
         attempt_negative = build_inpaint_negative_prompt(removal_target, fill_mode, retrying, ", ".join(filter(None, [forbidden_replacement, str(body.get("negativePrompt") or "")])))
         if body.get("processingMode") == "outfit-description" or body.get("confirmedPrompts") is not None or fill_mode in ("background", "base_layer", "reconstruct_body"):
             attempt_negative = negative
         if retrying and body.get("confirmedPrompts") is None and fill_mode in ("background", "base_layer", "reconstruct_body"):
-            attempt_prompt = prompt + prompt_text('inpaint.match_the_surrounding_surface_continuously_across_the')
+            attempt_prompt = prompt + retry_plan["promptSuffix"]
         elif retrying and body.get("confirmedPrompts") is None and not bool(profile.get("supportsNegativePrompt", architecture != "flux")):
             attempt_prompt += prompt_template("correctiveExclusions", negative=attempt_negative)
         retry_increment = float(profile.get("retryStrengthIncrement", 0.08))
-        attempt_strength = strength if body.get("confirmedPrompts") is not None else min(1.0, strength + (retry_increment if retrying else 0.0))
+        adaptive_delta = float(retry_plan["strengthDelta"]) if retrying else 0.0
+        attempt_strength = strength if body.get("confirmedPrompts") is not None else max(0.2, min(1.0, strength + (adaptive_delta if retrying else 0.0)))
+        attempt_mask = generation_mask
+        if retrying and int(retry_plan["maskDilate"]) > 0:
+            radius = max(1, min(16, int(retry_plan["maskDilate"])))
+            kernel = radius * 2 + 1
+            attempt_mask = generation_mask.filter(ImageFilter.MaxFilter(kernel))
+            if protected is not None:
+                pixels = np.asarray(attempt_mask).copy()
+                pixels[np.asarray(protected) > 16] = 0
+                attempt_mask = Image.fromarray(pixels)
+        attempt_regions = region_inputs
+        if retrying and local_removal:
+            retry_padding = max(32, min(256, round(requested_crop_padding * float(retry_plan["contextMultiplier"]))))
+            retry_boxes = removal_regions(attempt_mask, retry_padding, float(body.get("contextRatio", 0.30)))
+            attempt_regions = [(box, *prepare_region(source, attempt_mask, box, max_side)) for box in retry_boxes]
+        elif retrying:
+            attempt_regions = [(None, source.resize((width, height), Image.Resampling.LANCZOS),
+                                attempt_mask.resize((width, height), Image.Resampling.NEAREST), (width, height))]
         region_steps = max(1, int(steps * attempt_strength))
-        effective_steps = region_steps * len(region_inputs)
+        effective_steps = region_steps * len(attempt_regions)
         planned_work = completed_work + (maximum_attempts-index)*effective_steps
         update_job(job_id, stage="inpaint-generating", currentVariant=index + 1, totalVariants=maximum_attempts, currentStep=0, totalSteps=effective_steps, completedSteps=completed_work, totalWorkSteps=planned_work, seed=run_seed, autoRetry=retrying, _event={"type":"variant.started", "message":f"{'Tự thử lại' if retrying else 'Bắt đầu phương án'} {index + 1}/{maximum_attempts} · seed {run_seed}", "seed":run_seed})
         preview_interval = max(2, effective_steps // 6)
         preview_path = run_dir / f"preview_seed_{run_seed}.jpg"
+        inference_started = time.perf_counter()
         def on_step_end(pipeline, step_index, timestep, callback_kwargs):
             ensure_job_active(job_id)
             completed_step = region_index * region_steps + min(region_steps, int(step_index) + 1)
@@ -320,10 +352,10 @@ def inpaint(body: dict) -> dict:
                 if save_diffusion_preview(pipeline, callback_kwargs.get("latents"), preview_path, region_image.width, region_image.height):
                     progress_change["preview"] = {"file":str(preview_path.relative_to(ROOT)), "step":completed_step,
                                                   "variant":index + 1, "updatedAt":datetime.now(timezone.utc).isoformat()}
-            update_job(job_id, stage="inpaint-generating", currentVariant=index + 1, totalVariants=maximum_attempts, currentStep=completed_step, totalSteps=effective_steps, completedSteps=completed_work + completed_step, totalWorkSteps=planned_work, seed=run_seed, regionIndex=region_index+1, regionCount=len(region_inputs), **progress_change)
+            update_job(job_id, stage="inpaint-generating", currentVariant=index + 1, totalVariants=maximum_attempts, currentStep=completed_step, totalSteps=effective_steps, completedSteps=completed_work + completed_step, totalWorkSteps=planned_work, seed=run_seed, regionIndex=region_index+1, regionCount=len(attempt_regions), **progress_change)
             return callback_kwargs
         generated = source.copy()
-        for region_index, (region_box, region_image, region_mask, unpadded_size) in enumerate(region_inputs):
+        for region_index, (region_box, region_image, region_mask, unpadded_size) in enumerate(attempt_regions):
             ensure_job_active(job_id)
             call_kwargs = {
                 "prompt": attempt_prompt, "image": region_image, "mask_image": region_mask, "height": region_image.height, "width": region_image.width,
@@ -361,6 +393,7 @@ def inpaint(body: dict) -> dict:
             else:
                 generated = patch.resize(source.size, Image.Resampling.LANCZOS)
         completed_work += effective_steps
+        inference_seconds = round(time.perf_counter() - inference_started, 4)
         update_job(job_id, stage="inpaint-blending", postprocessPhase="edge-blend", currentVariant=index + 1, totalVariants=maximum_attempts, currentStep=effective_steps, totalSteps=effective_steps, completedSteps=completed_work, totalWorkSteps=planned_work, seed=run_seed, _event={"type":"blend.started", "message":f"Đang ghép biên phương án {index + 1}"})
         generated = generated.resize(source.size, Image.Resampling.LANCZOS)
         if local_removal:
@@ -378,10 +411,16 @@ def inpaint(body: dict) -> dict:
             composited, composite_mask, edge_feather, texture_amount if texture_enabled else 0.0
         )
         structural_baseline = composited.copy()
-        structural_enabled = body.get("structuralRefine", False) is True and not local_removal
+        structural_enabled = body.get("structuralRefine", local_removal) is True
         if local_removal:
-            structural_mask = Image.new("L", source.size)
-            structural_metrics = {"detected": False, "applied": False, "reason": "garment-only-check", "artifactPixels": 0}
+            if structural_enabled:
+                update_job(job_id, stage="inpaint-structural-refine", postprocessPhase="structural-refine", _event={"type":"postprocess.structure.started", "message":f"Đang tinh chỉnh cấu trúc nền phương án {index + 1}"})
+                composited, structural_mask, structural_metrics = refine_background_structure(
+                    source, composited, composite_mask, edge_feather
+                )
+            else:
+                structural_mask = Image.new("L", source.size)
+                structural_metrics = {"detected": False, "applied": False, "reason": "disabled", "artifactPixels": 0}
         elif structural_enabled:
             update_job(job_id, stage="inpaint-structural-refine", postprocessPhase="structural-refine", _event={"type":"postprocess.structure.started", "message":f"Đang tinh chỉnh cấu trúc phương án {index + 1}"})
             composited, structural_mask, structural_metrics = generative_core_structural_refine(
@@ -403,8 +442,12 @@ def inpaint(body: dict) -> dict:
             removal_check["statusLabel"] = "Còn đường may, cúc hoặc cấu trúc giống trang phục"
             removal_check["retryRecommended"] = True
         if semantic_enabled:
+            semantic_after_started = time.perf_counter()
             semantic_check = semantic_inpaint_residual_check(composited, mask, removal_target, fill_mode, object_label)
+            semantic_after_seconds = round(time.perf_counter() - semantic_after_started, 4)
             removal_check = assess_removal(removal_check, semantic_before, semantic_check, outside_mae)
+        else:
+            semantic_after_seconds = 0.0
         removal_check["boundaryError"] = boundary_metric(source, composited, composite_mask)
         output_name = f"result_seed_{run_seed}.png"
         texture_baseline_name = f"texture_baseline_seed_{run_seed}.png"
@@ -416,7 +459,7 @@ def inpaint(body: dict) -> dict:
         edge_artifacts.save(run_dir / f"edge_artifacts_seed_{run_seed}.png")
         texture_core.save(run_dir / f"texture_core_seed_{run_seed}.png")
         structural_mask.save(run_dir / f"structural_artifacts_seed_{run_seed}.png")
-        results.append({"seed": run_seed, "image": encode_image(composited), "outsideMaskMAE": outside_mae, "removalCheck": removal_check, "autoRetry": retrying, "effectiveStrength": attempt_strength, "negativePromptApplied": bool(profile.get("supportsNegativePrompt", architecture != "flux")), "edgeBlend": edge_metrics, "textureRecovery": texture_metrics, "textureBaseline": str((run_dir / texture_baseline_name).relative_to(ROOT)), "structuralRefine": structural_metrics, "structuralBaseline": str((run_dir / structural_baseline_name).relative_to(ROOT))})
+        results.append({"seed": run_seed, "image": encode_image(composited), "outsideMaskMAE": outside_mae, "removalCheck": removal_check, "autoRetry": retrying, "retryPlan": retry_plan, "effectiveStrength": attempt_strength, "timings": {"inferenceSeconds": inference_seconds, "semanticBeforeSeconds": semantic_before_seconds, "semanticAfterSeconds": semantic_after_seconds}, "negativePromptApplied": bool(profile.get("supportsNegativePrompt", architecture != "flux")), "edgeBlend": edge_metrics, "textureRecovery": texture_metrics, "textureBaseline": str((run_dir / texture_baseline_name).relative_to(ROOT)), "structuralRefine": structural_metrics, "structuralBaseline": str((run_dir / structural_baseline_name).relative_to(ROOT))})
         update_job(job_id, stage="inpaint-variant-complete", currentVariant=index + 1, totalVariants=maximum_attempts, _result={"kind":"inpaint", "sampleId":str(body.get("sampleId")), "seed":run_seed, "file":str((run_dir / output_name).relative_to(ROOT)), "outsideMaskMAE":round(outside_mae,6), "removalCheck":removal_check, "edgePixels":int(edge_metrics.get("edgePixels",0) or 0)}, _event={"type":"variant.completed", "message":f"Phương án {index + 1}/{maximum_attempts} đã hoàn tất · {removal_check['statusLabel']} · seed {run_seed}", "seed":run_seed})
     results.sort(key=removal_rank)
     results = results[:count]
@@ -435,7 +478,7 @@ def inpaint(body: dict) -> dict:
         "strength": strength, "guidance": guidance,
         "expand": expand, "blur": blur, "edgeFeather": edge_feather,
         "requestedCropPadding": requested_crop_padding, "cropPadding": crop_padding,
-        "dualMask": dual_mask_metrics, "contextRatio": float(body.get("contextRatio", 0.30)),
+        "dualMask": dual_mask_metrics, "maskCleanup": mask_cleanup_metrics, "contextRatio": float(body.get("contextRatio", 0.30)),
         "textureRecovery": texture_enabled, "textureRecoveryAmount": texture_amount,
         "structuralRefine": structural_enabled, "structuralSteps": int(body.get("structuralSteps", 14)),
         "model": str(selected_model_path), "modelId": selected_model_id or None, "modelName": selected_entry.get("name") if selected_entry else "Default", "inpaintArchitecture": architecture, "device": device,
@@ -449,7 +492,8 @@ def inpaint(body: dict) -> dict:
         "totalEffectiveSteps": completed_work,
         "loras": lora_metadata,
         "removalChecks": [{"seed": item["seed"], **item["removalCheck"]} for item in results],
-        "autoRetry": {"enabled": max_auto_retries > 0, "maximum": max_auto_retries, "attemptedVariants": attempted_variants},
+        "autoRetry": {"enabled": max_auto_retries > 0, "maximum": max_auto_retries, "attemptedVariants": attempted_variants,
+                      "plans": [{"seed": item["seed"], **item.get("retryPlan", {})} for item in results]},
     }
     (run_dir / "metadata.json").write_text(json.dumps(metadata, ensure_ascii=False, indent=2), encoding="utf-8")
     passed_count = sum(1 for item in results if item["removalCheck"]["accepted"])

@@ -189,6 +189,43 @@ def assess_removal(check, before, after, outside_mae=0.0):
     return check
 
 
+def retry_strategy(check):
+    """Translate a failed quality gate into a bounded corrective generation plan."""
+    status = str((check or {}).get("status") or "unverified")
+    structural = (check or {}).get("structuralArtifact") or {}
+    if status == "residual" or structural.get("detected"):
+        return {
+            "id": "residual-object",
+            "strengthDelta": 0.10,
+            "maskDilate": 8,
+            "contextMultiplier": 1.25,
+            "promptSuffix": " Remove every remaining fragment and continue the surrounding surface through the entire selected area.",
+        }
+    if status == "unchanged":
+        return {
+            "id": "insufficient-change",
+            "strengthDelta": 0.14,
+            "maskDilate": 4,
+            "contextMultiplier": 1.15,
+            "promptSuffix": " Fully replace the selected pixels; do not preserve the original object's color, outline, or texture.",
+        }
+    if status == "preservation-failed":
+        return {
+            "id": "preservation",
+            "strengthDelta": -0.10,
+            "maskDilate": 0,
+            "contextMultiplier": 0.85,
+            "promptSuffix": " Preserve every pixel and detail outside the selected region.",
+        }
+    return {
+        "id": "boundary-or-unverified",
+        "strengthDelta": -0.04,
+        "maskDilate": 2,
+        "contextMultiplier": 1.35,
+        "promptSuffix": " Match color, lighting, texture, and structural lines continuously across the selected boundary.",
+    }
+
+
 def boundary_metric(source, result, mask):
     """Boundary error is a ranking diagnostic, never a semantic acceptance gate."""
     a, b = np.asarray(source, dtype=np.float32), np.asarray(result, dtype=np.float32)
