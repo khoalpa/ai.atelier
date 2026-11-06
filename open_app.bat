@@ -1,7 +1,7 @@
 @echo off
 setlocal
 cd /d "%~dp0"
-title AI Image Offline
+title AI Atelier
 
 where powershell.exe >nul 2>nul
 if errorlevel 1 (

@@ -8,7 +8,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $appVersion = (Get-Content -LiteralPath (Join-Path $PSScriptRoot 'version.json') -Raw | ConvertFrom-Json).version
 $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
-$releaseRoot = Join-Path $Destination "ai-image-offline-$appVersion-$stamp"
+$releaseRoot = Join-Path $Destination "ai-atelier-$appVersion-$stamp"
 . (Join-Path $PSScriptRoot 'scripts\runtime.ps1')
 $node = Resolve-AtelierRuntime -Root $PSScriptRoot -Kind node
 & $node (Join-Path $PSScriptRoot 'scripts\build-web.js') | Out-Host

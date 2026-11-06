@@ -1,6 +1,6 @@
 param(
   [string]$ReleasePath = $PSScriptRoot,
-  [string]$InstallPath = (Join-Path $env:LOCALAPPDATA 'AI Image Offline'),
+  [string]$InstallPath = (Join-Path $env:LOCALAPPDATA 'AI Atelier'),
   [string]$InpaintModelPath = '',
   [string]$ChromaModelPath = '',
   [switch]$CreateDesktopShortcut
@@ -31,6 +31,6 @@ $existing['installedAt'] = (Get-Date).ToString('o')
 $existing | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $configPath -Encoding utf8
 if ($CreateDesktopShortcut) {
   $desktop = [Environment]::GetFolderPath('Desktop'); $shell = New-Object -ComObject WScript.Shell
-  $shortcut = $shell.CreateShortcut((Join-Path $desktop 'AI Image Offline.lnk')); $shortcut.TargetPath = (Join-Path $target 'open_app.bat'); $shortcut.WorkingDirectory = $target; $shortcut.Save()
+  $shortcut = $shell.CreateShortcut((Join-Path $desktop 'AI Atelier.lnk')); $shortcut.TargetPath = (Join-Path $target 'open_app.bat'); $shortcut.WorkingDirectory = $target; $shortcut.Save()
 }
 [pscustomobject]@{ok=$true;installPath=$target;config=$configPath;workspacePreserved=$true;modelsPreserved=$true}
