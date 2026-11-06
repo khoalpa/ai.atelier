@@ -8,7 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 import ai_service as service
-from prompt_catalog import prompt_text
+from services.ai.prompting.catalog import prompt_text
 from PIL import Image, ImageDraw, ImageStat
 import torch
 

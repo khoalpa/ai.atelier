@@ -16,7 +16,7 @@ from PIL import Image, ImageDraw
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from sample_catalog import resolve_sample
+from services.ai.catalog.samples import resolve_sample
 BASE=sys.argv[1] if len(sys.argv)>1 else 'http://127.0.0.1:27866'
 OUT=ROOT/'workspace/diagnostics/makeup';OUT.mkdir(parents=True,exist_ok=True)
 sys.stdout.reconfigure(encoding='utf-8')

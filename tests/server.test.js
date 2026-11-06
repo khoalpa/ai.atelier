@@ -424,13 +424,13 @@ for (const feature of ['emptyMaskDialog','editableMaskStats','showMaskGuide','cr
 assert.ok(maskGuideSource.indexOf('if (maskStats.selected < maskStats.minimum)') < maskGuideSource.indexOf("createJobId('inpaint')"), 'Phải kiểm tra mask trước khi tạo job Inpainting');
 console.log('OK: mask trống hoặc quá nhỏ được chặn trước khi tạo tác vụ và có hướng dẫn phục hồi.');
 
-const chromaGeneratorSource = require('./helpers/source').read(path.join(root, 'new_image.py'), 'utf8') + require('./helpers/source').read(path.join(root, 'app/public/new-image.js'), 'utf8') + serverSource + require('./helpers/source').read(path.join(root, 'ai_service.py'), 'utf8') + require('./helpers/source').read(path.join(root, 'app/public/index.html'), 'utf8') + require('./helpers/source').read(path.join(root, 'app/public/app.js'), 'utf8');
+const chromaGeneratorSource = require('./helpers/source').read(path.join(root, 'services/ai/features/generation/new_image.py'), 'utf8') + require('./helpers/source').read(path.join(root, 'app/public/new-image.js'), 'utf8') + serverSource + require('./helpers/source').read(path.join(root, 'ai_service.py'), 'utf8') + require('./helpers/source').read(path.join(root, 'app/public/index.html'), 'utf8') + require('./helpers/source').read(path.join(root, 'app/public/app.js'), 'utf8');
 for (const feature of ['/api/chroma-generate','/chroma-generate','chroma_generate','chromaGeneratorPanel','chromaGenerateButton','runChromaGenerate']) {
   assert.ok(chromaGeneratorSource.includes(feature), `Thiếu chức năng tạo ảnh Chroma: ${feature}`);
 }
 console.log('OK: tạo ảnh từ mô tả bằng Chroma đã được kết nối từ giao diện đến pipeline.');
 
-const characterAnatomySource=require('./helpers/source').read(path.join(root,'character_quality.py'),'utf8')+require('./helpers/source').read(path.join(root,'character_runtime.py'),'utf8')+require('./helpers/source').read(path.join(root,'character.py'),'utf8')+require('./helpers/source').read(path.join(root,'app/public/character.js'),'utf8')+studioMarkup+studioBehavior;
+const characterAnatomySource=require('./helpers/source').read(path.join(root,'services/ai/features/character/quality.py'),'utf8')+require('./helpers/source').read(path.join(root,'services/ai/features/character/runtime.py'),'utf8')+require('./helpers/source').read(path.join(root,'services/ai/features/character/service.py'),'utf8')+require('./helpers/source').read(path.join(root,'app/public/character.js'),'utf8')+studioMarkup+studioBehavior;
 for(const feature of ['characterAnatomyQuality','extremity_review','extremity_repair_mask','repair_extremities','fingerJointCoverage','fiveToesVerified','Kết quả chưa vượt cổng giải phẫu'])assert.ok(characterAnatomySource.includes(feature),`Thiếu cổng giải phẫu tay/chân: ${feature}`);
 console.log('OK: DWPose kiểm tra tay/chân, sửa cục bộ SD3.5 và khóa kết quả không đạt.');
 
@@ -545,16 +545,17 @@ const promptAssistSource = serverSource + require('./helpers/source').read(path.
 for (const feature of ['/api/prompt-assist','promptAssist','suggestNotesButton','suggestInpaintPromptButton','suggestChromaPromptButton','suggestNegativePromptButton','pendingPromptAssist']) {
   assert.ok(promptAssistSource.includes(feature), `Thiếu trợ lý LLM tạo prompt: ${feature}`);
 }
-const promptCatalog = require('../app/prompt-store').readCatalog();
+const promptCatalog = require('../apps/local-api/domain/catalog/prompt-store').readCatalog();
 for (const task of ['notes','inpaint','imagePrompt','negativePrompt']) assert.ok(promptCatalog.promptAssist.tasks[task], `Thiếu tác vụ LLM: ${task}`);
-assert.ok(serverSource.includes("process.env.ATELIER_LLM_MODEL || 'llava:7b'"), 'Thiếu model LLM cục bộ mặc định hoặc khả năng cấu hình');
+const configurationSource=require('./helpers/source').read(path.join(root,'apps/local-api/configuration.js'),'utf8');
+assert.ok(configurationSource.includes("env.ATELIER_LLM_MODEL || 'llava:7b'"), 'Thiếu model LLM cục bộ mặc định hoặc khả năng cấu hình');
 console.log('OK: trợ lý LLM hỗ trợ đủ bốn trường, dùng ảnh/mask khi phù hợp và có hoàn tác.');
 
 const promptOptimizationSource=serverSource+require('./helpers/source').read(path.join(root,'app/public/index.html'),'utf8')+require('./helpers/source').read(path.join(root,'app/public/app.js'),'utf8');
 for(const feature of ['optimizePrompt','optimizeNegativePrompt','analyzePrompt','promptAssistDialog','openPromptAssistPreview','applyPromptAssistButton','qualityScore','warnings'])assert.ok(promptOptimizationSource.includes(feature),`Thiếu tối ưu prompt/negative prompt: ${feature}`);
 console.log('OK: trợ lý AI hỗ trợ xem trước, tối ưu, kiểm tra xung đột và chỉ áp dụng khi người dùng xác nhận.');
 
-const removalSource=require('./helpers/source').read(path.join(root,'ai_service.py'),'utf8')+require('./helpers/source').read(path.join(root,'object_removal.py'),'utf8')+require('./helpers/source').read(path.join(root,'app/public/index.html'),'utf8')+require('./helpers/source').read(path.join(root,'app/public/app.js'),'utf8')+JSON.stringify(promptCatalog);
+const removalSource=require('./helpers/source').read(path.join(root,'ai_service.py'),'utf8')+require('./helpers/source').read(path.join(root,'services/ai/features/object_removal/service.py'),'utf8')+require('./helpers/source').read(path.join(root,'app/public/index.html'),'utf8')+require('./helpers/source').read(path.join(root,'app/public/app.js'),'utf8')+JSON.stringify(promptCatalog);
 for(const feature of ['removalTarget','fillMode','inpaintFillMode','base_layer','reconstruct_body','build_inpaint_instruction','inpaint_removal_check','maxAutoRetries','visual-change-diagnostic-v2','replace-core-feather-outward-v1'])assert.ok(removalSource.includes(feature),`Thiếu cải tiến xóa vật thể: ${feature}`);
 assert.ok(removalSource.includes('Avoid these failure modes:'),'FLUX phải nhận ràng buộc loại trừ trong positive prompt');
 assert.equal(promptCatalog.presets.outfit.resolution, '1024', 'Preset xóa trang phục phải dùng độ phân giải đủ lớn');
@@ -564,7 +565,7 @@ console.log('OK: xóa vật thể truyền ngữ nghĩa mục tiêu, có chế �
 
 const installedProfiles=JSON.parse(require('./helpers/source').read(path.join(root,'models/registry.json'),'utf8')).models.filter((item)=>item.kind==='inpaint');
 const catalogProfiles=JSON.parse(require('./helpers/source').read(path.join(root,'models/inpaint-candidates.json'),'utf8')).candidates.filter((item)=>item.kind==='inpaint');
-const migratedProfiles=require('../app/prompt-store').readCatalog().runtimePresets.modelInpaintProfiles;
+const migratedProfiles=require('../apps/local-api/domain/catalog/prompt-store').readCatalog().runtimePresets.modelInpaintProfiles;
 const registryProfiles=[...installedProfiles,...catalogProfiles.filter((candidate)=>!installedProfiles.some((installed)=>installed.id===candidate.id))].map(model=>({...model,removalProfile:migratedProfiles[model.id]}));
 for(const id of ['qwen-image-controlnet-inpainting']){
   const model=registryProfiles.find((item)=>item.id===id);assert.ok(model?.removalProfile,`Model ${id} thiếu removalProfile`);for(const key of ['nativeResolution','steps','strength','guidance','promptMode','supportsNegativePrompt','retryStrengthIncrement','maximumRetries'])assert.notEqual(model.removalProfile[key],undefined,`Profile ${id} thiếu ${key}`);
@@ -634,7 +635,7 @@ assert.ok(require('./helpers/source').read(path.join(root,'ai_service.py'),'utf8
 assert.ok(serverSource.includes('findNamedModel'),'Máy chủ chưa tự phục hồi đường dẫn registry cũ');
 console.log('OK: đường dẫn SD3.5 Large được chuẩn hóa và có cơ chế phục hồi cấu hình từ phiên bản cũ.');
 
-const generatedImageSource=require('./helpers/source').read(path.join(root,'new_image.py'),'utf8')+require('./helpers/source').read(path.join(root,'ai_service.py'),'utf8')+require('./helpers/source').read(path.join(root,'app/public/app.js'),'utf8');
+const generatedImageSource=require('./helpers/source').read(path.join(root,'services/ai/features/generation/new_image.py'),'utf8')+require('./helpers/source').read(path.join(root,'ai_service.py'),'utf8')+require('./helpers/source').read(path.join(root,'app/public/app.js'),'utf8');
 assert.ok(generatedImageSource.includes("'image': '/outputs/chroma/'"),'API tạo ảnh chưa trả URL công khai');
 assert.ok(generatedImageSource.includes("replace(/^\\/+/, '').replace(/^workspace\\//, '')"),'Giao diện chưa chuẩn hóa URL ảnh có dấu gạch đầu hoặc tiền tố workspace');
 assert.ok(serverSource.includes("pathname.startsWith('/workspace/outputs/')"),'Thiếu route tương thích cho URL kết quả cũ');

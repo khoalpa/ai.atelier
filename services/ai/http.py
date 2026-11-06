@@ -1,7 +1,7 @@
 """AI Atelier: http."""
 from functools import wraps
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from local_request_security import trusted_request
+from services.ai.security.local_request import trusted_request
 from pathlib import Path
 from urllib.parse import urlsplit, parse_qs
 import json
@@ -108,7 +108,7 @@ class Handler(BaseHTTPRequestHandler):
                 raise ValueError("Payload quá lớn")
             body = json.loads(self.rfile.read(length) or b"{}")
             if self.path == '/catalog-token-preview':
-                from catalog_preview import token_preview
+                from services.ai.catalog.preview import token_preview
                 return self.reply(200, token_preview(ROOT, body))
             self._generation_job = ''
             if self.path in execution_journal().routes:
@@ -126,7 +126,7 @@ class Handler(BaseHTTPRequestHandler):
                 except RuntimeError as error:
                     return self.reply(409, {"ok": False, "error": str(error)})
             if self.path == "/manual-cutout":
-                from background_edit import cutout
+                from services.ai.features.generation.background_edit import cutout
                 release_inpaint()
                 release_tryon()
                 release_text_to_image()
@@ -140,7 +140,7 @@ class Handler(BaseHTTPRequestHandler):
                     path = ROOT / path
                 architecture = detect_inpaint_architecture(path, entry.get('architecture') if entry else None)
                 resolved = resolve_inpaint_prompts(body, architecture, resolved_inpaint_profile(entry, architecture))
-                from prompt_limits import preview_encoder_prompts
+                from services.ai.prompting.limits import preview_encoder_prompts
                 try:
                     resolved['encoders'] = preview_encoder_prompts(path, architecture, resolved['prompt'], resolved['negativePrompt'], str(body.get('fillMode') or 'background'))
                 except Exception:
@@ -218,26 +218,26 @@ class Handler(BaseHTTPRequestHandler):
             if self.path == "/catvton-geometry-audit":
                 return self.reply(200, catvton_geometry_audit(body))
             if self.path == "/character-regenerate":
-                from character_workflow import regenerate
+                from services.ai.features.character.workflow import regenerate
                 return self.reply(200, regenerate(body, task_context()))
             if self.path in ("/character-analyze", "/character-preview", "/character-render"):
-                import character
+                from services.ai.features.character import service as character
                 handler={"/character-analyze":character.analyze,"/character-preview":character.plan,"/character-render":character.run}[self.path]
                 return self.reply(200, handler(body, task_context()))
             if self.path == "/makeup-compare":
-                from makeup_comparison import run
+                from services.ai.features.makeup.comparison import run
                 return self.reply(200, run(body, task_context()))
             if self.path == "/makeup-reference":
-                from makeup_reference import analyze
+                from services.ai.features.makeup.reference import analyze
                 return self.reply(200, analyze(body, task_context()))
             if self.path == "/makeup-analyze":
-                from makeup import analyze
+                from services.ai.features.makeup.service import analyze
                 return self.reply(200, analyze(body, task_context()))
             if self.path == "/makeup":
-                from makeup import run
+                from services.ai.features.makeup.service import run
                 return self.reply(200, run(body, task_context()))
             if self.path == "/enhance":
-                from image_enhancement import enhance
+                from services.ai.features.enhancement.service import enhance
                 return self.reply(200, enhance(body, task_context()))
             if self.path == "/outpaint":
                 return self.reply(200, outpaint(body))

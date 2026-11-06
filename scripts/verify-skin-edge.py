@@ -16,7 +16,7 @@ from PIL import Image, ImageDraw, ImageOps
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-import image_enhancement as enhancement
+import services.ai.features.enhancement.service as enhancement
 
 OUT = ROOT/'workspace/diagnostics/skin-edge'
 OUT.mkdir(parents=True, exist_ok=True)

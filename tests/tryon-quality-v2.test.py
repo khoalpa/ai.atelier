@@ -9,8 +9,8 @@ from PIL import Image, ImageFilter
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
-from tryon_quality import candidate_key, gate_reasons, pose_consistency, repair_is_better
-from tryon_geometry import target_coverage, target_attributes, inward_blend
+from services.ai.features.tryon.quality import candidate_key, gate_reasons, pose_consistency, repair_is_better
+from services.ai.features.tryon.geometry import target_coverage, target_attributes, inward_blend
 
 thresholds=dict(minimumQuality=75,minimumSimilarity=.55,minimumSeam=65,minimumAnatomy=90)
 passed=dict(qualityScore=80,referenceSimilarity=.7,seamScore=80,preservationScore=100,

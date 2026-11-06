@@ -1,5 +1,5 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
-const root=path.resolve(__dirname,'..'),catalog=require('../app/prompt-store').readCatalog(),nodes=new Map();
+const root=path.resolve(__dirname,'..'),catalog=require('../apps/local-api/domain/catalog/prompt-store').readCatalog(),nodes=new Map();
 function node(id){if(!nodes.has(id))nodes.set(id,{value:'',checked:false,textContent:'',innerHTML:'',disabled:false,addEventListener(){},dispatchEvent(){}});return nodes.get(id);}
 node('textToImageModel').value='sdxl-base-1.0';
 const context={window:{ATELIER_PROMPTS:catalog},document:{getElementById:node},localStorage:{getItem:()=>null,setItem(){},removeItem(){}},setTimeout:()=>1,clearTimeout(){},AtelierApp:{escapeHtml:String},Event:class{}};

@@ -8,8 +8,8 @@ from PIL import Image
 
 root=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(root))
-from catvton_inputs import prepare_inputs
-from tryon_geometry import fit_geometry
+from services.ai.features.tryon.catvton_inputs import prepare_inputs
+from services.ai.features.tryon.geometry import fit_geometry
 source=Image.new('RGB',(1024,1536),'black')
 source.paste((255,0,0),(0,0,32,1536))
 source.paste((0,255,0),(992,0,1024,1536))

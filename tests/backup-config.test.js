@@ -1,5 +1,5 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs/promises'),os=require('node:os'),path=require('node:path');
-const {createBackupStore}=require('../app/backup-store');
+const {createBackupStore}=require('../apps/local-api/infrastructure/backup-store');
 test('full backup verifies images, sessions and history; restore retains new files and rejects corruption before writes',async()=>{
  const root=await fs.mkdtemp(path.join(os.tmpdir(),'atelier-backup-'));try{
   async function put(name,data){const file=path.join(root,name);await fs.mkdir(path.dirname(file),{recursive:true});await fs.writeFile(file,data);}

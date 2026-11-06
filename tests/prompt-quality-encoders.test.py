@@ -1,9 +1,9 @@
 import sys
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from encoder_policy import model_policy, token_count, sequence_limit
-from prompt_limits import validate_prompt_limits
-from prompt_catalog import prompt_value
+from services.ai.prompting.encoder_policy import model_policy, token_count, sequence_limit
+from services.ai.prompting.limits import validate_prompt_limits
+from services.ai.prompting.catalog import prompt_value
 
 class Tokenizer:
     model_max_length=10**9

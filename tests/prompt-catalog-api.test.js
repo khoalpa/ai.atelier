@@ -2,7 +2,7 @@ const assert=require('node:assert/strict'),fs=require('fs'),os=require('os'),pat
 const {spawn}=require('child_process');
 async function main(){
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'atelier-api-')),file=path.join(dir,'prompts.json');
-  fs.copyFileSync(require('../app/prompt-store').FILE,file);
+  fs.copyFileSync(require('../apps/local-api/domain/catalog/prompt-store').FILE,file);
   const socket=net.createServer();await new Promise(r=>socket.listen(0,'127.0.0.1',r));const port=socket.address().port;await new Promise(r=>socket.close(r));
   const child=spawn(process.execPath,[path.join(__dirname,'../app/server.js')],{env:{...process.env,AI_IMAGE_PORT:String(port),ATELIER_PROMPTS_FILE:file,ATELIER_JSON_CONFIG_ROOT:dir},windowsHide:true,stdio:['ignore','pipe','pipe']});
   try{

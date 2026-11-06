@@ -1,9 +1,6 @@
 'use strict';
-const requireFromApp = require('node:module').createRequire(require('node:path').resolve(__dirname,'../../../app/server.js'));
 // Dependencies: CONFIG_FILE, EXTERNAL_MODEL_SOURCES, LLM_BASE_URL, MODEL_CANDIDATES, MODEL_DOWNLOADER, MODEL_DOWNLOADS, MODEL_DOWNLOAD_PYTHON, MODEL_HISTORY, MODEL_REGISTRY, ROOT, fs, parseJson, path, readCatalog, safeJoin, send, spawn
 module.exports = function createModels(deps) {
-const require = requireFromApp;
-const __dirname = require('node:path').join(deps.ROOT,'app');
 function readModelRegistry(){if(!deps.fs.existsSync(deps.MODEL_REGISTRY))return{schemaVersion:1,models:[],quarantine:[]};return JSON.parse(deps.fs.readFileSync(deps.MODEL_REGISTRY,'utf8'));}
 
 function readLocalConfig(){if(!deps.fs.existsSync(deps.CONFIG_FILE))return{};return JSON.parse(deps.fs.readFileSync(deps.CONFIG_FILE,'utf8'));}

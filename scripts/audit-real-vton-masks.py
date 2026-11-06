@@ -8,8 +8,8 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 import numpy as np
 from PIL import Image,ImageFilter,ImageDraw,ImageFont
-from vton_pilot import file_hash
-from tryon_geometry import target_coverage
+from services.ai.features.tryon.pilot import file_hash
+from services.ai.features.tryon.geometry import target_coverage
 
 
 def audit(baseline,out,cpu=False):

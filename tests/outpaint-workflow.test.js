@@ -4,7 +4,7 @@ for(const id of ['outpaintSteps','outpaintGuidance','outpaintResolution','outpai
 for(const id of ['outpaintPreserve','outpaintDetail','outpaintMaterialRefine','outpaintSeamRepair','outpaintSourceEnhance','outpaintChooseLayout'])fields[id]={checked:false};
 Object.assign(fields,{outpaintModel:{value:'flux-1-fill-dev'},outpaintEstimate:{},outpaintRun:{},outpaintCount:{value:'2'},outpaintWidth:{value:'1536'},outpaintHeight:{value:'1024'},outpaintLeft:{value:'256'},outpaintTop:{value:'0'}});
 const context={$:id=>fields[id],sourceImage:{naturalWidth:1024,naturalHeight:1024}};
-context.window={ATELIER_PROMPTS:require('../app/prompt-store').readCatalog()};
+context.window={ATELIER_PROMPTS:require('../apps/local-api/domain/catalog/prompt-store').readCatalog()};
 vm.createContext(context);vm.runInContext(require('./helpers/source').read('app/public/outpaint.js','utf8'),context);
 vm.runInContext('outpaintServiceReady=true',context);
 fields.outpaintPreserve.checked=true;fields.outpaintChooseLayout.checked=true;
@@ -21,9 +21,9 @@ const folder=fs.mkdtempSync(path.join(os.tmpdir(),'outpaint-timing-'));
 try{
   const jobs=[1,2,3].map(n=>({jobId:'test-'+n,taskType:'outpaint',status:'completed',durationSeconds:n*100,totalWorkSteps:100}));
   for(const j of jobs)fs.writeFileSync(path.join(folder,j.jobId+'.request.json'),JSON.stringify({modelId:'flux-1-fill-dev',maxSide:768}));
-  const timings=require('../app/outpaint-timing').outpaintTiming([...jobs,{...jobs[0],jobId:'../invalid'}],folder);
+  const timings=require('../apps/local-api/services/outpaint-timing').outpaintTiming([...jobs,{...jobs[0],jobId:'../invalid'}],folder);
   assert.equal(timings.length,1);assert.equal(timings[0].secondsPerStep,2);assert.equal(timings[0].sampleCount,3);
-  assert.equal(require('../app/outpaint-timing').outpaintTiming(jobs.slice(0,2),folder)[0].secondsPerStep,1.5);
+  assert.equal(require('../apps/local-api/services/outpaint-timing').outpaintTiming(jobs.slice(0,2),folder)[0].secondsPerStep,1.5);
   context.calibration=timings;vm.runInContext('outpaintTiming=calibration',context);fields.outpaintResolution.value='768';
   context.refreshOutpaintEstimate();assert(fields.outpaintEstimate.textContent.includes('3 lần chạy'));
 }finally{fs.rmSync(folder,{recursive:true,force:true});}

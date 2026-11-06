@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from sample_catalog import resolve_sample
+from services.ai.catalog.samples import resolve_sample
 
 def main():
     import cv2

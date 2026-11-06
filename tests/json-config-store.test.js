@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict'),fs=require('fs'),path=require('path'),os=require('os');
-const {createStore}=require('../app/json-config-store');
+const {createStore}=require('../apps/local-api/repositories/json-config-store');
 const root=fs.mkdtempSync(path.join(os.tmpdir(),'atelier-json-')),project=path.resolve(__dirname,'..');
 const original=createStore();
 for(const item of original.list()){const target=path.join(root,item.path);fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(path.join(project,item.path),target);}

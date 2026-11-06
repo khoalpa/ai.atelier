@@ -1,5 +1,5 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs/promises'),path=require('node:path'),os=require('node:os');
-const {createAcceptanceStore,TASKS}=require('../app/acceptance-store');
+const {createAcceptanceStore,TASKS}=require('../apps/local-api/repositories/acceptance-store');
 async function fixture(fn){const root=await fs.mkdtemp(path.join(os.tmpdir(),'atelier-acceptance-'));try{await fs.mkdir(path.join(root,'workspace/outputs'),{recursive:true});await fs.mkdir(path.join(root,'samples'),{recursive:true});const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aCbkAAAAASUVORK5CYII=','base64');await fs.writeFile(path.join(root,'samples/source.png'),png);await fs.writeFile(path.join(root,'workspace/outputs/result.png'),png);await fn(root,createAcceptanceStore(root));}finally{assert(root.startsWith(path.resolve(os.tmpdir())+path.sep));await fs.rm(root,{recursive:true,force:true});}}
 const input={action:'add',name:'Case',task:'manual',difficulty:'hard',sourceUrl:'/samples/source.png',resultUrl:'/outputs/result.png'};
 const passing=task=>Object.fromEntries(Object.keys(TASKS[task].checks).map(k=>[k,'pass']));

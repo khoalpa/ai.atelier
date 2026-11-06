@@ -5,7 +5,7 @@ import tempfile
 from types import SimpleNamespace
 from unittest.mock import patch
 from PIL import Image
-import sd35_depth_control as control
+import services.ai.models.sd35_depth_control as control
 
 with tempfile.TemporaryDirectory() as directory:
     root=Path(directory)

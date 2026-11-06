@@ -5,14 +5,14 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import torch
 from PIL import Image
-from idm_vton_runtime import load_pipeline, densepose_image, generate
+from services.ai.features.tryon.idm_runtime import load_pipeline, densepose_image, generate
 
 root = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
 parser.add_argument('--width', type=int, default=384)
 parser.add_argument('--height', type=int, default=512)
 args = parser.parse_args()
-source = Image.open(__import__('sample_catalog').resolve_sample(root, 'characters/c001.png')).convert('RGB')
+source = Image.open(__import__('services.ai.catalog.samples',fromlist=['resolve_sample']).resolve_sample(root, 'characters/c001.png')).convert('RGB')
 mask = Image.new('L', source.size, 0)
 mask.paste(255, (int(source.width*.25), int(source.height*.2), int(source.width*.75), int(source.height*.6)))
 garment = source.crop(mask.getbbox())

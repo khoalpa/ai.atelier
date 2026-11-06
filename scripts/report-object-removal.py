@@ -9,7 +9,7 @@ from urllib.parse import quote
 ROOT=Path(__file__).resolve().parents[1]
 import sys
 sys.path.insert(0, str(ROOT))
-from sample_catalog import collection_path
+from services.ai.catalog.samples import collection_path
 OUT=ROOT/'workspace/diagnostics/object-removal-benchmark'
 MODELS=['sdxl-inpaint-base-0.1','flux-1-fill-dev']
 

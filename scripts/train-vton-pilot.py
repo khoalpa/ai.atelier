@@ -17,7 +17,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
-from vton_pilot import build_inpaint_batch, file_hash, load_dataset, masked_mae
+from services.ai.features.tryon.pilot import build_inpaint_batch, file_hash, load_dataset, masked_mae
 
 ACTIVE_OUTPUT = None
 
@@ -46,7 +46,7 @@ def main():
     started=time.time()
     snapshot=out/'source-snapshot'; snapshot.mkdir()
     source_hashes={}
-    for relative in ('ai_service.py','vton_pilot.py','tryon_geometry.py','catvton_inputs.py','scripts/train-vton-pilot.py'):
+    for relative in ('ai_service.py','services/ai/features/tryon/pilot.py','services/ai/features/tryon/geometry.py','services/ai/features/tryon/catvton_inputs.py','scripts/train-vton-pilot.py'):
         source=ROOT/relative
         target=snapshot/relative; target.parent.mkdir(parents=True,exist_ok=True)
         shutil.copy2(source,target)
@@ -57,7 +57,7 @@ def main():
     from PIL import Image
     from safetensors.torch import save_model
     import ai_service as ai
-    from tryon_geometry import target_coverage
+    from services.ai.features.tryon.geometry import target_coverage
     os.environ['HF_HUB_OFFLINE']='1'
     os.environ['TRANSFORMERS_OFFLINE']='1'
     random.seed(args.seed); np.random.seed(args.seed); torch.manual_seed(args.seed)

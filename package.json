@@ -13,7 +13,9 @@
     "build": "node scripts/build-web.js",
     "clean:cache": "node scripts/clean-project.js",
     "verify:generated": "node scripts/verify-generated.js",
-    "verify": "pnpm check && pnpm verify:generated"
+    "verify:layout": "node scripts/verification/repository-layout.js",
+    "update:manifests": "node scripts/update-source-manifest.js && node scripts/update-local-api-manifest.js",
+    "verify": "pnpm check && pnpm verify:layout && pnpm verify:generated"
   },
   "devDependencies": {
     "@types/node": "26.6.5",

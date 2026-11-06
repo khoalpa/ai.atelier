@@ -11,7 +11,7 @@ from PIL import Image
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
-import idm_vton_runtime as runtime
+import services.ai.features.tryon.idm_runtime as runtime
 
 captured={}
 class FakeModel:

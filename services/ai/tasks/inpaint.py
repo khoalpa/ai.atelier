@@ -3,7 +3,7 @@ from services.ai.runtime.tracing import trace_generation
 from PIL import Image, ImageFilter, ImageOps
 from datetime import datetime, timezone
 from pathlib import Path
-from prompt_catalog import prompt_text, prompt_template, read_catalog, task_prompt
+from services.ai.prompting.catalog import prompt_text, prompt_template, read_catalog, task_prompt
 import json
 import numpy as np
 import time
@@ -82,7 +82,7 @@ def build_inpaint_instruction(removal_target: str, fill_mode: str, architecture:
     mode = fill_mode if fill_mode in ('base_layer', 'reconstruct_body', 'background') else "reconstruct_body"
     subject = INPAINT_TARGETS[target]
     if mode in ('base_layer', 'reconstruct_body', 'background'):
-        from processing_mode_prompts import processing_mode_prompt
+        from services.ai.prompting.processing_modes import processing_mode_prompt
         replacement = processing_mode_prompt(ROOT, mode).strip()
         removal = user_prompt.strip() or prompt_template("removeObject", subject=subject or prompt_template("selectedTarget", target=target.replace("_", " ")))
         preserve = prompt_text('build_inpaint_instruction.strict_inpainting_mode_modify_only_the_area')
@@ -121,7 +121,7 @@ def resolve_inpaint_prompts(body: dict, architecture: str = "", profile: dict | 
 
 def inpaint_removal_check(source: Image.Image, result: Image.Image, mask: Image.Image, removal_target: str) -> dict:
     """Pixel change is diagnostic only; it cannot certify object removal."""
-    from object_removal import visual_change
+    from services.ai.features.object_removal.service import visual_change
     return visual_change(source, result, mask)
 
 
@@ -167,7 +167,7 @@ def semantic_inpaint_residual_check(result: Image.Image, mask: Image.Image, remo
 
 @trace_generation
 def inpaint(body: dict) -> dict:
-    from object_removal import (model_settings, removal_regions, prepare_region, restore_region,
+    from services.ai.features.object_removal.service import (model_settings, removal_regions, prepare_region, restore_region,
                                 blend_removal, assess_removal, boundary_metric, removal_rank,
                                 retry_strategy)
     started_at = time.perf_counter()
@@ -380,7 +380,7 @@ def inpaint(body: dict) -> dict:
             elif not bool(profile.get("supportsNegativePrompt", architecture != "flux")):
                 call_kwargs["prompt_2"] = attempt_prompt
                 if architecture == "flux" and fill_mode in ("base_layer", "reconstruct_body", "background"):
-                    from prompt_limits import split_flux_prompts
+                    from services.ai.prompting.limits import split_flux_prompts
                     text_inputs, budget_info = split_flux_prompts(pipe, attempt_prompt)
                     call_kwargs.update(text_inputs)
                     prompt_trace_context.get()["resolvedSources"] = {**prompt_trace_context.get().get("resolvedSources", {}), **budget_info}
@@ -397,7 +397,7 @@ def inpaint(body: dict) -> dict:
         update_job(job_id, stage="inpaint-blending", postprocessPhase="edge-blend", currentVariant=index + 1, totalVariants=maximum_attempts, currentStep=effective_steps, totalSteps=effective_steps, completedSteps=completed_work, totalWorkSteps=planned_work, seed=run_seed, _event={"type":"blend.started", "message":f"Đang ghép biên phương án {index + 1}"})
         generated = generated.resize(source.size, Image.Resampling.LANCZOS)
         if local_removal:
-            from object_removal import match_simple_background
+            from services.ai.features.object_removal.service import match_simple_background
             generated, background_match = match_simple_background(source, generated, composite_mask, protected)
             composited, edge_artifacts, edge_metrics = blend_removal(source, generated, mask, composite_mask, protected)
             edge_metrics['backgroundMatch'] = background_match

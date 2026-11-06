@@ -7,7 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from sample_catalog import resolve_sample
+from services.ai.catalog.samples import resolve_sample
 
 
 def main():
@@ -19,8 +19,8 @@ def main():
     import ai_service as ai
     from PIL import Image, ImageDraw, ImageOps
     # Resolve lazy adapters before announcing the run, so a before-run is stable.
-    import catvton_inputs
-    import idm_vton_runtime
+    from services.ai.features.tryon import catvton_inputs
+    from services.ai.features.tryon import idm_runtime as idm_vton_runtime
     if args.tag and (not args.tag.replace('-','').isalnum()):
         raise ValueError('Tag must contain only letters, digits and hyphens')
     folder = ROOT / 'workspace/diagnostics/tryon-quality-20261022' / (args.phase + '-' + args.model + ('-'+args.tag if args.tag else ''))

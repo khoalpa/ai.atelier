@@ -1,5 +1,5 @@
 const fs=require('fs'),path=require('path'),vm=require('vm'),assert=require('node:assert/strict');
-const store=require('../app/prompt-store'),catalog=store.readCatalog();
+const store=require('../apps/local-api/domain/catalog/prompt-store'),catalog=store.readCatalog();
 const html=require('./helpers/source').read(path.join(__dirname,'../app/public/index.html'),'utf8');
 assert(!/\bplaceholder=/.test(html));
 const registry=JSON.parse(require('./helpers/source').read(path.join(__dirname,'../models/registry.json'),'utf8'));

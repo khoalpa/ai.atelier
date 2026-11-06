@@ -1,5 +1,5 @@
 const fs=require('fs'),path=require('path'),os=require('os'),assert=require('node:assert/strict');
-const {createStore}=require('../app/catalog-transfer-store'),prompts=require('../app/prompt-store');
+const {createStore}=require('../apps/local-api/domain/catalog/catalog-transfer-store'),prompts=require('../apps/local-api/domain/catalog/prompt-store');
 const root=fs.mkdtempSync(path.join(os.tmpdir(),'atelier-package-')),file=path.join(root,'workspace/prompts.json');fs.mkdirSync(path.dirname(file),{recursive:true});fs.copyFileSync(prompts.FILE,file);
 const store=createStore(root,file);
 try{

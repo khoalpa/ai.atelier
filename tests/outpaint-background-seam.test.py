@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from outpainting import equalize_background_seams
+from services.ai.features.outpaint.service import equalize_background_seams
 
 pixels=np.full((120,180,3),160,dtype=np.uint8)
 pixels[:,47:58]=120

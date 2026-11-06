@@ -1,6 +1,6 @@
 """AI Atelier: imaging.blending."""
 from PIL import Image, ImageFilter, ImageOps
-from prompt_catalog import prompt_text, prompt_template, read_catalog, task_prompt
+from services.ai.prompting.catalog import prompt_text, prompt_template, read_catalog, task_prompt
 import cv2
 import numpy as np
 import torch

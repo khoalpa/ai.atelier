@@ -1,9 +1,6 @@
 'use strict';
-const requireFromApp = require('node:module').createRequire(require('node:path').resolve(__dirname,'../../../app/server.js'));
 // Dependencies: OUTPUTS_DIR, REFERENCES_DIR, RETRY_COMPARISONS, REVIEW_DIR, REVIEW_STATE, ROOT, callAiJson, crypto, decodeImageDataUrl, fs, parseJson, path, resolveSamplePath, safeJoin, send
 module.exports = function createReview(deps) {
-const require = requireFromApp;
-const __dirname = require('node:path').join(deps.ROOT,'app');
 function latestOutputBySource() {
   const latest = new Map();
   if (!deps.fs.existsSync(deps.OUTPUTS_DIR)) return latest;
@@ -259,7 +256,7 @@ async function saveReferenceProfile(req,res) {
     if (!['upper_body','lower_body','overall'].includes(category)) throw new Error('Loại trang phục không hợp lệ');
     const decoded = deps.decodeImageDataUrl(body.image);
     const automated = await deps.callAiJson('/validate-product-reference',{category,image:body.image});
-    const validation = require('./product-reference-review').applyProductReview(automated,body.productReview,deps.crypto.createHash('sha256').update(decoded.buffer).digest('hex'));
+    const validation = require('../repositories/product-reference-review').applyProductReview(automated,body.productReview,deps.crypto.createHash('sha256').update(decoded.buffer).digest('hex'));
     if(!validation.accepted)return deps.send(res,422,JSON.stringify({ok:false,error:'Ảnh tham chiếu không đạt cổng kiểm định',validation}));
     const directory = deps.path.join(deps.REFERENCES_DIR,category);deps.fs.mkdirSync(directory,{recursive:true});
     for(const name of deps.fs.readdirSync(directory)) if(/^reference\.(png|jpe?g|webp)$/i.test(name)) deps.fs.unlinkSync(deps.path.join(directory,name));

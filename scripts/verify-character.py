@@ -15,7 +15,7 @@ import requests
 ROOT=Path(__file__).resolve().parents[1]
 import sys
 sys.path.insert(0, str(ROOT))
-from sample_catalog import resolve_sample
+from services.ai.catalog.samples import resolve_sample
 API='http://127.0.0.1:7860/api/'
 
 def post(route,body,check=True):

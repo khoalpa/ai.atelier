@@ -15,7 +15,7 @@ try {
   & $node --check (Join-Path $temporaryRoot 'app\server.js')
   Get-ChildItem -LiteralPath (Join-Path $temporaryRoot 'app') -Filter '*.js' -File -Recurse | ForEach-Object { & $node --check $_.FullName; if ($LASTEXITCODE -ne 0) { throw "JavaScript không hợp lệ: $($_.FullName)" } }
   $python = Resolve-AtelierRuntime -Root $PSScriptRoot -Kind python
-  & $python -m py_compile (Join-Path $temporaryRoot 'ai_service.py') (Join-Path $temporaryRoot 'background_edit.py') (Join-Path $temporaryRoot 'scripts\backup-sqlite.py')
+  & $python -m py_compile (Join-Path $temporaryRoot 'ai_service.py') (Join-Path $temporaryRoot 'services\ai\features\generation\background_edit.py') (Join-Path $temporaryRoot 'scripts\backup-sqlite.py')
   if ($LASTEXITCODE -ne 0) { throw 'Python không hợp lệ trong gói phát hành.' }
   & $python -m compileall -q (Join-Path $temporaryRoot 'services')
   if ($LASTEXITCODE -ne 0) { throw 'Mô-đun Python không hợp lệ.' }

@@ -4,7 +4,7 @@ from pathlib import Path
 from types import SimpleNamespace
 import torch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from idm_vton_runtime import limit_denoising_residency
+from services.ai.features.tryon.idm_runtime import limit_denoising_residency
 
 events=[]
 class Encoder(torch.nn.Module):

@@ -8,7 +8,7 @@ from pathlib import Path
 
 root=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(root))
-import prompt_catalog as catalog
+import services.ai.prompting.catalog as catalog
 
 source=ast.parse(read_source(root/'ai_service.py', encoding='utf-8'))
 node=next(n for n in source.body if isinstance(n,ast.FunctionDef) and n.name=='resolved_inpaint_profile')

@@ -10,7 +10,7 @@ from unittest.mock import Mock, patch
 from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import new_image as ni
+import services.ai.features.generation.new_image as ni
 
 
 class Tokenizer:

@@ -9,7 +9,7 @@ from PIL import Image, ImageDraw
 ROOT = Path(__file__).resolve().parents[1]
 import sys
 sys.path.insert(0, str(ROOT))
-from prompt_catalog import prompt_text
+from services.ai.prompting.catalog import prompt_text
 OUT = ROOT / 'workspace/review/mannequin-occlusion'
 OUT.mkdir(parents=True, exist_ok=True)
 source_dir = ROOT / 'workspace/uploads/mannequin-occlusion'

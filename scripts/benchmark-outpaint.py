@@ -14,8 +14,8 @@ from PIL import Image, ImageOps
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from sample_catalog import collection_path, project_path, resolve_sample
-from outpaint_quality import boundary_diagnostics
+from services.ai.catalog.samples import collection_path, project_path, resolve_sample
+from services.ai.features.outpaint.quality import boundary_diagnostics
 
 CASES=[
     ('studio','samples/characters/c001.png','Continue the textured warm ochre studio wall and floor, matching the existing light and perspective.'),
@@ -113,7 +113,7 @@ def main():
         if unknown:parser.error('Unknown cases: '+', '.join(sorted(unknown)))
         indices=[i for i,case in enumerate(cases) if case['id'] in args.case_ids]
     revision=hashlib.sha256(b''.join((ROOT/name).read_bytes() for name in
-        ('ai_service.py','outpainting.py','outpaint_quality.py','workspace/prompts.json'))).hexdigest()[:12]
+        ('ai_service.py','services/ai/features/outpaint/service.py','services/ai/features/outpaint/quality.py','workspace/prompts.json'))).hexdigest()[:12]
     summary_file=folder/'summary.json'
     records=json.loads(summary_file.read_text(encoding='utf-8')) if summary_file.exists() else []
     for index in indices:

@@ -17,7 +17,7 @@ from PIL import Image, ImageFilter, ImageOps
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from object_removal import (blend_removal, visual_change, assess_removal, model_settings,
+from services.ai.features.object_removal.service import (blend_removal, visual_change, assess_removal, model_settings,
                             removal_regions, prepare_region, restore_region, removal_rank,
                             retry_strategy)
 from services.ai.imaging.blending import (adaptive_object_removal_feather,
@@ -135,7 +135,7 @@ with tempfile.TemporaryDirectory() as folder:
                    objectLabel='cup', count=1, steps=12, strength=.55, guidance=30, maxSide=512,
                    confirmedPrompts={'prompt':'Continuous gray tabletop.', 'negativePrompt':''},
                    autoRetry=True, maxAutoRetries=1, livePreview=False, semanticCheck=True)
-    with patch.dict(sys.modules, {'prompt_limits':SimpleNamespace(split_flux_prompts=lambda pipe,text:({'prompt':text,'prompt_2':text},{}))}):
+    with patch.dict(sys.modules, {'services.ai.prompting.limits':SimpleNamespace(split_flux_prompts=lambda pipe,text:({'prompt':text,'prompt_2':text},{}))}):
         output = ns['inpaint'](request)
         assert output['attemptedVariants'] == 2, 'Confirmed prompts must allow retry'
         assert all(call['prompt'] == 'Continuous gray tabletop.' for call in calls)

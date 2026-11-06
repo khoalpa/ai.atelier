@@ -2,7 +2,7 @@ const fs=require('fs'),vm=require('vm'),assert=require('assert'),os=require('os'
 const fields={};
 for(const [id,value] of Object.entries({outpaintWidth:1280,outpaintHeight:1536,outpaintLeft:128,outpaintTop:0,outpaintRatio:'custom'}))fields[id]={value:String(value)};
 const context={sourceImage:{naturalWidth:1024,naturalHeight:1536},$:id=>fields[id],console};
-context.window={ATELIER_PROMPTS:require('../app/prompt-store').readCatalog()};
+context.window={ATELIER_PROMPTS:require('../apps/local-api/domain/catalog/prompt-store').readCatalog()};
 context.ATELIER_PROMPTS=context.window.ATELIER_PROMPTS;
 vm.createContext(context);vm.runInContext(require('./helpers/source').read('app/public/outpaint.js','utf8'),context);
 for(const id of ['outpaintSteps','outpaintGuidance','outpaintResolution','outpaintOverlap'])fields[id]={value:'',dataset:{}};
@@ -49,7 +49,7 @@ const renderOutpaintResults=context.renderOutpaintResults;let recovered;
 Object.assign(context,{activateAppView:()=>{},setStudioMode:()=>{},renderOutpaintResults:(result,id)=>recovered={result,id}});
 context.showSavedOutpaintResults({directory:'workspace/outputs/old',sourceId:'source.png',width:1500,height:800,results:[{seed:0,file:'workspace/outputs/old/result_seed_0.png'},{seed:0,file:'workspace/outputs/new/result_seed_0.png'}]});
 assert.equal(recovered.result.directory,'workspace/outputs/new');assert.equal(recovered.result.results.length,1);
-const history=require('../app/edit-history-store'),folder=fs.mkdtempSync(path.join(os.tmpdir(),'outpaint-history-'));
+const history=require('../apps/local-api/repositories/edit-history-store'),folder=fs.mkdtempSync(path.join(os.tmpdir(),'outpaint-history-'));
 try{
  const file=path.join(folder,'history.json');
  history.append(file,{sourceId:'sample.png',childId:'uploads/expanded.png',result:'/outputs/outpaint/result_seed_42.png',task:'outpaint'});

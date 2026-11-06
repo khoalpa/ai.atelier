@@ -12,7 +12,7 @@ from PIL import Image
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
-from vton_pilot import file_hash, load_dataset, masked_mae
+from services.ai.features.tryon.pilot import file_hash, load_dataset, masked_mae
 
 
 def require(condition,message):

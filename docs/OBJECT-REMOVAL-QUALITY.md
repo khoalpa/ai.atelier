@@ -1,6 +1,6 @@
 # Kiểm chứng chất lượng xóa vật thể
 
-Luồng phục hồi nền dùng `object_removal.py`. Các thay đổi tập trung vào việc xóa vật thể thông thường và giữ nguyên phần ảnh ngoài vùng được phép chỉnh sửa.
+Luồng phục hồi nền dùng `services/ai/features/object_removal/service.py`. Các thay đổi tập trung vào việc xóa vật thể thông thường và giữ nguyên phần ảnh ngoài vùng được phép chỉnh sửa.
 
 ## Xử lý ảnh
 

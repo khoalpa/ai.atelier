@@ -1,6 +1,6 @@
 """AI Atelier: imaging.mask_workflows."""
 from PIL import Image, ImageFilter, ImageOps
-from tryon_geometry import fit_geometry, fit_image, restore_image, inward_blend, target_attributes, target_coverage
+from services.ai.features.tryon.geometry import fit_geometry, fit_image, restore_image, inward_blend, target_attributes, target_coverage
 import cv2
 import numpy as np
 from services.ai.imaging.blending import exclude_protected_pixels, mask_strength_policy

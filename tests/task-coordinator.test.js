@@ -1,6 +1,6 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),os=require('node:os');
-const {createQueueStore}=require('../app/work-queue-store'),{createRunner}=require('../app/work-queue-runner'),{createTaskCoordinator}=require('../apps/local-api/task-coordinator'),{tasks}=require('../packages/contracts/jobs'),metadata=require('../packages/storage/metadata');
+const {createQueueStore}=require('../apps/local-api/repositories/work-queue-store'),{createRunner}=require('../apps/local-api/queue/work-queue-runner'),{createTaskCoordinator}=require('../apps/local-api/task-coordinator'),{tasks}=require('../packages/contracts/jobs'),metadata=require('../packages/storage/metadata');
 async function fixture(run){const root=fs.mkdtempSync(path.join(os.tmpdir(),'atelier-coordinator-'));let runner;try{
  metadata.migrate(path.join(root,'workspace'));const store=createQueueStore(root),calls=[];
  const ai=async(route,body)=>{calls.push({route,body});return route==='/job-status'?{status:'unknown'}:{ok:true,results:[{file:'saved.png'}],jobId:body.jobId};};

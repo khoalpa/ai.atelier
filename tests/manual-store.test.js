@@ -1,5 +1,5 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs/promises'),os=require('node:os'),path=require('node:path'),{execFile}=require('node:child_process'),{promisify}=require('node:util');
-const C=require('../app/public/manual-core'),{createStore}=require('../app/manual-store'),exec=promisify(execFile),ROOT=path.resolve(__dirname,'..');
+const C=require('../app/public/manual-core'),{createStore}=require('../apps/local-api/repositories/manual-store'),exec=promisify(execFile),ROOT=path.resolve(__dirname,'..');
 test('manual projects validate assets, keep immutable revisions, reject stale writes, and publish exact exports',async()=>{
   const root=await fs.mkdtemp(path.join(os.tmpdir(),'atelier-manual-'));const store=createStore(root,{python:path.join(ROOT,'.venv-sam2','Scripts','python.exe'),script:path.join(ROOT,'scripts','manual-image-io.py')});
   try{

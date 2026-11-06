@@ -10,7 +10,7 @@ tree = ast.parse(read_source(root / 'ai_service.py', encoding='utf-8'))
 names = {'build_inpaint_instruction', 'build_inpaint_negative_prompt', 'resolve_inpaint_prompts'}
 nodes = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name in names]
 nodes += [n for n in tree.body if isinstance(n, ast.Assign) and any(isinstance(t, ast.Name) and t.id == 'INPAINT_TARGETS' for t in n.targets)]
-from prompt_catalog import prompt_text, prompt_template
+from services.ai.prompting.catalog import prompt_text, prompt_template
 scope = {'ROOT': root, 'prompt_text': prompt_text, 'prompt_template': prompt_template}
 exec(compile(ast.Module(body=nodes, type_ignores=[]), '<prompts>', 'exec'), scope)
 resolve = scope['resolve_inpaint_prompts']

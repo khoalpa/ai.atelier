@@ -4,7 +4,7 @@ const root=path.resolve(__dirname,'..');
 if(!process.env.QUALITY_FIXTURE_ROOT)throw new Error('Set QUALITY_FIXTURE_ROOT to an isolated replay directory.');
 const fixture=path.resolve(process.env.QUALITY_FIXTURE_ROOT);
 if(!fs.existsSync(path.join(fixture,'workspace/quality-learning/state.sqlite3')))throw new Error('Missing replay fixture');
-const service=require('../app/quality-service').createQualityService(fixture,{python:path.join(root,'.venv-sam2/Scripts/python.exe'),workerPath:path.join(root,'quality_learning.py')});
+const service=require('../apps/local-api/infrastructure/quality-service').createQualityService(fixture,{python:path.join(root,'.venv-sam2/Scripts/python.exe')});
 process.once('exit',()=>service.stop());
 http.createServer(async(req,res)=>{
   const url=new URL(req.url,'http://127.0.0.1');

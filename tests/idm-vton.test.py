@@ -9,7 +9,7 @@ import numpy as np
 from PIL import Image
 root=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(root))
-from idm_vton_runtime import canvas_size, description_for, negative_description_for, generate
+from services.ai.features.tryon.idm_runtime import canvas_size, description_for, negative_description_for, generate
 
 assert canvas_size(512)==(384,512)
 assert canvas_size(960)==(720,960)

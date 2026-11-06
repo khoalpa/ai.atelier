@@ -3,7 +3,7 @@ from services.ai.runtime.tracing import trace_generation
 from PIL import Image, ImageFilter, ImageOps
 from datetime import datetime, timezone
 from pathlib import Path
-from prompt_catalog import prompt_text, prompt_template, read_catalog, task_prompt
+from services.ai.prompting.catalog import prompt_text, prompt_template, read_catalog, task_prompt
 import cv2
 import json
 import numpy as np
@@ -125,12 +125,12 @@ def outpaint_semantics(source, manual=None):
 
 @trace_generation
 def outpaint(body: dict) -> dict:
-    from outpainting import (prepare_canvas, prepare_inference, composite_canvas, integer, detail_regions,
+    from services.ai.features.outpaint.service import (prepare_canvas, prepare_inference, composite_canvas, integer, detail_regions,
                             PatchAccumulator, seam_band, semantic_seam_masks, repair_regions,
                             multiband_background, restore_source_core, seam_metrics, feather_seam_result,
                             preserve_fabric_texture, equalize_background_seams,
                             material_detail_masks, finish_materials, background_reference_mask)
-    from outpaint_quality import (choose_refinement, exclude_source, tile_mask, load_layout,
+    from services.ai.features.outpaint.quality import (choose_refinement, exclude_source, tile_mask, load_layout,
                                   source_fingerprint, PromptEmbeddingCache)
     from PIL import ImageOps
     started = time.perf_counter()
@@ -171,7 +171,7 @@ def outpaint(body: dict) -> dict:
     if architecture not in ("sd3", "sd35", "sdxl", "sd15", "sd2", "flux", "qwen-image-controlnet-inpaint"):
         raise ValueError("Model chưa hỗ trợ Outpainting")
     if architecture=='flux':
-        from prompt_limits import split_flux_prompts
+        from services.ai.prompting.limits import split_flux_prompts
     profile = resolved_inpaint_profile(entry, architecture)
     if "steps" not in body:
         steps = int(profile.get("steps", 50 if architecture == "flux" else 30))
@@ -284,7 +284,7 @@ def outpaint(body: dict) -> dict:
         stage_prompts[key] = text
     # Validate all requested passes before generating a layout, including the
     # later finish of a layout-only request. Never silently discard user text.
-    from prompt_limits import validate_prompt_limits
+    from services.ai.prompting.limits import validate_prompt_limits
     for key, text in {'outpaint': prompt, **stage_prompts}.items():
         inputs = {'prompt': text}
         if supports_negative: inputs['negative_prompt'] = negative
@@ -360,7 +360,7 @@ def outpaint(body: dict) -> dict:
             else:
                 kwargs["prompt_2"] = prompt
                 if architecture == "flux":
-                    from prompt_limits import split_flux_prompts
+                    from services.ai.prompting.limits import split_flux_prompts
                     text_inputs, _ = split_flux_prompts(pipe, prompt)
                     kwargs.update(text_inputs)
             if saved_layout is None:
@@ -494,7 +494,7 @@ def outpaint(body: dict) -> dict:
             update_job(job_id, stage="inpaint-blending")
             continuity_info={'applied':False,'reason':'disabled'}
             if background_continuity and run_mode!='layout':
-                from outpainting import continue_background_texture
+                from services.ai.features.outpaint.service import continue_background_texture
                 continued,continuity_info=continue_background_texture(source,result,geometry,foreground,birefnet_mask(result))
                 if continuity_info['applied']:
                     continued.save(run_dir/f'background_continuity_candidate_seed_{run_seed}.png')
@@ -506,7 +506,7 @@ def outpaint(body: dict) -> dict:
             original_mae = float(np.abs(np.asarray(region, dtype=np.int16) - np.asarray(source, dtype=np.int16)).mean())
             filename = f"result_seed_{run_seed}.png"
             result.save(run_dir / filename)
-            from outpaint_quality import final_seam_review
+            from services.ai.features.outpaint.quality import final_seam_review
             final_review = final_seam_review(result, geometry)
             saved = dict(seed=run_seed, file=str((run_dir / filename).relative_to(ROOT)), originalRegionMAE=original_mae,
                          backgroundContinuity=continuity_info,

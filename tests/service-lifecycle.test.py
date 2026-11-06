@@ -1,7 +1,7 @@
 import sys,unittest
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from service_lifecycle import ServiceLifecycle
+from services.ai.runtime.service_lifecycle import ServiceLifecycle
 class Tests(unittest.TestCase):
     def test_busy_service_cannot_be_reserved(self):
         life=ServiceLifecycle()

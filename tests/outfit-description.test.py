@@ -8,7 +8,7 @@ tree = ast.parse(read_source(root / 'ai_service.py', encoding='utf-8'))
 node = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'resolve_inpaint_prompts')
 import sys
 sys.path.insert(0, str(root))
-from prompt_catalog import task_prompt
+from services.ai.prompting.catalog import task_prompt
 scope = {'task_prompt': task_prompt}
 exec(compile(ast.Module(body=[node], type_ignores=[]), '<prompt>', 'exec'), scope)
 resolve = scope['resolve_inpaint_prompts']

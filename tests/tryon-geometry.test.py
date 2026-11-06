@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image,ImageDraw
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from tryon_geometry import fit_geometry,fit_image,restore_image,inward_blend
+from services.ai.features.tryon.geometry import fit_geometry,fit_image,restore_image,inward_blend
 
 for size in [(400,200),(200,400),(384,512),(120,120)]:
     image=Image.new('RGB',size,'white')

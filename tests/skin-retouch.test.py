@@ -16,8 +16,8 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import image_enhancement as enhancement
-import skin_retouch as skin
+import services.ai.features.enhancement.service as enhancement
+import services.ai.features.skin.retouch as skin
 
 
 def encode(image):

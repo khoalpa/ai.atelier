@@ -5,7 +5,7 @@ const controls={accessoryPreset:{value:'shirt'},garmentCategory:{value:'overall'
 const requests=[],displayed=[];
 let mutate=null;
 const context={current:{id:'characters/c001.png'},studioMode:'inpaint',$:id=>controls[id],setMessage(){},binaryMaskDataUrl:()=>'',displayMask:(mask)=>displayed.push(mask),displayProtectedMask(){},segmentWithAi:async()=>requests.push('generic'),fetch:async(_,opts)=>{const body=JSON.parse(opts.body);requests.push(body);if(mutate)mutate();return {ok:true,json:async()=>({ok:true,category:body.category,mask:'mask',accepted:true,coverage:.1})}}};
-context.window={ATELIER_PROMPTS:require('../app/prompt-store').readCatalog()};
+context.window={ATELIER_PROMPTS:require('../apps/local-api/domain/catalog/prompt-store').readCatalog()};
 vm.createContext(context);vm.runInContext(require('./helpers/source').read('app/public/outfit-workflow.js','utf8'),context);vm.runInContext(code,context);
 (async()=>{
  for(const [region,category] of Object.entries({shirt:'upper_body',pants:'lower_body',outfit:'overall'})){

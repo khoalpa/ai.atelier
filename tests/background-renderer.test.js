@@ -1,5 +1,5 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs/promises'),path=require('node:path'),os=require('node:os'),http=require('node:http'),{execFile}=require('node:child_process'),{promisify}=require('node:util');
-const {createRenderer}=require('../app/background-renderer'),{createStore}=require('../app/manual-store'),{createQueueStore}=require('../app/work-queue-store'),{createRunner}=require('../app/work-queue-runner'),C=require('../app/public/manual-core');
+const {createRenderer}=require('../apps/local-api/infrastructure/background-renderer'),{createStore}=require('../apps/local-api/repositories/manual-store'),{createQueueStore}=require('../apps/local-api/repositories/work-queue-store'),{createRunner}=require('../apps/local-api/queue/work-queue-runner'),C=require('../app/public/manual-core');
 const ROOT=path.resolve(__dirname,'..'),execute=promisify(execFile),python=path.join(ROOT,'.venv-sam2/Scripts/python.exe'),delay=ms=>new Promise(r=>setTimeout(r,ms));
 test('real background renderer preserves pixels and recovers committed exports without duplicates',{timeout:90000},async()=>{
  const root=await fs.mkdtemp(path.join(os.tmpdir(),'atelier-render-'));let renderer,runner,server;

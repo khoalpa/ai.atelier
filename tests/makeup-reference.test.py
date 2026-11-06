@@ -12,15 +12,15 @@ from PIL import Image, ImageDraw
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
-import makeup as m
-import makeup_reference as reference
+import services.ai.features.makeup.service as m
+import services.ai.features.makeup.reference as reference
 
 
 class ReferenceTests(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.root=Path(self.tmp.name)
         (self.root/'app').mkdir();(self.root/'workspace').mkdir(exist_ok=True);(self.root/'workspace/prompts.json').write_bytes((ROOT/'workspace/prompts.json').read_bytes())
-        self.source=Image.open(__import__('sample_catalog').resolve_sample(ROOT, 'outpaint-benchmark/portrait-left/reference.png')).convert('RGB')
+        self.source=Image.open(__import__('services.ai.catalog.samples',fromlist=['resolve_sample']).resolve_sample(ROOT, 'outpaint-benchmark/portrait-left/reference.png')).convert('RGB')
         self.points=np.array(json.loads((ROOT/'tests/fixtures/makeup-landmarks.json').read_text()),np.float32)
         self.path=self.root/'reference.png';self.source.save(self.path)
         self.env=dict(ROOT=self.root,safe_sample=lambda _:self.path,makeup_landmarks=lambda *args:[self.points],

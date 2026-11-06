@@ -4,8 +4,8 @@ from PIL import Image, ImageFilter, ImageOps
 from datetime import datetime, timezone
 from pathlib import Path
 from services.ai.runtime import metadata
-from tryon_geometry import fit_geometry, fit_image, restore_image, inward_blend, target_attributes, target_coverage
-from tryon_quality import pose_consistency, gate_reasons, candidate_key, repair_is_better, quality_gate
+from services.ai.features.tryon.geometry import fit_geometry, fit_image, restore_image, inward_blend, target_attributes, target_coverage
+from services.ai.features.tryon.quality import pose_consistency, gate_reasons, candidate_key, repair_is_better, quality_gate
 import json
 import numpy as np
 import shutil
@@ -62,7 +62,7 @@ def tryon(body: dict) -> dict:
     garment_description = None
     garment_negative_description = None
     if model_id == "idm-vton":
-        from idm_vton_runtime import description_for, negative_description_for
+        from services.ai.features.tryon.idm_runtime import description_for, negative_description_for
         garment_description = description_for(category, body.get("garmentDescription") or None)
         garment_negative_description = negative_description_for(body.get("garmentNegativeDescription"))
     auto_mask_score = None
@@ -120,7 +120,7 @@ def tryon(body: dict) -> dict:
     blend_mask = exclude_protected_pixels(blend_mask, protected)
 
     max_side = max(512, min(1024, int(body.get("maxSide", 1024))))
-    from idm_vton_runtime import canvas_size
+    from services.ai.features.tryon.idm_runtime import canvas_size
     # Both published try-on models use a 3:4 canvas. Padding, not stretching,
     # places the selected person and reference in this coordinate system.
     width, height = canvas_size(max_side)
@@ -155,7 +155,7 @@ def tryon(body: dict) -> dict:
     update_job(job_id, stage="loading-model", _event={"type":"model.loading", "message":"Đang nạp model tạo ảnh"})
     pose_image = None
     if model_id == "idm-vton":
-        from idm_vton_runtime import densepose_image
+        from services.ai.features.tryon.idm_runtime import densepose_image
         update_job(job_id, stage="densepose", modelId=model_id)
         pose_image = densepose_image(fit_image(source, fit_geometry(source.size, (width,height))), DENSEPOSE_SCRIPT)
     pipe = load_tryon_pipe(model_id)
@@ -225,7 +225,7 @@ def tryon(body: dict) -> dict:
         update_job(job_id, stage=prefix, seed=run_seed)
         generator = torch.Generator(device=device).manual_seed(run_seed)
         if model_id == "idm-vton":
-            from idm_vton_runtime import generate
+            from services.ai.features.tryon.idm_runtime import generate
             def on_idm_step(pipeline, step_index, timestep, callback_kwargs):
                 ensure_job_active(job_id)
                 update_job(job_id, stage=prefix, step=step_index + 1, totalSteps=run_steps, modelId=model_id)
@@ -237,7 +237,7 @@ def tryon(body: dict) -> dict:
                                  guidance_scale=guidance, height=run_height, width=run_width,
                                  generator=generator, callback_on_step_end=on_idm_step)
         else:
-            from catvton_inputs import prepare_inputs
+            from services.ai.features.tryon.catvton_inputs import prepare_inputs
             model_source, model_mask = prepare_inputs(source, hard_mask, (run_width, run_height))
             generated = traced_pipeline_call(pipe,
                 image=model_source, condition_image=garment, mask=model_mask,

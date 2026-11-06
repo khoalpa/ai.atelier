@@ -8,7 +8,7 @@ from pathlib import Path
 from http.client import HTTPConnection
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from local_request_security import trusted_request
+from services.ai.security.local_request import trusted_request
 
 calls = []
 

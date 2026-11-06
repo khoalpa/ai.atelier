@@ -16,7 +16,7 @@ def main():
     from accelerate import load_checkpoint_in_model
     from safetensors import safe_open
     import ai_service as ai
-    from vton_pilot import file_hash
+    from services.ai.features.tryon.pilot import file_hash
     ai.device='cpu'
     pipe=ai.load_tryon_pipe('catvton')
     checkpoint=run/'attention/model.safetensors'

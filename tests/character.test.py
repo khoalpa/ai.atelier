@@ -8,8 +8,8 @@ from unittest.mock import Mock
 import numpy as np
 from PIL import Image, ImageDraw
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
-import character as c
-import character_geometry as g
+import services.ai.features.character.service as c
+import services.ai.features.character.geometry as g
 
 
 def skeleton(offset=0):
@@ -195,7 +195,7 @@ class CharacterTests(unittest.TestCase):
         self.assertFalse(diffusion[y,x])
 
     def test_hand_controls_validate_and_bind_to_plan(self):
-        from character_controls import hand_targets,person
+        from services.ai.features.character.controls import hand_targets,person
         for bad in [{'2':{}},{'0':{'hands':{'middle':{}}}},{'0':{'hands':{'left':{'fingers':[0]}}}},{'0':{'hands':{'right':{'rotation':91}}}},{'0':{'expression':'evil'}}]:
             with self.assertRaises(ValueError):g.options({**self.body,'perPerson':bad})
         body={**self.body,'mode':'body','pose':'wave','expression':'keep','perPerson':{'0':{'hands':{'right':{'gesture':'custom','fingers':[0,0,1,1,1]}}}}}
@@ -204,24 +204,24 @@ class CharacterTests(unittest.TestCase):
         self.assertNotEqual(plan['planHash'],c.plan(body,self.env)['planHash'])
 
     def test_contact_presets_emit_hand_geometry(self):
-        from character_controls import hand_targets,person
+        from services.ai.features.character.controls import hand_targets,person
         for pose in ('hand_chest','touch_hair','hands_hips','crossed_arms','show_product'):
             settings=g.options({**self.body,'mode':'body','pose':pose,'expression':'keep'})
             target=g.preset_joints(skeleton(),pose,settings['handSide'])
             self.assertIn('right',hand_targets(target,person(settings,0),(400,400)))
 
     def test_clip_body_pipeline_is_permanently_disabled(self):
-        import character_runtime as runtime
+        import services.ai.features.character.runtime as runtime
         with self.assertRaisesRegex(RuntimeError,'CLIP'):
             list(runtime.body_candidates(self.source,None,None,None,None,{'pipeline':'sd35-pose-hybrid'},self.env,lambda:None,lambda *a:None))
 
     def test_hand_at_image_boundary_is_rejected_instead_of_clipped(self):
-        from character_controls import hand_targets
+        from services.ai.features.character.controls import hand_targets
         p=skeleton();p[9]=[.5,.005,1];p[7]=[.5,.2,1]
         with self.assertRaisesRegex(ValueError,'Bàn tay vượt'):hand_targets(p,dict(pose='wave',handSide='left'),(400,400))
 
     def test_retry_single_variant_retains_offset_and_original_files(self):
-        from character_workflow import regenerate
+        from services.ai.features.character.workflow import regenerate
         result=self.run_case();item=result['results'][1];path=self.root/item['file'];before=path.read_bytes()
         replay=regenerate({'file':item['file'],'jobId':'retry'},self.env)
         self.assertEqual(len(replay['results']),1);self.assertEqual(replay['results'][0]['variantIndex'],1)
@@ -232,7 +232,7 @@ class CharacterTests(unittest.TestCase):
         with self.assertRaises(Exception):regenerate({'file':item['file']},self.env)
 
     def test_garment_recovery_and_boundary_preserve_protected_pixels(self):
-        import character_quality as quality
+        import services.ai.features.character.quality as quality
         p=skeleton();people=[dict(box=[.1,.05,.5,.95],keypoints=p.tolist())]
         source=Image.new('RGB',(400,400),(40,100,190));generated=Image.new('RGB',(400,400),(50,40,40))
         mask=Image.new('L',(400,400));ImageDraw.Draw(mask).rectangle((50,90,180,200),fill=255)
@@ -243,7 +243,7 @@ class CharacterTests(unittest.TestCase):
         matched=quality.match_boundary(source,result,mask);np.testing.assert_array_equal(np.array(matched)[~allowed],np.array(source)[~allowed])
 
     def test_exposed_internal_structure_is_rejected(self):
-        import character_quality as quality
+        import services.ai.features.character.quality as quality
         p=skeleton();people=[dict(keypoints=p.tolist())]
         source=Image.new('RGB',(400,400),(170,130,100));broken=source.copy();draw=ImageDraw.Draw(broken)
         for y in range(125,205,9):draw.line((112,y,150,y),fill='white',width=3)
@@ -252,7 +252,7 @@ class CharacterTests(unittest.TestCase):
         self.assertTrue(quality.anatomy_artifact_review(source,source,people,{0:p})['passed'])
 
     def test_dwpose_extremity_gate_reports_finger_and_foot_failures(self):
-        import character_quality as quality
+        import services.ai.features.character.quality as quality
         target=skeleton();whole=np.ones((134,3),dtype=float);whole[:,:2]=.5
         person={'box':[20,10,180,390],'handKeypoints':{'left':whole[92:113].tolist(),'right':whole[113:134].tolist()},'footKeypoints':whole[18:24].tolist()}
         passed=quality.extremity_review([person],{0:target},(400,400),'strict')

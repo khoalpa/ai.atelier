@@ -7,8 +7,8 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from quality_learning import packed, now
-from quality_report import build_report, retention_reason, TASK_ORDER
+from services.ai.quality.learning import packed, now
+from services.ai.quality.report import build_report, retention_reason, TASK_ORDER
 
 spec = importlib.util.spec_from_file_location('quality_fixtures', ROOT / 'tests/quality-learning.test.py')
 fixtures = importlib.util.module_from_spec(spec)

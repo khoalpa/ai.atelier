@@ -13,14 +13,14 @@ from PIL import Image, ImageDraw
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
-import makeup as m
+import services.ai.features.makeup.service as m
 
 
 class MakeupTests(unittest.TestCase):
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory();self.root=Path(self.temp.name)
         (self.root/'app').mkdir();(self.root/'workspace').mkdir(exist_ok=True);(self.root/'workspace/prompts.json').write_bytes((ROOT/'workspace/prompts.json').read_bytes())
-        self.image=Image.open(__import__('sample_catalog').resolve_sample(ROOT, 'outpaint-benchmark/portrait-left/reference.png')).convert('RGB')
+        self.image=Image.open(__import__('services.ai.catalog.samples',fromlist=['resolve_sample']).resolve_sample(ROOT, 'outpaint-benchmark/portrait-left/reference.png')).convert('RGB')
         self.path=self.root/'source.png';self.image.save(self.path)
         self.points=np.array(json.loads((ROOT/'tests/fixtures/makeup-landmarks.json').read_text()),np.float32)
         self.events=[]

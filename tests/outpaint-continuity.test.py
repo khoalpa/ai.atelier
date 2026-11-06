@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from outpainting import prepare_canvas,continue_background_texture
+from services.ai.features.outpaint.service import prepare_canvas,continue_background_texture
 
 rng=np.random.default_rng(427)
 source=Image.fromarray(rng.integers(105,160,(220,240,3),dtype=np.uint8))

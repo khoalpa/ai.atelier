@@ -12,7 +12,7 @@ const state={taskType:'tryon',model:'catvton',width:512,height:512,totalWorkStep
 assert(Number.isNaN(guide.historyEta([],state)));
 const records=[40,50,90].map(seconds=>({...state,seconds}));assert(Math.abs(guide.historyEta(records,state)-40)<1);
 assert(Number.isNaN(guide.historyEta(records,{...state,model:'other'})));
-const store=require('../app/edit-history-store'),directory=fs.mkdtempSync(path.join(os.tmpdir(),'atelier-history-')),file=path.join(directory,'history.json');
+const store=require('../apps/local-api/repositories/edit-history-store'),directory=fs.mkdtempSync(path.join(os.tmpdir(),'atelier-history-')),file=path.join(directory,'history.json');
 try{
   assert.equal(store.read(file).length,0);
   store.append(file,{sourceId:'original',childId:'child',result:'/outputs/run/seed_1.png',task:'tryon'});

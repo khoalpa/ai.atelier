@@ -1,5 +1,5 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs/promises'),os=require('node:os'),path=require('node:path');
-const {createCatalog,testAsset}=require('../app/asset-catalog');
+const {createCatalog,testAsset}=require('../apps/local-api/repositories/asset-catalog');
 test('search sees older assets, paginates safely, keeps favorite albums and hides fixtures',async()=>{
  const root=await fs.mkdtemp(path.join(os.tmpdir(),'atelier-catalog-'));try{const catalog=createCatalog(root),items=Array.from({length:260},(_,i)=>({id:'output:'+i,name:'Ảnh '+i,url:'/outputs/'+i+'.png',sourceType:'result',createdAt:new Date(2020,0,i+1).toISOString()}));items.push({id:'object-removal-benchmark/mask.png',name:'mask.png',sourceType:'sample'});
  assert.equal((await catalog.query(items)).total,260);assert.equal((await catalog.query(items,{page:6})).assets.length,20);assert.equal((await catalog.query(items,{q:'Ảnh 0'})).assets[0].id,'output:0');assert.equal((await catalog.query(items,{filter:'tests'})).total,1);

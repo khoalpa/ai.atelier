@@ -11,7 +11,7 @@ import numpy as np
 from PIL import Image, ImageFilter
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from quality_learning import QualityStore, compare, digest, finish, now, packed
+from services.ai.quality.learning import QualityStore, compare, digest, finish, now, packed
 
 
 class QualityTests(unittest.TestCase):

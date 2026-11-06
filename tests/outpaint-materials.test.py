@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from outpainting import material_detail_masks,finish_materials
+from services.ai.features.outpaint.service import material_detail_masks,finish_materials
 
 geometry=dict(left=30,top=0,right=0,bottom=20,sourceWidth=100,sourceHeight=100,preserveOriginal=False)
 shape=(120,130)

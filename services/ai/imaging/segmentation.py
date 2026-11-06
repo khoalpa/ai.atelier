@@ -76,7 +76,7 @@ def safe_sample(sample_id: str) -> Path:
         base = (ROOT / "workspace" / "uploads").resolve()
         relative = sample_id.removeprefix("uploads/")
     else:
-        from sample_catalog import resolve_sample
+        from services.ai.catalog.samples import resolve_sample
         return resolve_sample(SAMPLES.parent, sample_id)
     target = (base / relative).resolve()
     if base not in target.parents or not target.is_file():
@@ -454,7 +454,7 @@ def automatic_protected_detail_mask(source: Image.Image, person_box, keypoints=N
     # Dark collars/cuffs can satisfy the hair/skin colour tests. Keeping those
     # pixels feeds old fabric back into the model and copies it over the result.
     # Only a confident garment label may unlock them; the head core stays locked.
-    import character_quality
+    from services.ai.features.character import quality as character_quality
     if character_quality.available(ROOT):
         labels, confident = character_quality.parse(source, ROOT)
         fabric = np.isin(labels, [4, 7]) & confident & (head_core == 0)

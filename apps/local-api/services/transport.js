@@ -1,9 +1,6 @@
 'use strict';
-const requireFromApp = require('node:module').createRequire(require('node:path').resolve(__dirname,'../../../app/server.js'));
 // Dependencies: AI_PORT, HOST, MIME, fs, http, path
 module.exports = function createTransport(deps) {
-const require = requireFromApp;
-const __dirname = require('node:path').join(deps.ROOT,'app');
 function send(res, status, body, type = 'application/json; charset=utf-8') {
   res.writeHead(status, {
     'Content-Type': type,
@@ -85,7 +82,7 @@ async function proxyToAi(req, res, endpoint = '/segment', maxBytes = 2 * 1024 * 
       if(endpoint==='/job-status')result=await deps.taskCoordinator.status(body.jobId);
       else if(endpoint==='/cancel-job')result=await deps.taskCoordinator.cancel(body.jobId);
       else if(endpoint==='/resume-job')result=await deps.taskCoordinator.resume(body.jobId,()=>closed);
-      else if(require('../packages/contracts/jobs').forRoute(endpoint)){
+      else if(require('../../../packages/contracts/jobs').forRoute(endpoint)){
         const submitted=await deps.taskCoordinator.enqueue(endpoint,body);
         res.setHeader('X-Atelier-Job-Id',submitted.jobId);
         result=await deps.taskCoordinator.wait(submitted.queueId,()=>closed);

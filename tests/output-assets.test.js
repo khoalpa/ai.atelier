@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict'),fs=require('node:fs/promises'),os=require('node:os'),path=require('node:path');
-const {listOutputAssets}=require('../app/output-assets');
+const {listOutputAssets}=require('../apps/local-api/services/output-assets');
 (async()=>{
   const dir=await fs.mkdtemp(path.join(os.tmpdir(),'atelier-assets-'));
   try {

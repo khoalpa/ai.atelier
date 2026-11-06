@@ -1,6 +1,6 @@
-const assert=require('node:assert/strict'),catalog=require('../app/prompt-store').readCatalog();
+const assert=require('node:assert/strict'),catalog=require('../apps/local-api/domain/catalog/prompt-store').readCatalog();
 let body,calls=0;
-const api=require('../apps/local-api/services/prompts')({ROOT:require('node:path').resolve(__dirname,'..'),readCatalog:()=>catalog,renderTemplate:require('../app/prompt-store').renderTemplate,parseJson:async()=>body,send:(_res,status,text)=>({status,data:JSON.parse(text)}),LLM_MODEL:'vision-test',PROMPT_LLM_MODEL:'text-test',callAiJson:async()=>({withinLimits:true})});
+const api=require('../apps/local-api/services/prompts')({ROOT:require('node:path').resolve(__dirname,'..'),readCatalog:()=>catalog,renderTemplate:require('../apps/local-api/domain/catalog/prompt-store').renderTemplate,parseJson:async()=>body,send:(_res,status,text)=>({status,data:JSON.parse(text)}),LLM_MODEL:'vision-test',PROMPT_LLM_MODEL:'text-test',callAiJson:async()=>({withinLimits:true})});
 let lastPayload;
 api.requestLocalLlm=async(payload)=>{calls++;lastPayload=payload;return {message:{content:JSON.stringify({suggestion:'A changed subject',components:{subject:'Wrong identity',materials:'fine fabric'},warnings:[],changes:[]})}};};
 (async()=>{

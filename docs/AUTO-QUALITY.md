@@ -64,8 +64,8 @@ Phản hồi bị rút lại hoặc kết quả xấu hơn có thể làm cấu 
 
 ## Lưu trữ và điểm tích hợp
 
-- `quality_learning.py`: theo dõi, đánh giá, hoàn thiện có mask, quản lý phản hồi và điều kiện học.
-- `quality_report.py`: tổng hợp toàn bộ lịch sử, thời gian, lý do giữ ảnh gốc và phản hồi hiện tại.
+- `services/ai/quality/learning.py`: theo dõi, đánh giá, hoàn thiện có mask, quản lý phản hồi và điều kiện học.
+- `services/ai/quality/report.py`: tổng hợp toàn bộ lịch sử, thời gian, lý do giữ ảnh gốc và phản hồi hiện tại.
 - `app/quality-service.js`: tiến trình CPU và giao tiếp với máy chủ web; tự khởi động lại nếu worker dừng.
 - `app/public/quality-learning.js`, `quality-learning.css`: cài đặt, so sánh, phản hồi và khôi phục.
 - `workspace/quality-learning/state.sqlite3`: cấu hình, kết quả, phản hồi, phiên bản và nhật ký. Các lần ghi dùng giao dịch; cài đặt có kiểm tra phiên bản để tránh ghi đè từ cửa sổ cũ.

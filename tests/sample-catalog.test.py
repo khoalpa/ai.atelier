@@ -4,7 +4,7 @@ import sys
 import tempfile
 import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from sample_catalog import resolve_sample, collection_path, sample_ids
+from services.ai.catalog.samples import resolve_sample, collection_path, sample_ids
 
 
 class Samples(unittest.TestCase):

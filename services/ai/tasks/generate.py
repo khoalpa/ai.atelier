@@ -2,7 +2,7 @@ from services.ai.runtime.tracing import trace_generation
 """AI Atelier: tasks.generate."""
 from PIL import Image, ImageFilter, ImageOps
 from datetime import datetime, timezone
-from prompt_catalog import prompt_text, prompt_template, read_catalog, task_prompt, prompt_value
+from services.ai.prompting.catalog import prompt_text, prompt_template, read_catalog, task_prompt, prompt_value
 import gc
 import hashlib
 import json
@@ -55,7 +55,7 @@ def chroma_smoke(body: dict) -> dict:
 
 
 def new_image_plan(body):
-    from new_image import plan
+    from services.ai.features.generation.new_image import plan
     model_id = str(body.get('modelId') or 'flux-2-klein-4b')
     path = CHROMA_ROOT if model_id == 'flux-chroma1-hd' else text_to_image_model_path(model_id)
     return plan(body, path, model_id)
@@ -63,7 +63,7 @@ def new_image_plan(body):
 
 @trace_generation
 def chroma_generate(body: dict) -> dict:
-    from new_image import generate
+    from services.ai.features.generation.new_image import generate
     try:
         return generate(body, task_context())
     except torch.cuda.OutOfMemoryError as error:
@@ -88,7 +88,7 @@ def qwen_depth_generate(body: dict) -> dict:
     scale = min(max_side / max(source.size), 1.0)
     size = (max(64, round(source.width * scale / 64) * 64), max(64, round(source.height * scale / 64) * 64))
     resized = source.resize(size, Image.Resampling.LANCZOS)
-    from sd35_depth_control import depth_image as estimate_depth, required_paths
+    from services.ai.models.sd35_depth_control import depth_image as estimate_depth, required_paths
     depth_path = required_paths(ROOT, LOCAL_CONFIG)["depth"]
     depth = estimate_depth(resized, depth_path, invert=False)
     pipe = load_qwen_depth_pipe()

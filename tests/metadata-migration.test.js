@@ -10,7 +10,7 @@ test('migration verifies original records, keeps rollback copies and is idempote
 }));
 test('invalid JSON never activates a partially migrated store',()=>fixture(async({home,put})=>{const file=put('asset-catalog.json',{});fs.writeFileSync(file,'invalid');assert.throws(()=>metadata.migrate(home));assert(!fs.existsSync(path.join(home,'metadata.sqlite3')));assert.equal(fs.readFileSync(file,'utf8'),'invalid');}));
 test('new queue and manual revisions enumerate from SQLite without legacy files',()=>fixture(async({root,home,put})=>{
- metadata.migrate(home);const store=require('../app/work-queue-store').createQueueStore(root),q=await store.action({action:'create',kind:'character',items:[{name:'A',payload:{}}]});
+ metadata.migrate(home);const store=require('../apps/local-api/repositories/work-queue-store').createQueueStore(root),q=await store.action({action:'create',kind:'character',items:[{name:'A',payload:{}}]});
  assert.equal((await store.list())[0].id,q.id);assert(!fs.existsSync(path.join(home,'work-queue',q.id+'.json')));
  const id='00000000-0000-0000-0000-000000000001',version=path.join(home,'manual/versions',id,'1.json'),head=path.join(home,'manual/projects',id+'.json');
  metadata.batchWrite([[version,{id,revision:1}],[head,{id,revision:1}]]);assert.deepEqual(metadata.entries(path.dirname(version)),['1.json']);
@@ -18,7 +18,7 @@ test('new queue and manual revisions enumerate from SQLite without legacy files'
 }));
 test('backup and restore preserve migrated records and new records with no JSON mirrors',()=>fixture(async({root,home,put})=>{
  put('asset-catalog.json',{version:1,assets:{},albums:[]});metadata.migrate(home);const file=path.join(home,'asset-catalog.json');metadata.write(file,{version:1,assets:{},albums:['Saved']});
- const store=require('../app/backup-store').createBackupStore(root),saved=await store.create('working');assert(saved.manifest.entries.some(e=>e.path==='workspace/asset-catalog.json'));assert(!saved.manifest.entries.some(e=>e.path==='workspace/metadata.sqlite3'));
+ const store=require('../apps/local-api/infrastructure/backup-store').createBackupStore(root),saved=await store.create('working');assert(saved.manifest.entries.some(e=>e.path==='workspace/asset-catalog.json'));assert(!saved.manifest.entries.some(e=>e.path==='workspace/metadata.sqlite3'));
  metadata.write(file,{version:1,assets:{},albums:['Changed']});metadata.write(path.join(home,'jobs/new.json'),{jobId:'new',status:'completed'});
  const restored=await store.restore(saved.name);assert.deepEqual(metadata.read(file).albums,['Saved']);assert.equal(metadata.read(path.join(home,'jobs/new.json')).status,'completed');assert(restored.safetyBackup);
 }));

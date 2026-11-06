@@ -2,7 +2,7 @@
 from PIL import Image, ImageFilter, ImageOps
 from datetime import datetime, timezone
 from pathlib import Path
-from prompt_catalog import prompt_text, prompt_template, read_catalog, task_prompt
+from services.ai.prompting.catalog import prompt_text, prompt_template, read_catalog, task_prompt
 import hashlib
 import json
 import numpy as np

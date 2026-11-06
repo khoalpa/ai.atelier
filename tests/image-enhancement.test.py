@@ -13,7 +13,7 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import image_enhancement as ie
+import services.ai.features.enhancement.service as ie
 
 
 def encoded(image):
@@ -117,7 +117,7 @@ class EnhancementTests(unittest.TestCase):
             self.assertTrue(((result>0)&(result<255)).all())
             self.assertLessEqual(np.abs(result.astype(int)-self.array).max(),16)
     def test_auto_quality_does_not_reprocess_enhancement(self):
-        import quality_learning
+        from services.ai.quality import learning as quality_learning
         self.assertNotIn('enhance',quality_learning.TASKS)
 
 

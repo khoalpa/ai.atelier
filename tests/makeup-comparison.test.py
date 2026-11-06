@@ -10,15 +10,15 @@ from unittest.mock import Mock
 import numpy as np
 from PIL import Image,ImageDraw
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
-import makeup
-import makeup_comparison as comparison
+from services.ai.features.makeup import service as makeup
+import services.ai.features.makeup.comparison as comparison
 
 
 class ComparisonTests(unittest.TestCase):
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory();self.root=Path(self.temp.name);(self.root/'app').mkdir()
         (self.root/'workspace').mkdir(exist_ok=True);(self.root/'workspace/prompts.json').write_bytes((ROOT/'workspace/prompts.json').read_bytes())
-        self.image=Image.open(__import__('sample_catalog').resolve_sample(ROOT, 'outpaint-benchmark/portrait-left/reference.png')).convert('RGB');self.path=self.root/'source.png';self.image.save(self.path)
+        self.image=Image.open(__import__('services.ai.catalog.samples',fromlist=['resolve_sample']).resolve_sample(ROOT, 'outpaint-benchmark/portrait-left/reference.png')).convert('RGB');self.path=self.root/'source.png';self.image.save(self.path)
         self.points=np.array(json.loads((ROOT/'tests/fixtures/makeup-landmarks.json').read_text()),np.float32)
         masks,_,_=makeup.region_masks(self.points,self.image.size);self.selected=Image.fromarray(np.maximum.reduce([np.asarray(masks[p]) for p in makeup.PARTS]))
         self.protected=Image.new('L',self.image.size);ImageDraw.Draw(self.protected).rectangle((260,380,290,410),fill=255)

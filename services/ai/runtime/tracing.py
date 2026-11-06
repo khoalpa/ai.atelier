@@ -29,7 +29,7 @@ def prompt_history():
 
 
 def traced_pipeline_call(pipe, **kwargs):
-    from encoder_policy import model_policy
+    from services.ai.prompting.encoder_policy import model_policy
     import inspect
     policy=model_policy(pipeline=type(pipe).__name__)
     if policy and policy.get('wrapper') and hasattr(pipe,'prompt_template_encode'):
@@ -42,7 +42,7 @@ def traced_pipeline_call(pipe, **kwargs):
            for name in ('tokenizer', 'tokenizer_2', 'tokenizer_3')):
         raise RuntimeError('Tác vụ dùng token CLIP đã bị loại vĩnh viễn. Hãy dùng pipeline T5.')
     prompt_cache = kwargs.pop('_prompt_cache', None)
-    from prompt_limits import validate_prompt_limits
+    from services.ai.prompting.limits import validate_prompt_limits
     token_budget = validate_prompt_limits(pipe, kwargs)
     context = prompt_trace_context.get()
     if context is not None:

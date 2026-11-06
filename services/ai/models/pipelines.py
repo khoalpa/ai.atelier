@@ -645,7 +645,7 @@ def load_tryon_pipe(model_id="catvton"):
             raise RuntimeError("Thiếu DensePose TorchScript cho IDM-VTON. Chạy scripts/setup-idm-vton.ps1.")
         release_inpaint()
         release_text_to_image()
-        from idm_vton_runtime import load_pipeline
+        from services.ai.features.tryon.idm_runtime import load_pipeline
         model_state.tryon_pipe = load_pipeline(IDMVTON_MODEL, IDMVTON_ROOT, device)
         model_state.tryon_pipe_model_id = model_id
         return model_state.tryon_pipe

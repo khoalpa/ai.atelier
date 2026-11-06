@@ -14,8 +14,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 import ai_service as service
 from PIL import Image
-import outpainting
-from outpainting import prepare_inference
+from services.ai.features.outpaint import service as outpainting
+from services.ai.features.outpaint.service import prepare_inference
 
 parser=argparse.ArgumentParser()
 parser.add_argument('job_id')

@@ -21,7 +21,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from sample_catalog import collection_path, project_path
+from services.ai.catalog.samples import collection_path, project_path
 LEFFA_ROOT = ROOT / "vendor" / "Leffa"
 DATASET = collection_path(ROOT, 'synthetic-paired-vton-20261021')
 INPUT_ROOT = ROOT / "workspace" / "diagnostics" / "synthetic-vton-reconstruction_20261021-final-inputs-v5"
@@ -168,7 +168,7 @@ def save_report(model_name: str, records: list[dict], configuration: dict, load_
 
 def run_idm() -> int:
     import ai_service as ai
-    from idm_vton_runtime import load_pipeline
+    from services.ai.features.tryon.idm_runtime import load_pipeline
 
     if not (IDM_DC / "unet" / "diffusion_pytorch_model.bin").is_file():
         raise RuntimeError("IDM-VTON DressCode checkpoint is missing")

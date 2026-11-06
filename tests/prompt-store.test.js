@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict'),fs=require('fs'),os=require('os'),path=require('path'),vm=require('vm');
-const s=require('../app/prompt-store');
+const s=require('../apps/local-api/domain/catalog/prompt-store');
 const dir=fs.mkdtempSync(path.join(os.tmpdir(),'atelier-catalog-')),file=path.join(dir,'prompts.json');
 fs.copyFileSync(s.FILE,file);
 try{

@@ -1,7 +1,7 @@
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from prompt_limits import validate_prompt_limits, split_flux_prompts
+from services.ai.prompting.limits import validate_prompt_limits, split_flux_prompts
 
 class Tokenizer:
     model_max_length = 77

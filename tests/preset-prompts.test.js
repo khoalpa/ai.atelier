@@ -1,9 +1,9 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert'),path=require('path'),os=require('os');
-const {savePresetPrompt}=require('../app/preset-store');
+const {savePresetPrompt}=require('../apps/local-api/repositories/preset-store');
 const source=require('./helpers/source').read(path.join(__dirname,'../app/public/app.js'),'utf8');
 const temp=fs.mkdtempSync(path.join(os.tmpdir(),'atelier-preset-'));
 const file=path.join(temp,'prompts.json'),backups=path.join(temp,'backups');
-fs.copyFileSync(require('../app/prompt-store').FILE,file);
+fs.copyFileSync(require('../apps/local-api/domain/catalog/prompt-store').FILE,file);
 const catalog=JSON.parse(require('./helpers/source').read(file,'utf8'));
 const store=new Map(),controls={},fields={};
 for(const id of ['inpaintPrompt','maskExpand','maskBlur','inpaintSteps','inpaintStrength','inpaintGuidance','cropPadding','inpaintResolution','inpaintFillMode','inpaintFillModeHint'])controls[id]={value:''};

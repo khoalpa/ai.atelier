@@ -9,9 +9,9 @@ try {
   $python = Join-Path $projectRoot '.venv-sam2\Scripts\python.exe'
   Push-Location $release
   try {
-    & $python -I -c 'import sys; sys.path.insert(0, sys.argv[1]); import ai_service, outpainting, processing_mode_prompts, prompt_limits, local_request_security, sd35_depth_control, vton_pilot; assert ai_service.prompt_text("outpaint.instruction")' $release
+    & $python -I -c 'import sys; sys.path.insert(0, sys.argv[1]); import ai_service; from services.ai.features.outpaint import service; from services.ai.prompting import processing_modes, limits; from services.ai.security import local_request; from services.ai.models import sd35_depth_control; from services.ai.features.tryon import pilot; assert ai_service.prompt_text("outpaint.instruction")' $release
     if ($LASTEXITCODE -ne 0) { throw 'Clean release imports failed' }
-    & node -e 'const c=require("./app/prompt-store").readCatalog();if(!c.components)process.exit(1)'
+    & node -e 'const c=require("./apps/local-api/domain/catalog/prompt-store").readCatalog();if(!c.components)process.exit(1)'
     if ($LASTEXITCODE -ne 0) { throw 'Clean release prompt catalog failed' }
   } finally { Pop-Location }
   $installPath = Join-Path $temporaryRoot 'installed'
@@ -20,10 +20,10 @@ try {
   $config = Get-Content -LiteralPath (Join-Path $installPath 'workspace\config.json') -Raw | ConvertFrom-Json
   if ($config.inpaintModel -ne (Join-Path $temporaryRoot 'custom-model')) { throw 'Reinstall overwrote saved model selection' }
   # Even if a manifest omitted a runtime dependency, verification must reject it.
-  $missingFile = Join-Path $release 'outpainting.py'
+  $missingFile = Join-Path $release 'services\ai\features\outpaint\service.py'
   $manifestPath = Join-Path $release 'release-manifest.json'
   $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
-  $manifest.files = @($manifest.files | Where-Object { $_.path -ne 'outpainting.py' })
+  $manifest.files = @($manifest.files | Where-Object { $_.path -ne 'services/ai/features/outpaint/service.py' })
   $manifest | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $manifestPath -Encoding utf8
   Remove-Item -LiteralPath $missingFile
   $rejected = $false

@@ -7,9 +7,9 @@ from PIL import Image
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 import sys
 sys.path.insert(0, str(ROOT))
-from sample_catalog import resolve_sample
-from object_removal import match_simple_background
-from outpaint_quality import final_seam_review
+from services.ai.catalog.samples import resolve_sample
+from services.ai.features.object_removal.service import match_simple_background
+from services.ai.features.outpaint.quality import final_seam_review
 OUT=ROOT/'workspace/diagnostics/background-quality-2.6';OUT.mkdir(parents=True,exist_ok=True)
 def save(name,value):
     (OUT/name).write_text(json.dumps(value,ensure_ascii=False,indent=2),encoding='utf-8')

@@ -3,7 +3,7 @@ const test=require('node:test'),assert=require('node:assert/strict');
 const fs=require('node:fs'),os=require('node:os'),path=require('node:path');
 const samples=require('../packages/samples/catalog');
 test('explicitly curated synthetic demos are not hidden by filename heuristics',()=>{
- const {testAsset}=require('../app/asset-catalog');
+ const {testAsset}=require('../apps/local-api/repositories/asset-catalog');
  assert.equal(testAsset({id:'synthetic/data.png',sampleRole:'demo'}),false);
  assert.equal(testAsset({id:'synthetic/data.png'}),true);
 });

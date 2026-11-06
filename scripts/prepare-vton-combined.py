@@ -16,7 +16,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from vton_pilot import file_hash
+from services.ai.features.tryon.pilot import file_hash
 
 
 def pixel_hash(path):
@@ -86,7 +86,7 @@ def main():
     import cv2
     import numpy as np
     import ai_service as ai
-    from catvton_inputs import prepare_inputs
+    from services.ai.features.tryon.catvton_inputs import prepare_inputs
     rows = []
     for root, row in records:
         raw = root/'raw-masks'/f'{row["id"]}.png'

@@ -3,7 +3,7 @@ const source=require('./helpers/source').read(path.join(__dirname,'../app/public
 const body=source.slice(source.indexOf('let textQuality='),source.indexOf('async function runChromaGenerate('));
 const controls={textToImageModel:{value:'flux-chroma1-hd',selectedOptions:[{textContent:'Chroma'}]},chromaSize:{},chromaQuality:{},textToImagePresetHint:{}};
 const buttons=['fast','balanced','quality'].map(name=>({dataset:{textQuality:name},classList:{toggle(){}},setAttribute(){}}));
-const context={window:{ATELIER_PROMPTS:require('../app/prompt-store').readCatalog()},$:id=>controls[id],document:{querySelectorAll:()=>buttons},updateTextToImageAvailability(){}};
+const context={window:{ATELIER_PROMPTS:require('../apps/local-api/domain/catalog/prompt-store').readCatalog()},$:id=>controls[id],document:{querySelectorAll:()=>buttons},updateTextToImageAvailability(){}};
 vm.createContext(context);vm.runInContext(body,context);
 assert.equal(vm.runInContext('textQuality',context),'balanced','New sessions start with a balanced draft preset');
 for(const [name,steps] of [['fast',12],['balanced',28],['quality',40]]){context.applyTextToImagePreset(name);assert.equal(controls.textToImageModel.value,'flux-chroma1-hd');assert.equal(controls.chromaQuality.value,String(steps));}

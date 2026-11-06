@@ -10,9 +10,9 @@ from PIL import Image, ImageFilter
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
-from outpainting import (prepare_canvas,prepare_inference,semantic_seam_masks,background_reference_mask,
+from services.ai.features.outpaint.service import (prepare_canvas,prepare_inference,semantic_seam_masks,background_reference_mask,
                         equalize_background_seams,detail_regions,PatchAccumulator)
-from outpaint_quality import (choose_refinement,exclude_source,tile_mask,load_layout,source_fingerprint,PromptEmbeddingCache)
+from services.ai.features.outpaint.quality import (choose_refinement,exclude_source,tile_mask,load_layout,source_fingerprint,PromptEmbeddingCache)
 
 for left,top,right,bottom in [(60,0,0,0),(0,60,0,0),(0,0,60,0),(0,0,0,60)]:
     source=Image.new('RGB',(120,120),(160,160,160))

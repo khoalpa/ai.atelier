@@ -58,7 +58,7 @@ vm.createContext(context);vm.runInContext(require('./helpers/source').read(path.
   context.activeJobId='other';api.sync();assert.equal(fields.enhancePreview.disabled,true);
   context.current=null;assert.throws(()=>api.payload(),/Chọn ảnh/);
   // Same history validator used by all result-continuation actions.
-  const history=require('../app/edit-history-store');const os=require('os');const folder=fs.mkdtempSync(path.join(os.tmpdir(),'atelier-enhancement-'));
+  const history=require('../apps/local-api/repositories/edit-history-store');const os=require('os');const folder=fs.mkdtempSync(path.join(os.tmpdir(),'atelier-enhancement-'));
   try{const file=path.join(folder,'history.json');history.append(file,{sourceId:'source',childId:'child',result:'/outputs/enhance/run/result_seed_0.png',task:'enhance'});assert.equal(history.read(file)[0].task,'enhance');assert.throws(()=>history.append(file,{sourceId:'a',childId:'b',result:'/outputs/../private.png',task:'enhance'}));}
   finally{fs.rmSync(folder,{recursive:true,force:true});}
   console.log('OK: enhancement readiness, preview budget, masks, busy state and continuation history.');

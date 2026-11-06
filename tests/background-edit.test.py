@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 from PIL import Image
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from background_edit import cutout
+from services.ai.features.generation.background_edit import cutout
 class CutoutTests(unittest.TestCase):
     def test_source_bound_mask_and_alpha_applied_once(self):
         with tempfile.TemporaryDirectory() as tmp:

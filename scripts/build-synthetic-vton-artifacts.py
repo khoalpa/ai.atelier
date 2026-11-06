@@ -12,7 +12,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageOps
 ROOT = Path(__file__).resolve().parents[1]
 import sys
 sys.path.insert(0, str(ROOT))
-from sample_catalog import collection_path
+from services.ai.catalog.samples import collection_path
 DATASET = collection_path(ROOT, 'synthetic-paired-vton-20261021')
 PRODUCTS = DATASET / "images" / "products"
 PEOPLE = DATASET / "images" / "people"

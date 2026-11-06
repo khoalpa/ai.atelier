@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict');
-const {applyProductReview}=require('../app/product-reference-review');
+const {applyProductReview}=require('../apps/local-api/repositories/product-reference-review');
 const person='Phát hiện người hoặc pose trong ảnh sản phẩm';
 const validation={ok:true,accepted:false,reasons:[person],metrics:{sha256:'abc',peopleDetected:1}};
 assert.equal(applyProductReview(validation,undefined,'abc'),validation);

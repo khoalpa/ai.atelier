@@ -1,5 +1,5 @@
 const fs=require('fs'),os=require('os'),path=require('path'),assert=require('assert');
-const {readRemoved,updateRemoved}=require('../app/library-removal-store');
+const {readRemoved,updateRemoved}=require('../apps/local-api/repositories/library-removal-store');
 const dir=fs.mkdtempSync(path.join(os.tmpdir(),'atelier-library-')),file=path.join(dir,'removed.json');
 try{
  assert.deepEqual(readRemoved(file),[]);

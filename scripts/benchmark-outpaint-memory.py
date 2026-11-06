@@ -9,7 +9,7 @@ import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from sample_catalog import resolve_sample
+from services.ai.catalog.samples import resolve_sample
 OUTPUT = ROOT / 'workspace/diagnostics/outpaint-quality/memory'
 
 
@@ -20,9 +20,9 @@ def worker(mode):
     import numpy as np
     import torch
     from PIL import Image
-    from outpainting import prepare_canvas, prepare_inference, composite_canvas
-    from outpaint_quality import PromptEmbeddingCache
-    from prompt_limits import split_flux_prompts
+    from services.ai.features.outpaint.service import prepare_canvas, prepare_inference, composite_canvas
+    from services.ai.features.outpaint.quality import PromptEmbeddingCache
+    from services.ai.prompting.limits import split_flux_prompts
     source = Image.open(resolve_sample(ROOT, 'outpaint-benchmark/studio-left/source.png')).convert('RGB')
     source.thumbnail((320, 384))
     canvas, mask, geometry = prepare_canvas(source, dict(width=source.width+64, height=source.height, left=64))

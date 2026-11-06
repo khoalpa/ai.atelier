@@ -1,12 +1,9 @@
 'use strict';
-const requireFromApp = require('node:module').createRequire(require('node:path').resolve(__dirname,'../../../app/server.js'));
 // Dependencies: AI_PORT, HOST, JOBS_DIR, MAKEUP_LLM_MODEL, OUTPUTS_DIR, PORT, PROMPTS_FILE, PUBLIC_DIR, REFERENCES_DIR, REVIEW_DIR, ROOT, SAMPLES_DIR, UPLOADS_DIR, VERSION, acceptanceStore, activateModel, activateScoreWeights, allLibraryAssets, analyzeModelUrl, assetCatalog, backgroundRenderer, backupStore, backupWorkspace, benchmarkReview, benchmarkWithPreflight, buildGoldenBaseline, buildQualityDashboard, buildRetryPlan, calibrateQuality, calibrateWeights, callAiJson, cleanupJobs, compareGoldenBaseline, compareScoreWeights, confirmDefaultWeights, deleteModel, editHistory, exportApprovedManifest, exportModelManifest, exportPresets, fs, importCatalog, jsonConfigStore, listBackups, listImages, listJobs, listModelCandidates, listModels, listModes, listRetryComparisons, listUploadedImages, manualStore, migrateBrowser, modelCapabilities, modelOperationalState, parseJson, path, previewImport, promptAssist, proxyAiGet, proxyAiHealth, proxyToAi, qualityOverview, qualityService, quarantineModel, readAiGet, readCatalog, readLocalConfig, readOllamaModels, readReviewState, referenceReadiness, regionStore, registerModel, registerModelUrl, releaseAcceptance, requestLocalLlm, resetWorkspaceData, restoreBackup, restoreQuarantinedModel, reviewReadiness, safeJoin, saveMask, saveMode, savePresetPrompt, saveReferenceProfile, saveRetryComparison, sd35DepthOperationalState, selectFeatureModel, selectResult, send, serveFile, serviceManager, startAllModelDownloads, startModelDownload, streamJobEvents, systemOverview, updateCatalog, updateRemoved, updateReview, uploadSourceImage, webRestartPending, workQueue
 module.exports = function createRoutes(deps) {
-const require = requireFromApp;
-const __dirname = require('node:path').join(deps.ROOT,'app');
 let anatomyParts;
-const getAnatomyParts=()=>anatomyParts||(anatomyParts=require('./anatomy-parts-store').create(deps.ROOT));
-const catalogTransfer=require('./catalog-transfer-store').createStore(process.env.ATELIER_JSON_CONFIG_ROOT||deps.ROOT,deps.PROMPTS_FILE);
+const getAnatomyParts=()=>anatomyParts||(anatomyParts=require('../repositories/anatomy-parts-store').create(deps.ROOT));
+const catalogTransfer=require('../domain/catalog/catalog-transfer-store').createStore(process.env.ATELIER_JSON_CONFIG_ROOT||deps.ROOT,deps.PROMPTS_FILE);
 async function handleRequest(req, res) {
   const url = new URL(req.url, `http://${deps.HOST}:${deps.PORT}`);
   const pathname = decodeURIComponent(url.pathname);
@@ -23,7 +20,7 @@ async function handleRequest(req, res) {
   if(pathname==='/api/catalog-preview'&&req.method==='POST'){
     try{
       if((req.headers.origin&&req.headers.origin!==`http://${req.headers.host}`)||req.headers['sec-fetch-site']==='cross-site')return deps.send(res,403,JSON.stringify({ok:false,error:'Yêu cầu phải đến từ ứng dụng này.'}));
-      const body=await deps.parseJson(req,3*1024*1024),result=require('./catalog-inspector').preview(body.catalog||deps.readCatalog(),body.taskId,body.variables||{},body.modelId||null);
+      const body=await deps.parseJson(req,3*1024*1024),result=require('../domain/catalog/catalog-inspector').preview(body.catalog||deps.readCatalog(),body.taskId,body.variables||{},body.modelId||null);
       if(body.modelId&&!result.missingVariables.length){try{result.tokenCheck=await deps.callAiJson('/catalog-token-preview',{modelId:body.modelId,prompt:result.prompt,negativePrompt:result.negativePrompt});}catch(error){result.tokenError=error.message;}}
       return deps.send(res,200,JSON.stringify({ok:true,...result}));
     }catch(error){return deps.send(res,400,JSON.stringify({ok:false,error:error.message}));}
@@ -224,23 +221,23 @@ async function handleRequest(req, res) {
   if (req.method === 'POST' && pathname === '/api/preprocess-garment') return deps.proxyToAi(req, res, '/preprocess-garment', 30 * 1024 * 1024);
   if (req.method === 'GET' && pathname === '/api/character-config') {const [health,ollama]=await Promise.all([deps.readAiGet('/health'),deps.readOllamaModels()]);return deps.send(res,200,JSON.stringify({ok:true,...(health.character||{}),serviceReady:health.characterVersion===1,plannerReady:ollama.models.some(m=>m.name===deps.MAKEUP_LLM_MODEL||m.model===deps.MAKEUP_LLM_MODEL)}));}
   if (req.method === 'POST' && ['/api/character-analyze','/api/character-preview','/api/character-render','/api/character-regenerate'].includes(pathname)) return deps.proxyToAi(req,res,pathname.slice(4),30*1024*1024);
-  if (req.method === 'POST' && pathname === '/api/character-refine') {try{return deps.send(res,200,JSON.stringify(await require('./character-refine').refine(await deps.parseJson(req,16384),deps.requestLocalLlm,deps.MAKEUP_LLM_MODEL)));}catch(e){return deps.send(res,400,JSON.stringify({ok:false,error:e.message}));}}
-  if (req.method === 'POST' && pathname === '/api/character-plan') {try{return deps.send(res,200,JSON.stringify(await require('./character-plan').plan(await deps.parseJson(req,8192),deps.requestLocalLlm,deps.MAKEUP_LLM_MODEL)));}catch(e){return deps.send(res,400,JSON.stringify({ok:false,error:e.message}));}}
-  if (pathname === '/api/character-presets' && ['GET','POST'].includes(req.method)) {try{const store=require('./character-presets');const file=deps.path.join(deps.ROOT,'workspace','character-presets.json');return deps.send(res,200,JSON.stringify(req.method==='GET'?store.read(file):store.save(file,await deps.parseJson(req,32768))));}catch(e){return deps.send(res,400,JSON.stringify({ok:false,error:e.message}));}}
+  if (req.method === 'POST' && pathname === '/api/character-refine') {try{return deps.send(res,200,JSON.stringify(await require('../domain/character/character-refine').refine(await deps.parseJson(req,16384),deps.requestLocalLlm,deps.MAKEUP_LLM_MODEL)));}catch(e){return deps.send(res,400,JSON.stringify({ok:false,error:e.message}));}}
+  if (req.method === 'POST' && pathname === '/api/character-plan') {try{return deps.send(res,200,JSON.stringify(await require('../domain/character/character-plan').plan(await deps.parseJson(req,8192),deps.requestLocalLlm,deps.MAKEUP_LLM_MODEL)));}catch(e){return deps.send(res,400,JSON.stringify({ok:false,error:e.message}));}}
+  if (pathname === '/api/character-presets' && ['GET','POST'].includes(req.method)) {try{const store=require('../domain/character/character-presets');const file=deps.path.join(deps.ROOT,'workspace','character-presets.json');return deps.send(res,200,JSON.stringify(req.method==='GET'?store.read(file):store.save(file,await deps.parseJson(req,32768))));}catch(e){return deps.send(res,400,JSON.stringify({ok:false,error:e.message}));}}
   if (req.method === 'POST' && pathname === '/api/makeup-compare') return deps.proxyToAi(req,res,'/makeup-compare',30*1024*1024);
   if (req.method === 'POST' && pathname === '/api/makeup') return deps.proxyToAi(req,res,'/makeup',30*1024*1024);
   if (req.method === 'POST' && pathname === '/api/makeup-analyze') return deps.proxyToAi(req,res,'/makeup-analyze');
   if (req.method === 'POST' && pathname === '/api/makeup-reference') return deps.proxyToAi(req,res,'/makeup-reference');
   if (pathname === '/api/makeup-library' && ['GET','POST'].includes(req.method)) {
     try {
-      const library=require('./makeup-library-store'),file=deps.path.join(deps.ROOT,'workspace','makeup-styles.json');
+      const library=require('../domain/makeup/makeup-library-store'),file=deps.path.join(deps.ROOT,'workspace','makeup-styles.json');
       if(req.method==='GET')return deps.send(res,200,JSON.stringify({ok:true,styles:library.read(file)}));
       const body=await deps.parseJson(req,16384),item=library.save(file,body);
       return deps.send(res,200,JSON.stringify({ok:true,item,styles:library.read(file)}));
     } catch(error) {return deps.send(res,400,JSON.stringify({ok:false,error:error.message}));}
   }
   if (req.method === 'GET' && pathname === '/api/makeup-config') {const [health,ollama]=await Promise.all([deps.readAiGet('/health'),deps.readOllamaModels()]);return deps.send(res,200,JSON.stringify({ok:true,...(health.makeup||{}),serviceReady:health.makeupVersion===1,plannerReady:ollama.models.some(model=>model.name===deps.MAKEUP_LLM_MODEL||model.model===deps.MAKEUP_LLM_MODEL)}));}
-  if (req.method === 'POST' && pathname === '/api/makeup-plan') {try{const body=await deps.parseJson(req,8192);return deps.send(res,200,JSON.stringify(await require('./makeup-plan').planMakeup(body,deps.requestLocalLlm,deps.MAKEUP_LLM_MODEL)));}catch(error){return deps.send(res,400,JSON.stringify({ok:false,error:'Không đọc được mô tả: '+error.message}));}}
+  if (req.method === 'POST' && pathname === '/api/makeup-plan') {try{const body=await deps.parseJson(req,8192);return deps.send(res,200,JSON.stringify(await require('../domain/makeup/makeup-plan').planMakeup(body,deps.requestLocalLlm,deps.MAKEUP_LLM_MODEL)));}catch(error){return deps.send(res,400,JSON.stringify({ok:false,error:'Không đọc được mô tả: '+error.message}));}}
   if (req.method === 'POST' && pathname === '/api/enhance') return deps.proxyToAi(req,res,'/enhance',30*1024*1024);
   if (req.method === 'GET' && pathname === '/api/enhance-config') {const health=await deps.readAiGet('/health');return deps.send(res,200,JSON.stringify({ok:true,...(health.enhancement||{}),serviceReady:health.enhanceVersion===1}));}
   if (req.method === 'POST' && pathname === '/api/outpaint') return deps.proxyToAi(req,res,'/outpaint',30*1024*1024);

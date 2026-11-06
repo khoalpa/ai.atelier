@@ -102,6 +102,19 @@ AI Atelier 3.0 tách giao diện, API, dịch vụ AI và lưu trữ thành các
 
 `app/server.js` và `ai_service.py` là các điểm khởi động tương thích. Mã giao diện trong `app/public` được sinh từ `apps/web`; không chỉnh trực tiếp các tệp được sinh.
 
+Các mô-đun Python nghiệp vụ chuẩn nằm trong `services/ai/features`, cấu hình
+prompt nằm trong `services/ai/prompting`, và mã chất lượng nằm trong
+`services/ai/quality`. Root chỉ giữ `ai_service.py` làm entrypoint ổn định. Quy ước chi tiết:
+[Cấu trúc repository](docs/architecture/REPOSITORY-LAYOUT.md).
+
+Mã Node.js phía máy chủ được chia thành `apps/local-api/domain`,
+`repositories`, `queue` và `infrastructure`; `app/server.js` là entrypoint
+tương thích duy nhất nằm trực tiếp trong `app/`.
+
+Mã chuẩn không được import ngược qua các alias này. `services/ai` dùng import
+đầy đủ `services.ai.*`; `apps/local-api` dùng trực tiếp `modules`, `services` và
+`packages`.
+
 Chi tiết: [Kiến trúc 3.0](docs/ARCHITECTURE-3.0.md).
 
 ## Phát triển
@@ -112,6 +125,7 @@ Cài dependency Node theo lockfile, sau đó dùng các lệnh chuẩn:
 pnpm install --frozen-lockfile
 pnpm build
 pnpm check
+pnpm verify:layout
 pnpm test
 ```
 
@@ -124,6 +138,8 @@ Sau khi thêm hoặc bớt nguồn Python, cập nhật manifest:
 
 ```powershell
 node scripts/update-source-manifest.js
+# Hoặc cập nhật cả manifest Python và API
+pnpm update:manifests
 ```
 
 Chạy một nhóm kiểm thử cụ thể:

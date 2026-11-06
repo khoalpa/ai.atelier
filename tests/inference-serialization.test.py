@@ -11,7 +11,7 @@ from concurrent.futures import ThreadPoolExecutor
 tree = ast.parse(read_source(Path(__file__).resolve().parents[1] / 'ai_service.py', encoding='utf-8'))
 node = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'serialized_inference')
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from service_lifecycle import ServiceLifecycle
+from services.ai.runtime.service_lifecycle import ServiceLifecycle
 namespace = dict(wraps=wraps, inference_lock=threading.RLock(), service_lifecycle=ServiceLifecycle())
 exec(compile(ast.Module(body=[node], type_ignores=[]), '<serialization>', 'exec'), namespace)
 entered, release, second_started, second_entered = (threading.Event() for _ in range(4))

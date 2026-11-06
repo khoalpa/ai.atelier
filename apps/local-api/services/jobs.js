@@ -1,10 +1,7 @@
 'use strict';
-const requireFromApp = require('node:module').createRequire(require('node:path').resolve(__dirname,'../../../app/server.js'));
 // Dependencies: JOBS_DIR, fs, parseJson, path, send
 module.exports = function createJobs(deps) {
-const require = requireFromApp;
-const metadata=require('../packages/storage/metadata');
-const __dirname = require('node:path').join(deps.ROOT,'app');
+const metadata=require('../../../packages/storage/metadata');
 function listJobs() {
   const items=metadata.entries(deps.JOBS_DIR).filter((name) => name.endsWith('.json') && !name.endsWith('.request.json') && !name.endsWith('.checkpoint.json')).map((name) => {
     try { return metadata.read(deps.path.join(deps.JOBS_DIR, name),null); } catch { return null; }
@@ -12,7 +9,7 @@ function listJobs() {
   const known=new Set(items.map(item=>item.jobId)),directory=deps.path.join(deps.ROOT,'workspace/work-queue');
   for(const name of metadata.entries(directory).filter(name=>name.endsWith('.json'))){
     const q=metadata.read(deps.path.join(directory,name),null);if(!q?.requestKey||known.has(q.requestKey))continue;
-    const item=q.items[0],task=require('../packages/contracts/jobs').tasks[q.kind];
+    const item=q.items[0],task=require('../../../packages/contracts/jobs').tasks[q.kind];
     items.push({jobId:q.requestKey,taskType:task?.taskType||q.kind,status:q.status==='paused'?'interrupted':q.status,stage:item.checkpoint?.submitted?'preparing':'queued',updatedAt:q.updatedAt,createdAt:q.createdAt,results:item.result?.results||[],resumable:q.status==='paused',resumeMode:task?.resume,queueId:q.id});
   }
   return items.sort((a,b)=>String(b.updatedAt||'').localeCompare(String(a.updatedAt||'')));
@@ -31,7 +28,7 @@ async function cleanupJobs(req, res) {
         const target = deps.path.join(deps.JOBS_DIR, safeId + suffix);
         if (safeId && metadata.exists(target)) files.push(target);
       }
-      const queue=deps.path.join(deps.ROOT,'workspace/work-queue',require('../apps/local-api/task-coordinator').queueId(safeId)+'.json');
+      const queue=deps.path.join(deps.ROOT,'workspace/work-queue',require('../task-coordinator').queueId(safeId)+'.json');
       if(safeId&&metadata.exists(queue))files.push(queue);
     }
     if (body.confirm === true) for (const target of files) metadata.remove(target);

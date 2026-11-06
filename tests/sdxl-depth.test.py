@@ -12,7 +12,7 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-import sd35_depth_control as depth
+import services.ai.models.sd35_depth_control as depth
 
 class Processor:
     @classmethod

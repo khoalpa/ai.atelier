@@ -1,10 +1,7 @@
 'use strict';
-const requireFromApp = require('node:module').createRequire(require('node:path').resolve(__dirname,'../../../app/server.js'));
 // Dependencies: JOBS_DIR, MASKS_DIR, OUTPUTS_DIR, RESET_ARCHIVE_DIR, REVIEW_DIR, ROOT, UPLOADS_DIR, activeModelPath, allBenchmarkReports, backupStore, fs, listJobs, modelOperationalState, parseJson, path, readAiGet, readLocalConfig, readModelRegistry, referenceReadinessPayload, send, server, serviceManager, spawn, verifyModelEntry, workQueue
 module.exports = function createAdministration(deps) {
-const require = requireFromApp;
-const metadata=require('../packages/storage/metadata');
-const __dirname = require('node:path').join(deps.ROOT,'app');
+const metadata=require('../../../packages/storage/metadata');
 const QUALITY_FILE_PATTERN = /^(quality-|regression-|golden-baseline|release-acceptance|score-weights|active-score-weights|weight-ab-report|automatic-mask-smoke|catvton-|effective-step-|hybrid-|lora-(?:ab|matrix|strength)|structural-refine-|texture-recovery-|chroma-(?:smoke|generate)|sd35-smoke-test)/i;
 
 function directoryChildren(directory) {

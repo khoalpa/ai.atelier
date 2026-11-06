@@ -1,7 +1,7 @@
 const assert=require('assert'),fs=require('fs'),path=require('path'),os=require('os');
-const {listModes,saveMode}=require('../app/processing-mode-store');
+const {listModes,saveMode}=require('../apps/local-api/repositories/processing-mode-store');
 const temp=fs.mkdtempSync(path.join(os.tmpdir(),'atelier-modes-')),file=path.join(temp,'modes.json');
-fs.copyFileSync(require('../app/prompt-store').FILE,file);
+fs.copyFileSync(require('../apps/local-api/domain/catalog/prompt-store').FILE,file);
 try{
  const original=listModes(file);assert.deepEqual(original.map(mode=>mode.id),['base_layer','reconstruct_body','background']);
  const prompt='Opaque clothing, "quotes"\nÁnh sáng phù hợp';

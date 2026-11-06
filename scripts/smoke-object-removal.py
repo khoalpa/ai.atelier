@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 BENCHMARK=json.loads((ROOT / 'tests/fixtures/prompt-benchmarks.json').read_text(encoding='utf-8'))
 import sys
 sys.path.insert(0, str(ROOT))
-from sample_catalog import resolve_sample
+from services.ai.catalog.samples import resolve_sample
 WEB_PORT = int(os.environ.get('AI_IMAGE_PORT', '7860'))
 AI_PORT = int(os.environ.get('AI_SEGMENT_PORT', '7861'))
 
@@ -35,8 +35,9 @@ def main():
     with urlopen(f'http://127.0.0.1:{AI_PORT}/health') as response:
         health = json.load(response)
     revision = hashlib.sha256(b''.join((ROOT/name).read_bytes() for name in (
-        'ai_service.py', 'object_removal.py', 'catvton_inputs.py', 'idm_vton_runtime.py',
-        'local_request_security.py', 'vendor/CatVTON/model/pipeline.py', 'vendor/CatVTON/utils.py'))).hexdigest()
+        'ai_service.py', 'services/ai/features/object_removal/service.py',
+        'services/ai/features/tryon/catvton_inputs.py', 'services/ai/features/tryon/idm_runtime.py',
+        'services/ai/security/local_request.py', 'vendor/CatVTON/model/pipeline.py', 'vendor/CatVTON/utils.py'))).hexdigest()
     assert health['revision'] == revision, 'Restart AI service to load current code.'
     sample = 'object-removal-benchmark/01-flat-1/source.png'
     segmented = post('segment', {'sampleId': sample, 'points': [{'x':480,'y':320,'label':1}]})

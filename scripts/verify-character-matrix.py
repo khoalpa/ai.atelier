@@ -15,7 +15,7 @@ from PIL import Image,ImageOps,ImageDraw
 
 ROOT=Path(__file__).resolve().parents[1];OUT=ROOT/'workspace/diagnostics/character-upgrade/matrix';API='http://127.0.0.1:7860/api/'
 sys.path.insert(0, str(ROOT))
-from sample_catalog import resolve_sample, sample_ids
+from services.ai.catalog.samples import resolve_sample, sample_ids
 
 
 def post(route,body):

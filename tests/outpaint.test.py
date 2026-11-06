@@ -18,7 +18,7 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from outpainting import (prepare_canvas, prepare_inference, composite_canvas, detail_regions, merge_detail,
+from services.ai.features.outpaint.service import (prepare_canvas, prepare_inference, composite_canvas, detail_regions, merge_detail,
                         PatchAccumulator,seam_band,semantic_seam_masks,multiband_background,restore_source_core,seam_metrics,feather_seam_result,preserve_fabric_texture)
 from services.ai.tasks.outpaint import outpaint_pipeline_kwargs
 
@@ -185,7 +185,7 @@ with tempfile.TemporaryDirectory() as folder:
     namespace = dict(Path=Path, time=time, datetime=datetime, timezone=timezone, np=np, Image=Image,
         ROOT=root, OUTPUTS=root/'outputs', INPAINT_MODEL=root/'model', inpaint_pipe=None,
         prompt_text=lambda key:'Continue scene' if key.endswith('instruction') else 'seams',
-        task_prompt=lambda key, polarity='positive': namespace['prompt_text'](__import__('prompt_catalog').read_catalog()['tasks'][key][polarity]['components'][0]),
+        task_prompt=lambda key, polarity='positive': namespace['prompt_text'](__import__('services.ai.prompting.catalog',fromlist=['read_catalog']).read_catalog()['tasks'][key][polarity]['components'][0]),
         prompt_template=lambda key, **kwargs:'Avoid: '+kwargs['negative'], prompt_history=lambda:[],
         safe_sample=lambda name:root/'source.png', inpaint_model_entry=lambda model:None,
         detect_inpaint_architecture=lambda *args:'sdxl', resolved_inpaint_profile=lambda *args:{'nativeResolution':1024},
@@ -199,7 +199,7 @@ with tempfile.TemporaryDirectory() as folder:
     namespace['outpaint_semantics']=lambda image,manual=None:(Image.new('L',image.size,0),Image.new('L',image.size,0),
                                                             manual or Image.new('L',image.size,0),[])
     namespace['metadata']=metadata
-    __import__('outpaint_quality').final_seam_review=lambda image,geometry:dict(
+    __import__('services.ai.features.outpaint.quality',fromlist=['final_seam_review']).final_seam_review=lambda image,geometry:dict(
         status='unverified',sides={},message='Test result',method='final-multiscale-seam-v2')
     exec(compile(ast.Module(body=[runner],type_ignores=[]),str(ROOT/'ai_service.py'),'exec'), namespace)
     body = dict(jobId='test',sampleId='source.png',width=180,height=120,left=30,top=20,count=2)
@@ -357,7 +357,7 @@ with tempfile.TemporaryDirectory() as folder:
         if 'PROMPT:outpaint.fabric' in inputs['prompt']:
             raise ValueError('prompt: 78 token, vượt giới hạn 77')
         return {}
-    with patch('prompt_limits.validate_prompt_limits', side_effect=preflight_limit):
+    with patch('services.ai.prompting.limits.validate_prompt_limits', side_effect=preflight_limit):
         try:
             namespace['outpaint'](dict(jobId='prompt-preflight',sampleId='large.png',width=1529,height=2044,left=139,
                 runMode='layout',detailPass=True,materialRefine=True))

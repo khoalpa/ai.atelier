@@ -13,8 +13,8 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import image_enhancement as enhancement
-import skin_edge
+import services.ai.features.enhancement.service as enhancement
+from services.ai.features.skin import edge as skin_edge
 
 
 def encode(image):

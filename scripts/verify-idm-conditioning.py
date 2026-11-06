@@ -9,7 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from sample_catalog import resolve_sample
+from services.ai.catalog.samples import resolve_sample
 
 CASES = {
     'overall:c003': 'a solid emerald green linen knee-length A-line dress with a round neckline, short sleeves, a fitted waist and a flared skirt',
@@ -39,7 +39,7 @@ def main():
     original_loader = ai.load_tryon_pipe
     diagnostic_pipe = None
     if args.dresscode_checkpoint:
-        from idm_vton_runtime import load_pipeline
+        from services.ai.features.tryon.idm_runtime import load_pipeline
         dc_path = ROOT/'models/tryon/IDM-VTON-DC'
         if not (dc_path/'unet/diffusion_pytorch_model.bin').is_file():
             raise SystemExit('DressCode checkpoint is not installed')

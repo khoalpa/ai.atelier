@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
-from catalog_preview import token_preview
+from services.ai.catalog.preview import token_preview
 
 prompt='A blue cotton shirt. '+('Show consistent fabric weave, accurate seams and natural folds under soft studio light. '*10)
 for model in ('flux-chroma1-hd','flux-2-klein-4b','qwen-image-controlnet-inpainting'):

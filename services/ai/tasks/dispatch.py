@@ -22,16 +22,16 @@ def dispatch_generation(route, body):
         raise ValueError('Tác vụ ControlNet dùng token CLIP đã bị loại vĩnh viễn.')
     if route == '/qwen-depth-generate': return qwen_depth_generate(body)
     if route == '/enhance':
-        from image_enhancement import enhance
+        from services.ai.features.enhancement.service import enhance
         return enhance(body, task_context())
     if route in ('/character-render', '/character-regenerate'):
-        from character import run, regenerate
+        from services.ai.features.character.service import run, regenerate
         return (regenerate if route.endswith('regenerate') else run)(body, task_context())
     if route in ('/makeup', '/makeup-compare'):
         if route == '/makeup-compare':
-            from makeup_comparison import run
+            from services.ai.features.makeup.comparison import run
         else:
-            from makeup import run
+            from services.ai.features.makeup.service import run
         return run(body, task_context())
     raise ValueError('Loại tác vụ không được hỗ trợ.')
 
@@ -51,18 +51,18 @@ def resume_job(body: dict) -> dict:
         return dispatch_generation(request['_route'], request)
     task_type = str(request.get("taskType") or "batch-tryon")
     if task_type == "character":
-        from character import run
+        from services.ai.features.character.service import run
         update_job(job_id, cancelRequested=False, status="running", error=None, results=[])
         return run(request, task_context())
     if task_type == "makeup":
         if request.get("comparisonStyles"):
-            from makeup_comparison import run
+            from services.ai.features.makeup.comparison import run
         else:
-            from makeup import run
+            from services.ai.features.makeup.service import run
         update_job(job_id, cancelRequested=False, status="running", error=None, results=[])
         return run(request, task_context())
     if task_type == "enhance":
-        from image_enhancement import enhance
+        from services.ai.features.enhancement.service import enhance
         update_job(job_id, cancelRequested=False, status="running", error=None, results=[])
         return enhance(request, task_context())
     if task_type == "outpaint":

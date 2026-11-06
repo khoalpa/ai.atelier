@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
-from outpaint_quality import choose_refinement,final_seam_review
+from services.ai.features.outpaint.quality import choose_refinement,final_seam_review
 OUT=ROOT/'workspace/diagnostics/background-quality-2.6'
 record_file=OUT/'outpaint-replayed.json'
 records=json.loads(record_file.read_text(encoding='utf-8')) if record_file.exists() else []

@@ -17,7 +17,7 @@ from PIL import Image, ImageDraw, ImageFilter
 ROOT = Path(__file__).resolve().parents[1]
 BENCHMARK=json.loads((ROOT / 'tests/fixtures/prompt-benchmarks.json').read_text(encoding='utf-8'))
 sys.path.insert(0, str(ROOT))
-from sample_catalog import collection_path
+from services.ai.catalog.samples import collection_path
 DATA = collection_path(ROOT, 'object-removal-benchmark')
 OUT = ROOT/'workspace/diagnostics/object-removal-benchmark'
 

@@ -1,6 +1,6 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path');
-const {create}=require('../app/anatomy-parts-store');
+const {create}=require('../apps/local-api/repositories/anatomy-parts-store');
 const root=fs.mkdtempSync(path.join(os.tmpdir(),'atelier-anatomy-'));
 fs.mkdirSync(path.join(root,'workspace'),{recursive:true});
 fs.copyFileSync(path.join(__dirname,'..','workspace','prompts.json'),path.join(root,'workspace','prompts.json'));

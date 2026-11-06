@@ -4,8 +4,8 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from object_removal import match_simple_background, blend_removal
-from outpaint_quality import final_seam_review, choose_refinement
+from services.ai.features.object_removal.service import match_simple_background, blend_removal
+from services.ai.features.outpaint.quality import final_seam_review, choose_refinement
 
 # Multiple gross colour bands are a failed layout, not a selectable result.
 framed = Image.new('RGB', (120, 120), (20, 20, 20))

@@ -19,7 +19,7 @@ with tempfile.TemporaryDirectory() as temporary:
     for mode, text in {'base_layer': 'Use a neutral base layer.', 'reconstruct_body': 'Restore the covered body surfaces.', 'background': 'Continue the surrounding background.'}.items():
         catalog['processingModes'][mode]['prompt'] = text
     (test_root / 'workspace/prompts.json').write_text(json.dumps(catalog), encoding='utf-8')
-    from prompt_catalog import prompt_text, prompt_template
+    from services.ai.prompting.catalog import prompt_text, prompt_template
     namespace = {'ROOT': test_root, 'prompt_text': prompt_text, 'prompt_template': prompt_template}
     exec(compile(ast.Module(body=nodes, type_ignores=[]), '<instructions>', 'exec'), namespace)
     for architecture in ['flux', 'sdxl', 'sd15', 'anime']:

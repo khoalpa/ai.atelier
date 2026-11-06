@@ -6,8 +6,8 @@ from pathlib import Path
 from types import SimpleNamespace
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
-from prompt_catalog import CatalogMap, catalog_value
-source=ast.parse((ROOT/'character.py').read_text(encoding='utf-8'))
+from services.ai.prompting.catalog import CatalogMap, catalog_value
+source=ast.parse((ROOT/'services/ai/features/character/service.py').read_text(encoding='utf-8'))
 node=next(n for n in source.body if isinstance(n,ast.FunctionDef) and n.name=='configuration')
 scope={'runtime':SimpleNamespace(configuration=lambda root:{'ready':True}),'geometry':SimpleNamespace(EXPRESSIONS=CatalogMap('featurePresets','character.expressions'),POSES=CatalogMap('featurePresets','character.poses'),JOINTS=[],EDGES=[]),'quality':SimpleNamespace(available=lambda root:False)}
 exec(compile(ast.Module(body=[node],type_ignores=[]),'<configuration>','exec'),scope)

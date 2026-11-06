@@ -1,7 +1,7 @@
 """AI Atelier: runtime.configuration."""
 from datetime import datetime, timezone
 from pathlib import Path
-from service_lifecycle import ServiceLifecycle
+from services.ai.runtime.service_lifecycle import ServiceLifecycle
 import hashlib
 import json
 import os

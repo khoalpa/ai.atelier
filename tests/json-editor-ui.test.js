@@ -1,5 +1,5 @@
 const fs=require('fs'),path=require('path'),os=require('os'),vm=require('vm'),assert=require('node:assert/strict');
-const {createStore}=require('../app/json-config-store');
+const {createStore}=require('../apps/local-api/repositories/json-config-store');
 const root=fs.mkdtempSync(path.join(os.tmpdir(),'atelier-json-ui-')),project=path.resolve(__dirname,'..');
 for(const file of createStore().list()){const target=path.join(root,file.path);fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(path.join(project,file.path),target);}
 const store=createStore(root,path.join(root,'workspace/prompts.json'));
@@ -19,7 +19,7 @@ const window={events:{},confirm:()=>true,addEventListener(name,fn){this.events[n
 const document={getElementById:id=>elements[id],createElement:tag=>new Node(tag),body:new Node(),addEventListener(){}};
 const context={window,document,Option:class extends Node{constructor(text,value){super('option');this.textContent=text;this.value=value;}},fetch:async(url,options)=>{
   try{
-    if(url==='/api/catalog-preview'){const body=JSON.parse(options.body);return {ok:true,json:async()=>({ok:true,...require('../app/catalog-inspector').preview(body.catalog,body.taskId,body.variables)})};}
+    if(url==='/api/catalog-preview'){const body=JSON.parse(options.body);return {ok:true,json:async()=>({ok:true,...require('../apps/local-api/domain/catalog/catalog-inspector').preview(body.catalog,body.taskId,body.variables)})};}
     const id=url.split('/').at(-1);let result;
     if(url==='/api/json-config')result={files:store.list()};
     else if(!options.method)result=store.read(id);

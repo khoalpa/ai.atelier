@@ -9,7 +9,7 @@ from PIL import Image, ImageDraw
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
-from vton_pilot import build_inpaint_batch, file_hash, load_dataset
+from services.ai.features.tryon.pilot import build_inpaint_batch, file_hash, load_dataset
 
 spec=importlib.util.spec_from_file_location('intake',ROOT/'scripts/prepare-couple-tee.py')
 intake=importlib.util.module_from_spec(spec); spec.loader.exec_module(intake)

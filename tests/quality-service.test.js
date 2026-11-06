@@ -1,7 +1,7 @@
 const assert = require('assert'), fs = require('fs'), os = require('os'), path = require('path');
-const {createQualityService} = require('../app/quality-service');
+const {createQualityService} = require('../apps/local-api/infrastructure/quality-service');
 const root = path.resolve(__dirname,'..'), fixture = fs.mkdtempSync(path.join(os.tmpdir(),'atelier-quality-'));
-const service = createQualityService(fixture, {python:path.join(root,'.venv-sam2/Scripts/python.exe'),workerPath:path.join(root,'quality_learning.py')});
+const service = createQualityService(fixture, {python:path.join(root,'.venv-sam2/Scripts/python.exe')});
 (async () => {
   try {
     const [one,two] = await Promise.all([service.call('state'), service.call('state')]);

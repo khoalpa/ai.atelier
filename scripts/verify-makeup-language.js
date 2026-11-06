@@ -1,6 +1,6 @@
 /* Local model acceptance checks. No portrait or user text leaves the machine. */
 const fs=require('fs'),path=require('path'),assert=require('assert');
-const {planMakeup}=require('../app/makeup-plan');
+const {planMakeup}=require('../apps/local-api/domain/makeup/makeup-plan');
 const model=process.argv[2]||'qwen3:4b';
 const cases=[
  {description:'Chỉ tô son hồng đất, không trang điểm mắt, giữ tàn nhang.',check:p=>{assert.deepEqual(p.parts,['lips']);assert.equal(p.lip,'#a66b70');}},

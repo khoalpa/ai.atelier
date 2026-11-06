@@ -17,7 +17,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from sample_catalog import collection_path
+from services.ai.catalog.samples import collection_path
 
 
 def digest(path):
@@ -84,7 +84,7 @@ def main():
     import numpy as np
     import cv2
     import ai_service as ai
-    from catvton_inputs import prepare_inputs
+    from services.ai.features.tryon.catvton_inputs import prepare_inputs
     predictor = ai.load_predictor()
     for folder in ('products', 'people', 'masks', 'raw-masks', 'previews'):
         (out/folder).mkdir(parents=True, exist_ok=True)

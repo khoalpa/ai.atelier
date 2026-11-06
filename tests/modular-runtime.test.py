@@ -20,11 +20,11 @@ from services.ai.runtime.factory import task_context
 import services.ai.http as http
 
 class RuntimeTests(unittest.TestCase):
-    def test_legacy_entry_point_exports_prompt_catalog_helpers(self):
+    def test_stable_entry_point_exports_prompt_catalog_helpers(self):
         import ai_service
-        import prompt_catalog
+        from services.ai.prompting import catalog
         for name in ('prompt_text','prompt_template','read_catalog','task_prompt'):
-            self.assertIs(getattr(ai_service,name),getattr(prompt_catalog,name))
+            self.assertIs(getattr(ai_service,name),getattr(catalog,name))
 
     def test_legacy_diagnostics_override_the_actual_domain_dependencies(self):
         import ai_service
@@ -70,7 +70,7 @@ class RuntimeTests(unittest.TestCase):
                         with urllib.request.urlopen(request,timeout=10) as response:return response.status,json.load(response)
                     except urllib.error.HTTPError as error:return error.code,json.load(error)
                 try:
-                    with patch.object(http,'execution_journal',return_value=journal),patch('image_enhancement.enhance',return_value={'ok':True,'results':[{'file':'preserved.png'}]}) as run:
+                    with patch.object(http,'execution_journal',return_value=journal),patch('services.ai.features.enhancement.service.enhance',return_value={'ok':True,'results':[{'file':'preserved.png'}]}) as run:
                         body={'jobId':'repeat','seed':42}
                         self.assertEqual(post(body)[0],200);self.assertEqual(post(body)[1]['results'][0]['file'],'preserved.png');self.assertEqual(run.call_count,1)
                         self.assertEqual(post({**body,'seed':99})[0],400)

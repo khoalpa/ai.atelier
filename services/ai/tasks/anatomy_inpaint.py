@@ -9,9 +9,9 @@ import cv2
 import numpy as np
 from PIL import Image
 
-from prompt_catalog import catalog_value, prompt_template, prompt_text
-import character
-from character_quality import extremity_review
+from services.ai.prompting.catalog import catalog_value, prompt_template, prompt_text
+from services.ai.features.character import service as character
+from services.ai.features.character.quality import extremity_review
 from services.ai.imaging.segmentation import decode_mask, encode_image
 from services.ai.runtime.jobs import update_job
 from services.ai.tasks.inpaint import inpaint

@@ -5,7 +5,7 @@ const html=require('./helpers/web-html')();
 const source=fs.readFileSync(path.join(root,'apps/web/features/prompt-builder.js'),'utf8');
 new (require('node:vm').Script)(source);
 const catalog=JSON.parse(fs.readFileSync(path.join(root,'workspace/prompts.json'),'utf8'));
-const reference=require('../app/prompt-store').renderTemplate(catalog.templates['promptBuilder.references'],{roles:'1=subject, 2=style',referenceMode:'strict'});
+const reference=require('../apps/local-api/domain/catalog/prompt-store').renderTemplate(catalog.templates['promptBuilder.references'],{roles:'1=subject, 2=style',referenceMode:'strict'});
 assert(reference.includes('Reference roles: 1=subject, 2=style. Reference mode: strict.'));
 assert(reference.endsWith('unless explicit in the image.'));
 assert.match(html,/id="promptBuilder"/);

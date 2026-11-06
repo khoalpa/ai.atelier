@@ -11,7 +11,7 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-import character_quality
+from services.ai.features.character import quality as character_quality
 
 tree = ast.parse(read_source(ROOT/'ai_service.py', encoding='utf-8'))
 function = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'automatic_protected_detail_mask')

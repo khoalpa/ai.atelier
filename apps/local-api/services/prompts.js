@@ -1,11 +1,8 @@
 'use strict';
-const requireFromApp = require('node:module').createRequire(require('node:path').resolve(__dirname,'../../../app/server.js'));
 // Dependencies: LLM_BASE_URL, LLM_MODEL, PROMPT_LLM_MODEL, decodePngDataUrl, fs, http, parseJson, readCatalog, renderTemplate, resolveSamplePath, send
 module.exports = function createPrompts(deps) {
-const require = requireFromApp;
-const __dirname = require('node:path').join(deps.ROOT,'app');
 const PROMPT_ASSIST_TASKS = new Proxy({}, {get:(_,key)=>deps.readCatalog().promptAssist.tasks[key]});
-const compiler=require('../packages/prompting/compiler');
+const compiler=require('../../../packages/prompting/compiler');
 function checkedText(value,label,maximum=16000){if(typeof value!=='string'||value.length>maximum)throw Error(label+' không hợp lệ hoặc vượt '+maximum+' ký tự.');return value;}
 
 function parseAssistResult(raw, fallback) {

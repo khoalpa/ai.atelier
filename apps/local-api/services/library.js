@@ -1,18 +1,15 @@
 'use strict';
-const requireFromApp = require('node:module').createRequire(require('node:path').resolve(__dirname,'../../../app/server.js'));
 // Dependencies: MASKS_DIR, OUTPUTS_DIR, REFERENCES_DIR, ROOT, SAMPLES_DIR, UPLOADS_DIR, crypto, decodePngDataUrl, fs, manualStore, parseJson, path, readRemoved, safeJoin, send
 module.exports = function createLibrary(deps) {
-const require = requireFromApp;
-const __dirname = require('node:path').join(deps.ROOT,'app');
 function resolveSamplePath(sampleId) {
   const normalized = String(sampleId || '').replace(/\\/g, '/');
   if (normalized.startsWith('uploads/')) return deps.safeJoin(deps.UPLOADS_DIR, normalized.slice('uploads/'.length));
-  return require('../packages/samples/catalog').resolve(deps.ROOT, normalized);
+  return require('../../../packages/samples/catalog').resolve(deps.ROOT, normalized);
 }
 
 function listImages(dir, prefix = '') {
   if (!prefix && deps.path.resolve(dir) === deps.path.resolve(deps.SAMPLES_DIR)) {
-    const selected = require('../packages/samples/catalog').images(deps.ROOT);
+    const selected = require('../../../packages/samples/catalog').images(deps.ROOT);
     if (selected) return selected;
   }
   if (!deps.fs.existsSync(dir)) return [];

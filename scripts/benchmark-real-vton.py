@@ -10,8 +10,8 @@ from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from sample_catalog import project_path, sample_id_for_path
-from vton_pilot import file_hash
+from services.ai.catalog.samples import project_path, sample_id_for_path
+from services.ai.features.tryon.pilot import file_hash
 
 
 def write(path,value):
@@ -41,14 +41,16 @@ def load_service_snapshot(snapshot):
     for name,digest in metadata['files'].items():
         data=(snapshot/name).read_bytes()
         if hashlib.sha256(data).hexdigest()!=digest: raise ValueError('Corrupt runtime snapshot')
-        if name not in ('ai_service.py','idm_vton_runtime.py') and file_hash(ROOT/name)!=digest:
+        if name not in ('ai_service.py','services/ai/features/tryon/idm_runtime.py') and file_hash(ROOT/name)!=digest:
             raise ValueError('Supporting runtime changed: '+name)
         contents.append(data)
     if hashlib.sha256(b''.join(contents)).hexdigest()!=metadata['revision']:
         raise ValueError('Snapshot revision mismatch')
-    runtime=types.ModuleType('idm_vton_runtime');runtime.__file__=str(ROOT/'idm_vton_runtime.py')
-    exec(compile((snapshot/'idm_vton_runtime.py').read_text(encoding='utf-8'),str(snapshot/'idm_vton_runtime.py'),'exec'),runtime.__dict__)
-    sys.modules['idm_vton_runtime']=runtime
+    runtime_name='services.ai.features.tryon.idm_runtime'
+    runtime_path=Path('services/ai/features/tryon/idm_runtime.py')
+    runtime=types.ModuleType(runtime_name);runtime.__file__=str(ROOT/runtime_path)
+    exec(compile((snapshot/runtime_path).read_text(encoding='utf-8'),str(snapshot/runtime_path),'exec'),runtime.__dict__)
+    sys.modules[runtime_name]=runtime
     module=types.ModuleType('ai_service');module.__file__=str(ROOT/'ai_service.py')
     sys.modules['ai_service']=module
     exec(compile((snapshot/'ai_service.py').read_text(encoding='utf-8'),str(snapshot/'ai_service.py'),'exec'),module.__dict__)
@@ -60,7 +62,7 @@ def prepare(out):
     import numpy as np
     from PIL import Image,ImageOps,ImageDraw,ImageFont
     import ai_service as ai
-    from tryon_geometry import target_coverage
+    from services.ai.features.tryon.geometry import target_coverage
     dataset=ROOT/'workspace/training/couple-tee-pilot'
     rows=[json.loads(s) for s in (dataset/'manifest.jsonl').read_text(encoding='utf-8').splitlines()]
     validation=[r for r in rows if r['split']=='validation']
@@ -127,7 +129,7 @@ def run(args):
     import torch
     from PIL import Image
     import ai_service as ai
-    from tryon_geometry import fit_geometry,restore_image
+    from services.ai.features.tryon.geometry import fit_geometry,restore_image
     dataset=args.root.resolve(); manifest=json.loads((dataset/'cases.json').read_text(encoding='utf-8'))
     cases=[c for c in manifest['cases'] if (not args.case or args.case in c['id']) and (not args.mode or c['mode']==args.mode)]
     if not cases: raise ValueError('No matching cases')

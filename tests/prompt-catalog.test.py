@@ -9,10 +9,10 @@ from pathlib import Path
 
 root=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(root))
-from prompt_catalog import prompt_text, prompt_template, read_catalog
-from processing_mode_prompts import processing_mode_prompt
+from services.ai.prompting.catalog import prompt_text, prompt_template, read_catalog
+from services.ai.prompting.processing_modes import processing_mode_prompt
 from unittest.mock import patch
-import prompt_catalog
+from services.ai.prompting import catalog as prompt_catalog
 
 tree=ast.parse(read_source(root/'ai_service.py', encoding='utf-8'))
 names={'build_inpaint_instruction','build_inpaint_negative_prompt','resolve_inpaint_prompts'}
